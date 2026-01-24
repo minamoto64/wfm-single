@@ -9,7 +9,7 @@ RSpec.describe 'Dashboards', type: :request do
     get root_path
   end
 
-  context 'as admin user' do
+  context 'when logged in as admin user' do
     let(:login_user) { admin_user }
 
     it 'shows user name' do
@@ -21,7 +21,7 @@ RSpec.describe 'Dashboards', type: :request do
     end
   end
 
-  context 'as normal user' do
+  context 'when logged in as normal user' do
     let(:login_user) { normal_user }
 
     it 'shows user name' do
