@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_25_071412) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_30_101208) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -23,6 +23,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_25_071412) do
     t.datetime "updated_at", null: false
     t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.index ["uuid"], name: "index_customers_on_uuid", unique: true
+  end
+
+  create_table "interactions", force: :cascade do |t|
+    t.boolean "completed", default: false, null: false
+    t.datetime "created_at", null: false
+    t.bigint "customer_id", null: false
+    t.string "interaction_type", null: false
+    t.datetime "occurred_at", null: false
+    t.bigint "parent_interaction_id"
+    t.text "request_content", null: false
+    t.text "response_result", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["customer_id", "occurred_at"], name: "index_interactions_on_customer_id_and_occurred_at"
+    t.index ["interaction_type"], name: "index_interactions_on_interaction_type"
+    t.index ["parent_interaction_id"], name: "index_interactions_on_parent_interaction_id"
+    t.index ["user_id", "occurred_at"], name: "index_interactions_on_user_id_and_occurred_at"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -44,5 +61,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_25_071412) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "interactions", "customers"
+  add_foreign_key "interactions", "interactions", column: "parent_interaction_id"
+  add_foreign_key "interactions", "users"
   add_foreign_key "sessions", "users"
 end
