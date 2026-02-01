@@ -86,3 +86,83 @@ customers.each do |attrs|
     puts "重要メモ: #{customer.key_notes}"
   end
 end
+
+# 応対履歴のステータスを日本語に変換する
+def status_label(completed)
+  completed ? "完了" : "対応中"
+end
+
+# 応対履歴の問合せ方法を日本語に変換する
+def interaction_type_label(interaction_type)
+  {
+    phone: "電話",
+    email: "メール",
+    web: "WEB",
+    sns: "SNS",
+    in_person: "対面"
+  }[interaction_type.to_sym]
+end
+
+# 初期応対履歴の作成
+interactions = [
+  {
+    customer_id: 1,
+    user_id: 2,
+    occurred_at: Time.new(2026, 1, 26, 3, 3, 0, "+09:00"),
+    interaction_type: :phone,
+    parent_interaction_id: nil,
+    request_content: "商品Aの在庫問い合わせ。入荷したら連絡してほしいとのこと。",
+    response_result: "在庫確認後、明日入荷予定と回答。 入荷次第連絡する旨を伝えた。",
+    completed: false
+  },
+  {
+    customer_id: 1,
+    user_id: 2,
+    occurred_at: Time.new(2026, 1, 30, 11, 0, 0, "+09:00"),
+    interaction_type: :phone,
+    parent_interaction_id: 1,
+    request_content: "入荷連絡の電話するも、不在。",
+    response_result: "留守電にメッセージを入れて終話。",
+    completed: false
+  },
+  {
+    customer_id: 2,
+    user_id: 2,
+    occurred_at: Time.new(2026, 1, 25, 2, 0, 0, "+09:00"),
+    interaction_type: :phone,
+    parent_interaction_id: nil,
+    request_content: "商品Xの不具合報告。一度店頭にて状況を確認してほしいとのこと。",
+    response_result: "明日13時に来店予定。2階承りカウンターにお越しいただくように伝えてます。",
+    completed: false
+  },
+  {
+    customer_id: 3,
+    user_id: 3,
+    occurred_at: Time.new(2026, 1, 31, 8, 0, 0, "+09:00"),
+    interaction_type: :in_person,
+    parent_interaction_id: nil,
+    request_content: "商品Bの取り寄せ依頼。",
+    response_result: "センターにも在庫無。入荷まで2~3週間かかる旨伝える。入荷次第連絡希望。",
+    completed: false
+  }
+]
+
+interactions.each do |attrs|
+  interaction = Interaction.find_or_create_by!(
+    customer_id: attrs[:customer_id],
+    occurred_at: attrs[:occurred_at]
+  ) do |u|
+    u.assign_attributes(attrs)
+  end
+
+  if interaction.previously_new_record?
+    puts "初期応対履歴を作成しました！"
+    puts "顧客: #{interaction.customer.name}"
+    puts "従業員: #{interaction.user.name}"
+    puts "応対日時: #{interaction.occurred_at}"
+    puts "問合せ方法: #{interaction_type_label(interaction.interaction_type)}"
+    puts "応対内容: #{interaction.request_content}"
+    puts "対応結果: #{interaction.response_result}"
+    puts "対応状況: #{status_label(interaction.completed)}"
+  end
+end

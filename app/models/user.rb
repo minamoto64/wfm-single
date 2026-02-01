@@ -7,4 +7,6 @@ class User < ApplicationRecord
   validates :email_address, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :name, presence: true, length: { maximum: 50 }
   validates :password, length: { minimum: 8 }, if: -> { new_record? || !password.nil? }
+
+  has_many :interactions
 end
