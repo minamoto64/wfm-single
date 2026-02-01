@@ -9,7 +9,13 @@ class Interaction < ApplicationRecord
   # has_many :notices
   # has_many :tasks
 
-  enum :interaction_type, %i[phone email web sns in_person]
+  enum :interaction_type, {
+  phone: "phone",
+  email: "email",
+  web: "web",
+  sns: "sns",
+  in_person: "in_person"
+}
 
   validates :occurred_at, presence: true
   validates :interaction_type, presence: true
