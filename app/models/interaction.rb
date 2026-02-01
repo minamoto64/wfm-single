@@ -21,5 +21,5 @@ class Interaction < ApplicationRecord
   validates :interaction_type, presence: true
   validates :request_content, presence: true
   validates :response_result, presence: true
-  validates :completed, inclusion: { in: [true, false] }
+  validates :completed, inclusion: { in: [ true, false ] }
 end
