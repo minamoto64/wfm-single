@@ -7,5 +7,5 @@ class Customer < ApplicationRecord
   validates :key_notes, length: { maximum: 500 }
 
   # add associations after other models are created
-  # has_many :interactions
+  has_many :interactions
 end
