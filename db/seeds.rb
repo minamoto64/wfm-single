@@ -166,3 +166,86 @@ interactions.each do |attrs|
     puts "対応状況: #{status_label(interaction.completed)}"
   end
 end
+
+# 周知事項の種別を日本語に変換する
+def notice_type_label(notice_type)
+  {
+    important: "重要",
+    normal: "通常",
+    confidential: "管理者"
+  }[notice_type.to_sym]
+end
+
+# 初期の周知事項の作成
+notices = [
+  {
+    title: "商品Xのクレーム多発について",
+    content: "商品Xに関するクレームが増加しています。 対応時は必ずマニュアルを確認し、丁寧な説明を心がけてください。 不明点があれば必ず店長に確認してください。 【対応のポイント】 ・まずお客様の話をしっかり聞く ・マニュアルP.15の手順に従う ・必要に応じて代替品を提案 ・対応後は必ず記録を残す ご協力よろしくお願いいたします。",
+    notice_type: :important,
+    admin_only: false,
+    start_at: Time.new(2026, 2, 1, 11, 0, 0, "+09:00"),
+    end_at: Time.new(2026, 8, 1, 11, 0, 0, "+09:00"),
+    posted_by_user_id: 2,
+    parent_notice_id: nil
+  },
+  {
+    title: "お釣りのお渡し漏れについて",
+    content: "最近レジでのお釣りを渡し忘れる事案が多発しています。お客様をお見送りするのも大事ですが、それよりも前にレジのトレーにお釣りやレシートが残っていないか、確認を徹底しましょう。",
+    notice_type: :normal,
+    admin_only: false,
+    start_at: Time.new(2026, 2, 1, 13, 0, 0, "+09:00"),
+    end_at: Time.new(2026, 8, 1, 13, 0, 0, "+09:00"),
+    posted_by_user_id: 1,
+    parent_notice_id: nil
+  },
+  {
+    title: "カードの返し忘れについて",
+    content: "先日、レジでのお釣りの返し忘れが多い件について周知しましたが、今度はクレジットカードの返却忘れが発生しました。お釣りやレシートと同様ですが、お客様がクレジットカードをお取りいただいているか、カード決済端末も逐一確認するようお願いいたします。",
+    notice_type: :normal,
+    admin_only: false,
+    start_at: Time.new(2026, 2, 2, 13, 0, 0, "+09:00"),
+    end_at: Time.new(2026, 8, 2, 13, 0, 0, "+09:00"),
+    posted_by_user_id: 1,
+    parent_notice_id: 3
+  },
+  {
+    title: "従業員の退職申出について",
+    content: "Uターンするため、退職したいと佐藤さんから申し入れがありました。少し掘り下げると、直近の業務でしんどい部分があったことも影響しているようです。ひとまず慰留しましたが、元気がなさそうであれば声がけするなど、管理者各位もフォローお願いします。",
+    notice_type: :confidential,
+    admin_only: true,
+    start_at: Time.new(2026, 2, 1, 12, 0, 0, "+09:00"),
+    end_at: Time.new(2026, 8, 1, 12, 0, 0, "+09:00"),
+    posted_by_user_id: 1,
+    parent_notice_id: nil
+  },
+  {
+    title: "退職申出の保留について",
+    content: "佐藤さんとフォロー面談を実施した結果、もう少し将来についてゆっくり考えたいので、退職の話は一旦取り下げしたい都申出がありました。Uターンしてカフェを開業するという夢があるようです。全力で応援する気持ちと、現職で辛いことがあれば、管理者に気兼ねなく相談しても大丈夫と伝えてます。佐藤さんから何か相談があれば、快く相談にのってあげてください。",
+    notice_type: :confidential,
+    admin_only: true,
+    start_at: Time.new(2026, 2, 3, 11, 0, 0, "+09:00"),
+    end_at: Time.new(2026, 8, 3, 11, 0, 0, "+09:00"),
+    posted_by_user_id: 1,
+    parent_notice_id: 4
+  }
+]
+
+notices.each do |attrs|
+  notice = Notice.find_or_create_by!(
+    title: attrs[:title],
+    start_at: attrs[:start_at],
+    posted_by_user_id: attrs[:posted_by_user_id]
+  ) do |u|
+    u.assign_attributes(attrs)
+  end
+
+  if notice.previously_new_record?
+    puts "初期周知事項を作成しました！"
+    puts "#{notice.title}"
+    puts "内容: #{notice.content}"
+    puts "種別: #{notice_type_label(notice.notice_type)}"
+    puts "作成日時: #{notice.start_at}"
+    puts "終了日時: #{notice.end_at}"
+    puts "作成者: #{notice.posted_by_user.name}"
+  end
+end
