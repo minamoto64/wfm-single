@@ -9,4 +9,5 @@ class User < ApplicationRecord
   validates :password, length: { minimum: 8 }, if: -> { new_record? || !password.nil? }
 
   has_many :interactions
+  has_many :notices
 end

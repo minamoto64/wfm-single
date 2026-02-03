@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_30_101208) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_02_102534) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -42,6 +42,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_101208) do
     t.index ["user_id", "occurred_at"], name: "index_interactions_on_user_id_and_occurred_at"
   end
 
+  create_table "notices", force: :cascade do |t|
+    t.boolean "admin_only", default: false, null: false
+    t.text "content", null: false
+    t.datetime "created_at", null: false
+    t.datetime "end_at", null: false
+    t.string "notice_type", null: false
+    t.bigint "parent_notice_id"
+    t.bigint "posted_by_user_id", null: false
+    t.datetime "start_at", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["notice_type"], name: "index_notices_on_notice_type"
+    t.index ["parent_notice_id"], name: "index_notices_on_parent_notice_id"
+    t.index ["start_at", "end_at"], name: "index_notices_on_start_at_and_end_at"
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ip_address"
@@ -64,5 +80,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_101208) do
   add_foreign_key "interactions", "customers"
   add_foreign_key "interactions", "interactions", column: "parent_interaction_id"
   add_foreign_key "interactions", "users"
+  add_foreign_key "notices", "notices", column: "parent_notice_id"
+  add_foreign_key "notices", "users", column: "posted_by_user_id"
   add_foreign_key "sessions", "users"
 end
