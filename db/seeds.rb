@@ -249,3 +249,57 @@ notices.each do |attrs|
     puts "作成者: #{notice.posted_by_user.name}"
   end
 end
+
+# 初期タスクの作成
+tasks = [
+  {
+    title: "商品X再発防止策の検討",
+    description: "クレーム多発のため、メーカーとの協議と対応マニュアル改訂が必要。 再発防止のための体制整備を行う。 各店舗での対応事例を収集し、ベストプラクティスをまとめる。",
+    admin_only: true,
+    created_by_user_id: 1,
+    parent_task_id: nil,
+    due_at: Time.new(2026, 2, 12, 11, 0, 0, "+09:00")
+  },
+  {
+    title: "メーカーへの問い合わせ",
+    description: "商品Xについてクレームが多発しているため、製造・設計段階で何か不具合があったのではないかメーカーへ確認。不具合がなければ。今後の対応方法について助言を求める。",
+    admin_only: true,
+    created_by_user_id: 1,
+    parent_task_id: 1,
+    due_at: Time.new(2026, 2, 9, 11, 0, 0, "+09:00")
+  },
+  {
+    title: "販売マニュアルの改訂",
+    description: "メーカーから製造・設計段階による具体的な不具合は確認されなかったと返答。しかしながら、今後リコールへ発展する可能性も考え、同様の申出があった場合は、故意の破損等を除いて、原則交換対応とする。商品Xのクレーム申出があった場合は、メーカーが用意した特設フォームへ情報の入力が必要なため、手順について、期間用途限定のマニュアルを、既存の販売マニュアルへ追加要。",
+    admin_only: true,
+    created_by_user_id: 1,
+    parent_task_id: 2,
+    due_at: Time.new(2026, 2, 9, 11, 0, 0, "+09:00")
+  },
+  {
+    title: "商品Yの品出し",
+    description: "昨日の閉店作業時間内に商品Yの品出しが終わりませんでした。。すみませんが、朝番の方、商品Yの棚がスカスカになっているので、開店作業中に優先して品出しをお願いします。",
+    admin_only: false,
+    created_by_user_id: 2,
+    parent_task_id: nil,
+    due_at: nil
+  }
+]
+
+tasks.each do |attrs|
+  task = Task.find_or_create_by!(
+    title: attrs[:title],
+    created_by_user_id: attrs[:created_by_user_id],
+    parent_task_id: attrs[:parent_task_id]
+  ) do |u|
+    u.assign_attributes(attrs)
+  end
+
+  if task.previously_new_record?
+    puts "初期タスクを作成しました！"
+    puts "#{task.title}"
+    puts "説明: #{task.description}"
+    puts "作成者: #{task.created_by_user.name}"
+    puts "期限: #{task.due_at}"
+  end
+end
