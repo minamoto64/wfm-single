@@ -5,7 +5,7 @@ FactoryBot.define do
     title { "タイトル" }
     description { "説明" }
     admin_only { false }
-    parent_task { nil }
+    parent { nil }
     due_at { 1.week.from_now }
   end
 end
