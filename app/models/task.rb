@@ -5,7 +5,8 @@ class Task < ApplicationRecord
   has_many :children, class_name: "Task", foreign_key: "parent_task_id"
 
   # add associations after other models are created
-  # has_many :task_assignments
+  has_many :task_assignments
+  has_many :users, through: :task_assignments
 
   validates :title, presence: true, length: { maximum: 50 }
   validates :description, presence: true, length: { maximum: 2000 }

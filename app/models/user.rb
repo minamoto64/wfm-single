@@ -12,6 +12,6 @@ class User < ApplicationRecord
   has_many :notices
   has_many :created_tasks, class_name: "Task", foreign_key: "created_by_user_id"
 
-  # add associations after other models are created
-  # has_many :task_assignments
+  has_many :task_assignments
+  has_many :assigned_tasks, through: :task_assignments, source: :task
 end
