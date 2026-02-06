@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_02_102534) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_04_124818) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -67,6 +67,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_02_102534) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "tasks", force: :cascade do |t|
+    t.boolean "admin_only", default: false, null: false
+    t.datetime "created_at", null: false
+    t.bigint "created_by_user_id", null: false
+    t.text "description", null: false
+    t.datetime "due_at"
+    t.bigint "parent_task_id"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["due_at"], name: "index_tasks_on_due_at"
+    t.index ["parent_task_id"], name: "index_tasks_on_parent_task_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.boolean "admin", default: false, null: false
     t.datetime "created_at", null: false
@@ -83,4 +96,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_02_102534) do
   add_foreign_key "notices", "notices", column: "parent_notice_id"
   add_foreign_key "notices", "users", column: "posted_by_user_id"
   add_foreign_key "sessions", "users"
+  add_foreign_key "tasks", "tasks", column: "parent_task_id"
+  add_foreign_key "tasks", "users", column: "created_by_user_id"
 end
