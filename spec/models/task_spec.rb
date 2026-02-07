@@ -35,6 +35,17 @@ RSpec.describe Task, type: :model do
       expect(association.options[:class_name]).to eq("Task")
       expect(association.options[:foreign_key]).to eq("parent_task_id")
     end
+
+    it 'has many task_assignments' do
+      association = described_class.reflect_on_association(:task_assignments)
+      expect(association.macro).to eq(:has_many)
+    end
+
+    it 'has_many users through task_assignments' do
+      association = described_class.reflect_on_association(:users)
+      expect(association.macro).to eq(:has_many)
+      expect(association.options[:through]).to eq(:task_assignments)
+    end
   end
 
   describe 'validations' do
