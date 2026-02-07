@@ -12,6 +12,13 @@ users = [
     admin: true
   },
   {
+    name: "管理者2",
+    email_address: "admin2@example.com",
+    password: "password",
+    password_confirmation: "password",
+    admin: true
+  },
+  {
     name: "山田太郎",
     email_address: "yamada@example.com",
     password: "password",
@@ -254,23 +261,23 @@ end
 tasks = [
   {
     title: "商品X再発防止策の検討",
-    description: "クレーム多発のため、メーカーとの協議と対応マニュアル改訂が必要。 再発防止のための体制整備を行う。 各店舗での対応事例を収集し、ベストプラクティスをまとめる。",
-    admin_only: true,
+    description: "クレーム多発のため、メーカーとの協議と対応マニュアル改訂が必要。 再発防止のための体制整備を行う。 各店舗での対応事例を収集し、ベストプラクティスをまとめておいてください。",
+    admin_only: false,
     created_by_user_id: 1,
     parent_task_id: nil,
     due_at: Time.new(2026, 2, 12, 11, 0, 0, "+09:00")
   },
   {
     title: "メーカーへの問い合わせ",
-    description: "商品Xについてクレームが多発しているため、製造・設計段階で何か不具合があったのではないかメーカーへ確認。不具合がなければ。今後の対応方法について助言を求める。",
-    admin_only: true,
+    description: "商品Xについてクレームが多発しているため、製造・設計段階で何か不具合があったのではないかメーカーへ確認要。佐藤さんが、各店舗での事例をExcelファイルにまとめてくれているので、そちらを添付の上、メーカーへメールにて問い合わせお願いします。不具合がないということであれば、今後の対応方法について助言を求めてください。",
+    admin_only: false,
     created_by_user_id: 1,
     parent_task_id: 1,
     due_at: Time.new(2026, 2, 9, 11, 0, 0, "+09:00")
   },
   {
     title: "販売マニュアルの改訂",
-    description: "メーカーから製造・設計段階による具体的な不具合は確認されなかったと返答。しかしながら、今後リコールへ発展する可能性も考え、同様の申出があった場合は、故意の破損等を除いて、原則交換対応とする。商品Xのクレーム申出があった場合は、メーカーが用意した特設フォームへ情報の入力が必要なため、手順について、期間用途限定のマニュアルを、既存の販売マニュアルへ追加要。",
+    description: "メーカーから製造・設計段階による具体的な不具合は確認されなかったと返答。しかしながら、今後リコールへ発展する可能性も考え、同様の申出があった場合は、故意の破損等を除いて、原則交換対応とする。商品Xのクレーム申出があった場合は、メーカーが用意した特設フォームへ情報の入力が必要なため、手順について、期間用途限定のマニュアルを、既存の販売マニュアルへ追加要。改訂作業お願いします。",
     admin_only: true,
     created_by_user_id: 1,
     parent_task_id: 2,
@@ -280,9 +287,25 @@ tasks = [
     title: "商品Yの品出し",
     description: "昨日の閉店作業時間内に商品Yの品出しが終わりませんでした。。すみませんが、朝番の方、商品Yの棚がスカスカになっているので、開店作業中に優先して品出しをお願いします。",
     admin_only: false,
-    created_by_user_id: 2,
+    created_by_user_id: 3,
     parent_task_id: nil,
     due_at: nil
+  },
+  {
+    title: "扶養控除申告書の提出について",
+    description: "今年も年末調整の時期がやってきました!つきましては、扶養控除申告書の提出が必要となります。書面は2Fの事務室に置いてあります。各自1部お取りいただき、期日までに提出をお願いいたします。何か不明点があれば管理者まで。",
+    admin_only: false,
+    created_by_user_id: 1,
+    parent_task_id: nil,
+    due_at: Time.new(2026, 2, 14, 11, 0, 0, "+09:00")
+  },
+  {
+    title: "管理者各位 期末評価について",
+    description: "社長との1on1面談が実施されます。面談にあたり、今年度の自己評価表の提出が必要となります。業務システムの管理者項目、期末評価から、期日までに提出をお願いいたします。",
+    admin_only: true,
+    created_by_user_id: 1,
+    parent_task_id: nil,
+    due_at: Time.new(2026, 2, 14, 11, 0, 0, "+09:00")
   }
 ]
 
@@ -301,5 +324,59 @@ tasks.each do |attrs|
     puts "説明: #{task.description}"
     puts "作成者: #{task.created_by_user.name}"
     puts "期限: #{task.due_at}"
+  end
+end
+
+# タスクのステータスを日本語に変換する
+def task_status_label(status)
+  {
+    todo: "未着手",
+    in_progress: "進行中",
+    done: "完了"
+  }[status.to_sym]
+end
+
+# 初期のタスク割り当てを作成
+task_assignments = [
+  {
+    task_id: 1,
+    user_id: 3,
+    status: :todo
+  },
+  {
+    task_id: 2,
+    user_id: 4,
+    status: :todo
+  },
+  {
+    task_id: 3,
+    user_id: 2,
+    status: :todo
+  },
+  {
+    task_id: 4,
+    user_id: 4,
+    status: :todo
+  },
+  # 作成者を含めて、従業員全員に割り当てるタスク
+  *User.pluck(:id).map { |uid| { task_id: 5, user_id: uid } },
+
+  # 作成者を含めて、管理者権限を持つ全員に割り当てるタスク
+  *User.where(admin: true).pluck(:id).map { |uid| { task_id: 6, user_id: uid } }
+]
+
+task_assignments.each do |attrs|
+  task_assignment = TaskAssignment.find_or_create_by!(
+    user_id: attrs[:user_id],
+    task_id: attrs[:task_id]
+  ) do |u|
+    u.assign_attributes(attrs)
+  end
+
+  if task_assignment.previously_new_record?
+    puts "初期のタスク割り当てを作成しました"
+    puts "#{task_assignment.task.title}"
+    puts "担当: #{task_assignment.user.name}"
+    puts "状態: #{task_status_label(task_assignment.status)}"
   end
 end
