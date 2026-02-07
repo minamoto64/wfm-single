@@ -11,6 +11,24 @@ RSpec.describe User, type: :model do
       user.sessions.create!
       expect { user.destroy }.to change(Session, :count).by(-1)
     end
+
+    it 'has many created_tasks' do
+      association = described_class.reflect_on_association(:created_tasks)
+      expect(association.macro).to eq(:has_many)
+      expect(association.options[:class_name]).to eq("Task")
+      expect(association.options[:foreign_key]).to eq("created_by_user_id")
+    end
+
+    it 'has many task_assignments' do
+      association = described_class.reflect_on_association(:task_assignments)
+      expect(association.macro).to eq(:has_many)
+    end
+
+    it 'has many assigned_tasks through task_assignments' do
+      association = described_class.reflect_on_association(:assigned_tasks)
+      expect(association.macro).to eq(:has_many)
+      expect(association.options[:through]).to eq(:task_assignments)
+    end
   end
 
   describe 'validations' do
