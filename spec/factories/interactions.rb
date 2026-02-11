@@ -5,7 +5,6 @@ FactoryBot.define do
 
     occurred_at { Time.current }
     channel { "phone" }
-    parent { nil }
     request_content { "問い合わせ内容" }
     response_result { "対応結果" }
     completed { false }
