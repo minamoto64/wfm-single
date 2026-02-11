@@ -4,7 +4,7 @@ FactoryBot.define do
     association :user
 
     occurred_at { Time.current }
-    interaction_type { "phone" }
+    channel { "phone" }
     parent { nil }
     request_content { "問い合わせ内容" }
     response_result { "対応結果" }
