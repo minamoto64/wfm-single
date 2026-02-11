@@ -7,25 +7,22 @@ RSpec.describe Task, type: :model do
     end
 
     it 'has a valid task with parent' do
-      parent = create(:task)
-      expect(parent).to be_valid
-      child = create(:task, parent: parent)
-      expect(child.parent).to be_present
+      task = create(:task, :with_parent)
+      expect(task).to be_valid
+      expect(task.parent).to be_present
     end
   end
 
   describe 'associations' do
-    it 'belongs to created_by_user (User)' do
-      association = described_class.reflect_on_association(:created_by_user)
+    it 'belongs to user)' do
+      association = described_class.reflect_on_association(:user)
       expect(association.macro).to eq(:belongs_to)
-      expect(association.options[:class_name]).to eq("User")
     end
 
     it 'belongs to parent task (optional)' do
       association = described_class.reflect_on_association(:parent)
       expect(association.macro).to eq(:belongs_to)
       expect(association.options[:class_name]).to eq("Task")
-      expect(association.options[:foreign_key]).to eq("parent_task_id")
       expect(association.options[:optional]).to be(true)
     end
 
@@ -33,7 +30,7 @@ RSpec.describe Task, type: :model do
       association = described_class.reflect_on_association(:children)
       expect(association.macro).to eq(:has_many)
       expect(association.options[:class_name]).to eq("Task")
-      expect(association.options[:foreign_key]).to eq("parent_task_id")
+      expect(association.options[:foreign_key]).to eq("parent_id")
     end
 
     it 'has many task_assignments' do
@@ -42,9 +39,10 @@ RSpec.describe Task, type: :model do
     end
 
     it 'has_many users through task_assignments' do
-      association = described_class.reflect_on_association(:users)
+      association = described_class.reflect_on_association(:assigned_users)
       expect(association.macro).to eq(:has_many)
       expect(association.options[:through]).to eq(:task_assignments)
+      expect(association.options[:source]).to eq (:user)
     end
   end
 
@@ -83,19 +81,19 @@ RSpec.describe Task, type: :model do
       end
     end
 
-    describe 'admin_only' do
-      it 'is valid when admin_only is true' do
-        task = build(:task, admin_only: true)
+    describe 'restricted' do
+      it 'is valid when restricted is true' do
+        task = build(:task, restricted: true)
         expect(task).to be_valid
       end
 
-      it 'is valid when admin_only is false' do
-        task = build(:task, admin_only: false)
+      it 'is valid when restricted is false' do
+        task = build(:task, restricted: false)
         expect(task).to be_valid
       end
 
-      it 'is invalid when admin_only is nil' do
-        task = build(:task, admin_only: nil)
+      it 'is invalid when restricted is nil' do
+        task = build(:task, restricted: nil)
         expect(task).to be_invalid
       end
     end
