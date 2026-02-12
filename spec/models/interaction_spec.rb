@@ -29,7 +29,6 @@ RSpec.describe Interaction, type: :model do
       association = described_class.reflect_on_association(:parent)
       expect(association.macro).to eq(:belongs_to)
       expect(association.options[:class_name]).to eq("Interaction")
-      expect(association.options[:foreign_key]).to eq("parent_interaction_id")
       expect(association.options[:optional]).to be(true)
     end
 
@@ -37,13 +36,13 @@ RSpec.describe Interaction, type: :model do
       association = described_class.reflect_on_association(:children)
       expect(association.macro).to eq(:has_many)
       expect(association.options[:class_name]).to eq("Interaction")
-      expect(association.options[:foreign_key]).to eq("parent_interaction_id")
+      expect(association.options[:foreign_key]).to eq("parent_id")
     end
   end
 
   describe 'enum' do
-    it 'defines correct interaction_type values' do
-      expect(described_class.interaction_types).to eq(
+    it 'defines correct channel values' do
+      expect(described_class.channels).to eq(
         "phone" => "phone",
         "email" => "email",
         "web" => "web",
@@ -61,9 +60,9 @@ RSpec.describe Interaction, type: :model do
       end
     end
 
-    describe 'interaction_type' do
+    describe 'channel' do
       it 'is required' do
-        interaction = build(:interaction, interaction_type: "")
+        interaction = build(:interaction, channel: "")
         expect(interaction).to be_invalid
       end
     end

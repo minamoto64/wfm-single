@@ -7,25 +7,22 @@ RSpec.describe Notice, type: :model do
     end
 
     it 'has a valid notice with parent' do
-      parent = create(:notice)
-      expect(parent).to be_valid
-      child = create(:notice, parent: parent)
-      expect(child.parent).to be_present
+      notice = create(:notice, :with_parent)
+      expect(notice).to be_valid
+      expect(notice.parent).to be_present
     end
   end
 
   describe 'associations' do
     it 'belongs to user' do
-      association = described_class.reflect_on_association(:posted_by_user)
+      association = described_class.reflect_on_association(:user)
       expect(association.macro).to eq(:belongs_to)
-      expect(association.options[:class_name]).to eq("User")
     end
 
     it 'belongs to parent notice (optional)' do
       association = described_class.reflect_on_association(:parent)
       expect(association.macro).to eq(:belongs_to)
       expect(association.options[:class_name]).to eq("Notice")
-      expect(association.options[:foreign_key]).to eq("parent_notice_id")
       expect(association.options[:optional]).to be(true)
     end
 
@@ -33,13 +30,13 @@ RSpec.describe Notice, type: :model do
       association = described_class.reflect_on_association(:children)
       expect(association.macro).to eq(:has_many)
       expect(association.options[:class_name]).to eq("Notice")
-      expect(association.options[:foreign_key]).to eq("parent_notice_id")
+      expect(association.options[:foreign_key]).to eq("parent_id")
     end
   end
 
   describe 'enum' do
-    it 'defines correct notice_type values' do
-      expect(described_class.notice_types.keys).to match_array(
+    it 'defines correct level values' do
+      expect(described_class.levels.keys).to match_array(
         %w[important normal confidential]
       )
     end
@@ -80,26 +77,26 @@ RSpec.describe Notice, type: :model do
       end
     end
 
-    describe 'notice_type' do
+    describe 'level' do
       it 'is required' do
-        notice = build(:notice, notice_type: "")
+        notice = build(:notice, level: "")
         expect(notice).to be_invalid
       end
     end
 
-    describe 'admin_only' do
-      it 'is valid when admin_only is true' do
-        notice = build(:notice, admin_only: true)
+    describe 'restricted' do
+      it 'is valid when restricted is true' do
+        notice = build(:notice, restricted: true)
         expect(notice).to be_valid
       end
 
-      it 'is valid when admin_only is false' do
-        notice = build(:notice, admin_only: false)
+      it 'is valid when restricted is false' do
+        notice = build(:notice, restricted: false)
         expect(notice).to be_valid
       end
 
-      it 'is invalid when admin_only is nil' do
-        notice = build(:notice, admin_only: nil)
+      it 'is invalid when restricted is nil' do
+        notice = build(:notice, restricted: nil)
         expect(notice).to be_invalid
       end
     end

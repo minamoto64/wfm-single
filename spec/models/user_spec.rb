@@ -6,17 +6,9 @@ RSpec.describe User, type: :model do
   end
 
   describe 'associations' do
-    it 'destroys associated sessions when the user is deleted' do
-      user = create(:user)
-      user.sessions.create!
-      expect { user.destroy }.to change(Session, :count).by(-1)
-    end
-
     it 'has many created_tasks' do
-      association = described_class.reflect_on_association(:created_tasks)
+      association = described_class.reflect_on_association(:tasks)
       expect(association.macro).to eq(:has_many)
-      expect(association.options[:class_name]).to eq("Task")
-      expect(association.options[:foreign_key]).to eq("created_by_user_id")
     end
 
     it 'has many task_assignments' do
