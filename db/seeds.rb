@@ -95,19 +95,19 @@ customers.each do |attrs|
 end
 
 # 応対履歴のステータスを日本語に変換する
-def status_label(completed)
+def interaction_status_label(completed)
   completed ? "完了" : "対応中"
 end
 
 # 応対履歴の問合せ方法を日本語に変換する
-def interaction_type_label(interaction_type)
+def interaction_channel_label(channel)
   {
     phone: "電話",
     email: "メール",
     web: "WEB",
     sns: "SNS",
     in_person: "対面"
-  }[interaction_type.to_sym]
+  }[channel.to_sym]
 end
 
 # 初期応対履歴の作成
@@ -116,8 +116,8 @@ interactions = [
     customer_id: 1,
     user_id: 2,
     occurred_at: Time.new(2026, 1, 26, 3, 3, 0, "+09:00"),
-    interaction_type: :phone,
-    parent_interaction_id: nil,
+    channel: :phone,
+    parent_id: nil,
     request_content: "商品Aの在庫問い合わせ。入荷したら連絡してほしいとのこと。",
     response_result: "在庫確認後、明日入荷予定と回答。 入荷次第連絡する旨を伝えた。",
     completed: false
@@ -126,8 +126,8 @@ interactions = [
     customer_id: 1,
     user_id: 2,
     occurred_at: Time.new(2026, 1, 30, 11, 0, 0, "+09:00"),
-    interaction_type: :phone,
-    parent_interaction_id: 1,
+    channel: :phone,
+    parent_id: 1,
     request_content: "入荷連絡の電話するも、不在。",
     response_result: "留守電にメッセージを入れて終話。",
     completed: false
@@ -136,8 +136,8 @@ interactions = [
     customer_id: 2,
     user_id: 2,
     occurred_at: Time.new(2026, 1, 25, 2, 0, 0, "+09:00"),
-    interaction_type: :phone,
-    parent_interaction_id: nil,
+    channel: :phone,
+    parent_id: nil,
     request_content: "商品Xの不具合報告。一度店頭にて状況を確認してほしいとのこと。",
     response_result: "明日13時に来店予定。2階承りカウンターにお越しいただくように伝えてます。",
     completed: false
@@ -146,8 +146,8 @@ interactions = [
     customer_id: 3,
     user_id: 3,
     occurred_at: Time.new(2026, 1, 31, 8, 0, 0, "+09:00"),
-    interaction_type: :in_person,
-    parent_interaction_id: nil,
+    channel: :in_person,
+    parent_id: nil,
     request_content: "商品Bの取り寄せ依頼。",
     response_result: "センターにも在庫無。入荷まで2~3週間かかる旨伝える。入荷次第連絡希望。",
     completed: false
@@ -167,20 +167,20 @@ interactions.each do |attrs|
     puts "顧客: #{interaction.customer.name}"
     puts "従業員: #{interaction.user.name}"
     puts "応対日時: #{interaction.occurred_at}"
-    puts "問合せ方法: #{interaction_type_label(interaction.interaction_type)}"
+    puts "問合せ方法: #{interaction_channel_label(interaction.channel)}"
     puts "応対内容: #{interaction.request_content}"
     puts "対応結果: #{interaction.response_result}"
-    puts "対応状況: #{status_label(interaction.completed)}"
+    puts "対応状況: #{interaction_status_label(interaction.completed)}"
   end
 end
 
 # 周知事項の種別を日本語に変換する
-def notice_type_label(notice_type)
+def notice_level_label(level)
   {
     important: "重要",
     normal: "通常",
     confidential: "管理者"
-  }[notice_type.to_sym]
+  }[level.to_sym]
 end
 
 # 初期の周知事項の作成
@@ -188,52 +188,52 @@ notices = [
   {
     title: "商品Xのクレーム多発について",
     content: "商品Xに関するクレームが増加しています。 対応時は必ずマニュアルを確認し、丁寧な説明を心がけてください。 不明点があれば必ず店長に確認してください。 【対応のポイント】 ・まずお客様の話をしっかり聞く ・マニュアルP.15の手順に従う ・必要に応じて代替品を提案 ・対応後は必ず記録を残す ご協力よろしくお願いいたします。",
-    notice_type: :important,
-    admin_only: false,
+    level: :important,
+    restricted: false,
     start_at: Time.new(2026, 2, 1, 11, 0, 0, "+09:00"),
     end_at: Time.new(2026, 8, 1, 11, 0, 0, "+09:00"),
-    posted_by_user_id: 2,
-    parent_notice_id: nil
+    user_id: 2,
+    parent_id: nil
   },
   {
     title: "お釣りのお渡し漏れについて",
     content: "最近レジでのお釣りを渡し忘れる事案が多発しています。お客様をお見送りするのも大事ですが、それよりも前にレジのトレーにお釣りやレシートが残っていないか、確認を徹底しましょう。",
-    notice_type: :normal,
-    admin_only: false,
+    level: :normal,
+    restricted: false,
     start_at: Time.new(2026, 2, 1, 13, 0, 0, "+09:00"),
     end_at: Time.new(2026, 8, 1, 13, 0, 0, "+09:00"),
-    posted_by_user_id: 1,
-    parent_notice_id: nil
+    user_id: 1,
+    parent_id: nil
   },
   {
     title: "カードの返し忘れについて",
     content: "先日、レジでのお釣りの返し忘れが多い件について周知しましたが、今度はクレジットカードの返却忘れが発生しました。お釣りやレシートと同様ですが、お客様がクレジットカードをお取りいただいているか、カード決済端末も逐一確認するようお願いいたします。",
-    notice_type: :normal,
-    admin_only: false,
+    level: :normal,
+    restricted: false,
     start_at: Time.new(2026, 2, 2, 13, 0, 0, "+09:00"),
     end_at: Time.new(2026, 8, 2, 13, 0, 0, "+09:00"),
-    posted_by_user_id: 1,
-    parent_notice_id: 3
+    user_id: 1,
+    parent_id: 3
   },
   {
     title: "従業員の退職申出について",
     content: "Uターンするため、退職したいと佐藤さんから申し入れがありました。少し掘り下げると、直近の業務でしんどい部分があったことも影響しているようです。ひとまず慰留しましたが、元気がなさそうであれば声がけするなど、管理者各位もフォローお願いします。",
-    notice_type: :confidential,
-    admin_only: true,
+    level: :confidential,
+    restricted: true,
     start_at: Time.new(2026, 2, 1, 12, 0, 0, "+09:00"),
     end_at: Time.new(2026, 8, 1, 12, 0, 0, "+09:00"),
-    posted_by_user_id: 1,
-    parent_notice_id: nil
+    user_id: 1,
+    parent_id: nil
   },
   {
     title: "退職申出の保留について",
     content: "佐藤さんとフォロー面談を実施した結果、もう少し将来についてゆっくり考えたいので、退職の話は一旦取り下げしたい都申出がありました。Uターンしてカフェを開業するという夢があるようです。全力で応援する気持ちと、現職で辛いことがあれば、管理者に気兼ねなく相談しても大丈夫と伝えてます。佐藤さんから何か相談があれば、快く相談にのってあげてください。",
-    notice_type: :confidential,
-    admin_only: true,
+    level: :confidential,
+    restricted: true,
     start_at: Time.new(2026, 2, 3, 11, 0, 0, "+09:00"),
     end_at: Time.new(2026, 8, 3, 11, 0, 0, "+09:00"),
-    posted_by_user_id: 1,
-    parent_notice_id: 4
+    user_id: 1,
+    parent_id: 4
   }
 ]
 
@@ -241,7 +241,7 @@ notices.each do |attrs|
   notice = Notice.find_or_create_by!(
     title: attrs[:title],
     start_at: attrs[:start_at],
-    posted_by_user_id: attrs[:posted_by_user_id]
+    user_id: attrs[:user_id]
   ) do |u|
     u.assign_attributes(attrs)
   end
@@ -250,10 +250,10 @@ notices.each do |attrs|
     puts "初期周知事項を作成しました！"
     puts "#{notice.title}"
     puts "内容: #{notice.content}"
-    puts "種別: #{notice_type_label(notice.notice_type)}"
+    puts "種別: #{notice_level_label(notice.level)}"
     puts "作成日時: #{notice.start_at}"
     puts "終了日時: #{notice.end_at}"
-    puts "作成者: #{notice.posted_by_user.name}"
+    puts "作成者: #{notice.user.name}"
   end
 end
 
@@ -262,49 +262,49 @@ tasks = [
   {
     title: "商品X再発防止策の検討",
     description: "クレーム多発のため、メーカーとの協議と対応マニュアル改訂が必要。 再発防止のための体制整備を行う。 各店舗での対応事例を収集し、ベストプラクティスをまとめておいてください。",
-    admin_only: false,
-    created_by_user_id: 1,
-    parent_task_id: nil,
+    restricted: false,
+    user_id: 1,
+    parent_id: nil,
     due_at: Time.new(2026, 2, 12, 11, 0, 0, "+09:00")
   },
   {
     title: "メーカーへの問い合わせ",
     description: "商品Xについてクレームが多発しているため、製造・設計段階で何か不具合があったのではないかメーカーへ確認要。佐藤さんが、各店舗での事例をExcelファイルにまとめてくれているので、そちらを添付の上、メーカーへメールにて問い合わせお願いします。不具合がないということであれば、今後の対応方法について助言を求めてください。",
-    admin_only: false,
-    created_by_user_id: 1,
-    parent_task_id: 1,
+    restricted: false,
+    user_id: 1,
+    parent_id: 1,
     due_at: Time.new(2026, 2, 9, 11, 0, 0, "+09:00")
   },
   {
     title: "販売マニュアルの改訂",
     description: "メーカーから製造・設計段階による具体的な不具合は確認されなかったと返答。しかしながら、今後リコールへ発展する可能性も考え、同様の申出があった場合は、故意の破損等を除いて、原則交換対応とする。商品Xのクレーム申出があった場合は、メーカーが用意した特設フォームへ情報の入力が必要なため、手順について、期間用途限定のマニュアルを、既存の販売マニュアルへ追加要。改訂作業お願いします。",
-    admin_only: true,
-    created_by_user_id: 1,
-    parent_task_id: 2,
+    restricted: true,
+    user_id: 1,
+    parent_id: 2,
     due_at: Time.new(2026, 2, 9, 11, 0, 0, "+09:00")
   },
   {
     title: "商品Yの品出し",
     description: "昨日の閉店作業時間内に商品Yの品出しが終わりませんでした。。すみませんが、朝番の方、商品Yの棚がスカスカになっているので、開店作業中に優先して品出しをお願いします。",
-    admin_only: false,
-    created_by_user_id: 3,
-    parent_task_id: nil,
+    restricted: false,
+    user_id: 3,
+    parent_id: nil,
     due_at: nil
   },
   {
     title: "扶養控除申告書の提出について",
     description: "今年も年末調整の時期がやってきました!つきましては、扶養控除申告書の提出が必要となります。書面は2Fの事務室に置いてあります。各自1部お取りいただき、期日までに提出をお願いいたします。何か不明点があれば管理者まで。",
-    admin_only: false,
-    created_by_user_id: 1,
-    parent_task_id: nil,
+    restricted: false,
+    user_id: 1,
+    parent_id: nil,
     due_at: Time.new(2026, 2, 14, 11, 0, 0, "+09:00")
   },
   {
     title: "管理者各位 期末評価について",
     description: "社長との1on1面談が実施されます。面談にあたり、今年度の自己評価表の提出が必要となります。業務システムの管理者項目、期末評価から、期日までに提出をお願いいたします。",
-    admin_only: true,
-    created_by_user_id: 1,
-    parent_task_id: nil,
+    restricted: true,
+    user_id: 1,
+    parent_id: nil,
     due_at: Time.new(2026, 2, 14, 11, 0, 0, "+09:00")
   }
 ]
@@ -312,8 +312,8 @@ tasks = [
 tasks.each do |attrs|
   task = Task.find_or_create_by!(
     title: attrs[:title],
-    created_by_user_id: attrs[:created_by_user_id],
-    parent_task_id: attrs[:parent_task_id]
+    user_id: attrs[:user_id],
+    parent_id: attrs[:parent_id]
   ) do |u|
     u.assign_attributes(attrs)
   end
@@ -322,7 +322,7 @@ tasks.each do |attrs|
     puts "初期タスクを作成しました！"
     puts "#{task.title}"
     puts "説明: #{task.description}"
-    puts "作成者: #{task.created_by_user.name}"
+    puts "作成者: #{task.user.name}"
     puts "期限: #{task.due_at}"
   end
 end
