@@ -1,7 +1,12 @@
 class InteractionsController < ApplicationController
   before_action :set_interaction, only: [ :show, :edit, :update ]
 
-  def index; end
+  def index
+    @interactions = Interaction
+                      .preload(:customer, :user)
+                      .order(occurred_at: :desc)
+  end
+
   def new; end
   def create; end
   def show; end

@@ -1,0 +1,51 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-4xl mx-auto px-4">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold">応対履歴一覧</h1>
+      <%= link_to "新規登録", new_interaction_path,
+            class: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm" %>
+    </div>
+    <div class="bg-white rounded-lg shadow">
+      <% if @interactions.any? %>
+        <table class="w-full text-sm">
+          <thead class="bg-gray-50 border-b">
+            <tr>
+              <th class="text-left p-3 text-gray-600">日時</th>
+              <th class="text-left p-3 text-gray-600">顧客</th>
+              <th class="text-left p-3 text-gray-600">担当</th>
+              <th class="text-left p-3 text-gray-600">要望内容</th>
+              <th class="text-left p-3 text-gray-600">状態</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y">
+            <% @interactions.each do |interaction| %>
+              <tr class="hover:bg-gray-50">
+                <td class="p-3 whitespace-nowrap">
+                  <%= l interaction.occurred_at, format: :short %>
+                </td>
+                <td class="p-3"><%= interaction.customer.name %></td>
+                <td class="p-3"><%= interaction.user.name %></td>
+                <td class="p-3">
+                  <%= link_to truncate(interaction.request_content, length: 40),
+                        interaction_path(interaction),
+                        class: "text-blue-600 hover:underline" %>
+                </td>
+                <td class="p-3">
+                  <% if interaction.completed? %>
+                    <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs">完了</span>
+                  <% else %>
+                    <span class="px-2 py-1 bg-blue-100 text-blue-600 rounded text-xs">対応中</span>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <div class="p-8 text-center text-gray-500 text-sm">
+          まだ応対履歴はありません。
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
