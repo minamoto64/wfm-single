@@ -1,0 +1,12 @@
+ja:
+  time:
+    formats:
+      default: "%Y/%m/%d %H:%M"
+  enums:
+    interaction:
+      channel:
+        phone: "電話"
+        email: "メール"
+        web: "Web"
+        sns: "SNS"
+        in_person: "対面"
