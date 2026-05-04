@@ -21,7 +21,7 @@
             <% @interactions.each do |interaction| %>
               <tr class="hover:bg-gray-50">
                 <td class="p-3 whitespace-nowrap">
-                  <%= l interaction.occurred_at, format: :short %>
+                  <%= l interaction.occurred_at %>
                 </td>
                 <td class="p-3"><%= interaction.customer.name %></td>
                 <td class="p-3"><%= interaction.user.name %></td>
