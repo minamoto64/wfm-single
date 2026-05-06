@@ -19,7 +19,17 @@ RSpec.describe "Interactions", type: :request do
       it "displays the interaction history list" do
         interaction = create(:interaction, user: user)
         get interactions_path
+        expect(response.body).to include(interaction.customer.name)
+        expect(response.body).to include(interaction.user.name)
         expect(response.body).to include(interaction.request_content)
+      end
+
+      it "displays completed status badge" do
+        create(:interaction, user: user, completed: true)
+        create(:interaction, user: user, completed: false)
+        get interactions_path
+        expect(response.body).to include("完了")
+        expect(response.body).to include("対応中")
       end
     end
 
