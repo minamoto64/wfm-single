@@ -9,14 +9,22 @@ class InteractionsController < ApplicationController
 
   def new; end
   def create; end
-  def show; end
+
+  def show
+    root = @interaction.parent || @interaction
+    @timeline = [ root, *root.children ].sort_by(&:occurred_at)
+  end
+
   def edit; end
   def update; end
 
   private
 
   def set_interaction
-    @interaction = Interaction.find(params[:id])
+    @interaction = Interaction.preload(
+      :customer,
+      :user
+    ).find(params[:id])
   end
 
   def interaction_params
