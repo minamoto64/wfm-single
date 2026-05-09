@@ -1,0 +1,70 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-4xl mx-auto px-4">
+    <div class="mb-4">
+      <% if @interaction.parent %>
+        <%= link_to "← 親の応対履歴に戻る", interaction_path(@interaction.parent),
+              class: "text-blue-600 hover:underline text-sm" %>
+      <% else %>
+        <%= link_to "← 一覧に戻る", interactions_path,
+              class: "text-blue-600 hover:underline text-sm" %>
+      <% end %>
+    </div>
+    <div class="bg-white rounded-lg shadow-lg p-6">
+      <div class="border-b-4 border-blue-500 pb-4 mb-6">
+        <h1 class="text-2xl font-bold">応対履歴詳細</h1>
+      </div>
+      <div class="mb-6">
+        <h2 class="text-lg font-semibold mb-3 border-b-2 border-gray-300 pb-2">基本情報</h2>
+        <div class="bg-gray-50 p-4 rounded text-sm">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <span class="text-gray-600">日時:</span>
+              <span class="ml-2"><%= l @interaction.occurred_at %></span>
+            </div>
+            <div>
+              <span class="text-gray-600">顧客:</span>
+              <span class="ml-2"><%= @interaction.customer.name %></span>
+            </div>
+            <div>
+              <span class="text-gray-600">担当:</span>
+              <span class="ml-2"><%= @interaction.user.name %></span>
+            </div>
+            <div>
+              <span class="text-gray-600">種別:</span>
+              <span class="ml-2">
+                <%= interaction_channel_label(@interaction) %>
+              </span>
+            </div>
+            <div>
+              <span class="text-gray-600">状態:</span>
+              <span class="ml-2">
+                <%= @interaction.completed? ? "対応完了" : "対応中" %>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mb-6">
+        <h2 class="text-lg font-semibold mb-3 border-b-2 border-gray-300 pb-2">要望内容</h2>
+        <div class="bg-gray-50 p-4 rounded text-sm whitespace-pre-wrap">
+          <%= @interaction.request_content %>
+        </div>
+      </div>
+      <div class="mb-6">
+        <h2 class="text-lg font-semibold mb-3 border-b-2 border-gray-300 pb-2">対応結果</h2>
+        <div class="bg-gray-50 p-4 rounded text-sm whitespace-pre-wrap">
+          <%= @interaction.response_result %>
+        </div>
+      </div>
+
+      <%= render "timeline", timeline: @timeline, current_item: @interaction %>
+
+      <% if @interaction.user == Current.user %>
+        <div class="mt-6 flex justify-end border-t pt-4">
+          <%= link_to "編集", edit_interaction_path(@interaction),
+                class: "px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 text-sm" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
