@@ -43,6 +43,84 @@ RSpec.describe "Interactions", type: :request do
     end
   end
 
+  describe "GET /interactions/new" do
+    context "when the user is logged in" do
+      before { sign_in(user) }
+
+      it "returns 200" do
+        get new_interaction_path
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "inherits the same customer name if parent_id is present" do
+        parent = create(:interaction, user: user)
+        get new_interaction_path(parent_id: parent.id)
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "when the user is not logged in" do
+      it "redirects to the login page" do
+        get interactions_path
+        expect(response).to redirect_to(new_session_path)
+      end
+    end
+  end
+
+  describe "POST /interactions" do
+    context "when the user is logged in" do
+      before { sign_in(user) }
+
+      let(:customer) { create(:customer) }
+      let(:valid_params) do
+        {
+          interaction: {
+            customer_id: customer.id,
+            channel: "phone",
+            occurred_at: Time.current,
+            request_content: "新規要望",
+            response_result: "対応しました！",
+            completed: true
+          }
+        }
+      end
+
+      it "creates an Interaction with valid params" do
+        expect {
+          post interactions_path, params: valid_params
+        }.to change(Interaction, :count).by(1)
+      end
+
+      it "redirects to the show page with valid params" do
+        post interactions_path, params: valid_params
+        expect(response).to redirect_to(interaction_path(Interaction.last))
+      end
+
+      it "records the user who created it" do
+        post interactions_path, params: valid_params
+        expect(Interaction.last.user).to eq(user)
+      end
+
+      it "does not create an Interaction with invalid params" do
+        expect {
+          post interactions_path, params: { interaction: { channel: nil } }
+        }.not_to change(Interaction, :count)
+      end
+
+      it "re-renders the new template with invalid params" do
+        post interactions_path, params: { interaction: { channel: nil } }
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "when the user is not logged in" do
+      it "redirects to the login page" do
+        post interactions_path, params: {}
+        expect(response).to redirect_to(new_session_path)
+      end
+    end
+  end
+
   describe "GET /interactions/:id" do
     let(:interaction) { create(:interaction, user: user) }
 
