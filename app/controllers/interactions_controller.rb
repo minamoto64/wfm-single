@@ -1,5 +1,6 @@
 class InteractionsController < ApplicationController
   before_action :set_interaction, only: [ :show, :edit, :update ]
+  before_action :require_creator, only: [ :edit, :update ]
 
   def index
     @interactions = Interaction
@@ -32,8 +33,16 @@ class InteractionsController < ApplicationController
     @timeline = [ root, *root.children ].sort_by(&:occurred_at)
   end
 
-  def edit; end
-  def update; end
+  def edit
+  end
+
+  def update
+    if @interaction.update(interaction_params)
+      redirect_to @interaction, notice: "応対履歴を更新しました"
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
 
   private
 
@@ -50,5 +59,11 @@ class InteractionsController < ApplicationController
       :request_content, :response_result, :completed, :parent_id,
       images: []
     )
+  end
+
+  def require_creator
+    unless @interaction.user == Current.user
+      redirect_to @interaction, alert: "編集権限がありません"
+    end
   end
 end

@@ -180,4 +180,82 @@ RSpec.describe "Interactions", type: :request do
       end
     end
   end
+
+  describe "GET /interactions/:id/edit" do
+    context "when the user is the creator" do
+      before { sign_in(user) }
+
+      it "returns 200" do
+        interaction = create(:interaction, user: user)
+        get edit_interaction_path(interaction)
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "when the user is not the creator" do
+      it "redirects to the show page" do
+        other_user = create(:user)
+        interaction = create(:interaction, user: other_user)
+        sign_in(user)
+        get edit_interaction_path(interaction)
+        expect(response).to redirect_to(interaction_path(interaction))
+      end
+    end
+
+    context "when the user is not logged in" do
+      it "redirects to the login page" do
+        interaction = create(:interaction, user: user)
+        get edit_interaction_path(interaction)
+        expect(response).to redirect_to(new_session_path)
+      end
+    end
+  end
+
+  describe "PATCH /interactions/:id" do
+    let(:interaction) { create(:interaction, user: user) }
+
+    context "when the user is the creator with valid parameters" do
+      before { sign_in(user) }
+
+      it "updates the interaction" do
+        patch interaction_path(interaction),
+            params: { interaction: { request_content: "新規要望" } }
+        expect(interaction.reload.request_content).to eq("新規要望")
+      end
+
+      it "redirects to the show page" do
+        patch interaction_path(interaction),
+            params: { interaction: { request_content: "新規要望" } }
+        expect(response).to redirect_to(interaction_path(interaction))
+      end
+    end
+
+    context "when the user is the creator with invalid parameters" do
+      before { sign_in(user) }
+
+      it "re-renders the edit template" do
+        patch interaction_path(interaction),
+              params: { interaction: { channel: nil } }
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "when the user is not the creator" do
+      it "does not update the interaction and redirects to the show page" do
+        other_user = create(:user)
+        sign_in(other_user)
+        patch interaction_path(interaction),
+            params: { interaction: { request_content: "無効な更新" } }
+        expect(interaction.reload.request_content).not_to eq("無効な更新")
+        expect(response).to redirect_to(interaction_path(interaction))
+      end
+    end
+
+    context "when the user is not logged in" do
+      it "redirects to the login page" do
+        patch interaction_path(interaction), params: {}
+        expect(response).to redirect_to(new_session_path)
+      end
+    end
+  end
 end

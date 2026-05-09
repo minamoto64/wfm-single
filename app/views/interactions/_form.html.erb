@@ -16,15 +16,17 @@
 
   <div>
     <%= f.label :customer_id, "顧客", class: "block text-sm font-medium text-gray-700 mb-1" %>
-    <% if @parent_interaction %>
-      <%= f.hidden_field :customer_id %>
-      <div class="w-full border border-gray-200 rounded px-3 py-2 text-sm bg-gray-100 text-gray-600">
-        <%= @parent_interaction.customer.name %>
-      </div>
-    <% else %>
+    <% if interaction.new_record? && @parent_interaction.nil? %>
+      <%# 全くの新規登録のみセレクトボックス %>
       <%= f.collection_select :customer_id, Customer.order(:name), :id, :name,
             { prompt: "選択してください" },
             { class: "w-full border border-gray-300 rounded px-3 py-2 text-sm" } %>
+    <% else %>
+      <%# 子として新規登録 or 編集時は顧客固定 %>
+      <%= f.hidden_field :customer_id %>
+      <div class="w-full border border-gray-200 rounded px-3 py-2 text-sm bg-gray-100 text-gray-600">
+        <%= interaction.customer.name %>
+      </div>
     <% end %>
   </div>
   <div>
