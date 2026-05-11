@@ -34,6 +34,70 @@ RSpec.describe "Customers", type: :request do
     end
   end
 
+  describe "GET /customers/new" do
+    context "when the user is logged in" do
+      before { sign_in(user) }
+
+      it "responds with HTTP 200 OK" do
+        get new_customer_path
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "when the user is not logged in" do
+      it "redirects to the login page" do
+        get new_customer_path
+        expect(response).to redirect_to(new_session_path)
+      end
+    end
+  end
+
+  describe "POST /customers" do
+    context "when the user is logged in" do
+      before { sign_in(user) }
+
+      let(:valid_params) do
+        {
+          customer: {
+            name: "テスト顧客",
+            email: "test@example.com",
+            phone: "090-1234-5678",
+            key_notes: "常連"
+          }
+        }
+      end
+
+      it "creates a Customer with valid params" do
+        expect {
+          post customers_path, params: valid_params
+        }.to change(Customer, :count).by(1)
+      end
+
+      it "redirects to the show page with valid params" do
+        post customers_path, params: valid_params
+        expect(response).to redirect_to(customer_path(Customer.last))
+      end
+
+      it "does not create a Customer with invalid params" do
+        expect {
+          post customers_path, params: { customer: { name: nil } }
+        }.not_to change(Customer, :count)
+      end
+
+      it "re-renders the new template with invalid params" do
+        post customers_path, params: { customer: { name: nil } }
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "when the user is not logged in" do
+      it "redirects to the login page" do
+        post customers_path, params: {}
+        expect(response).to redirect_to(new_session_path)
+      end
+    end
+  end
+
   describe "GET /customers/:id" do
     let(:customer) { create(:customer) }
 

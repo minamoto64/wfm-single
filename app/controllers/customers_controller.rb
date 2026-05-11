@@ -5,8 +5,19 @@ class CustomersController < ApplicationController
     @customers = Customer.order(:name)
   end
 
-  def new; end
-  def create; end
+  def new
+    @customer = Customer.new
+  end
+
+  def create
+    @customer = Customer.new(customer_params)
+
+    if @customer.save
+      redirect_to @customer, notice: "顧客を登録しました"
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
 
   def show
   end
