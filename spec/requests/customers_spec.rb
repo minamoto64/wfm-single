@@ -33,4 +33,32 @@ RSpec.describe "Customers", type: :request do
       end
     end
   end
+
+  describe "GET /customers/:id" do
+    let(:customer) { create(:customer) }
+
+    context "when the user is logged in" do
+      before { sign_in(user) }
+
+      it "responds with HTTP 200 OK" do
+        get customer_path(customer)
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "displays the customer information" do
+        get customer_path(customer)
+        expect(response.body).to include(customer.name)
+        expect(response.body).to include(customer.email)
+        expect(response.body).to include(customer.phone)
+        expect(response.body).to include(customer.key_notes)
+      end
+    end
+
+    context "when the user is not logged in" do
+      it "redirects to the login page" do
+        get customer_path(customer)
+        expect(response).to redirect_to(new_session_path)
+      end
+    end
+  end
 end
