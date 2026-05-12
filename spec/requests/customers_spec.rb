@@ -125,4 +125,57 @@ RSpec.describe "Customers", type: :request do
       end
     end
   end
+
+  describe "GET /customers/:id/edit" do
+    let(:customer) { create(:customer) }
+
+    context "when the user is logged in" do
+      before { sign_in(user) }
+
+      it "returns 200" do
+        get edit_customer_path(customer)
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "when the user is not logged in" do
+      it "redirects to the login page" do
+        get edit_customer_path(customer)
+        expect(response).to redirect_to(new_session_path)
+      end
+    end
+  end
+
+  describe "PATCH /customers/:id" do
+    let(:customer) { create(:customer) }
+
+    context "when the user is logged in" do
+      before { sign_in(user) }
+
+      it "updates the customer with valid parameters" do
+        patch customer_path(customer),
+          params: { customer: { name: "更新後の顧客名" } }
+        expect(customer.reload.name).to eq("更新後の顧客名")
+      end
+
+      it "redirects to the show page with valid parameters" do
+        patch customer_path(customer),
+          params: { customer: { name: "更新後の顧客名" } }
+        expect(response).to redirect_to(customer_path(customer))
+      end
+
+      it "re-renders the edit template with invalid parameters" do
+        patch customer_path(customer),
+          params: { customer: { name: nil } }
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "when the user is not logged in" do
+      it "redirects to the login page" do
+        patch customer_path(customer), params: {}
+        expect(response).to redirect_to(new_session_path)
+      end
+    end
+  end
 end

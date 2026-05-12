@@ -22,8 +22,16 @@ class CustomersController < ApplicationController
   def show
   end
 
-  def edit; end
-  def update; end
+  def edit
+  end
+
+  def update
+    if @customer.update(customer_params)
+      redirect_to @customer, notice: "顧客情報を更新しました"
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
 
   private
 
