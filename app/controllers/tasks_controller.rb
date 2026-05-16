@@ -7,8 +7,21 @@ class TasksController < ApplicationController
     @tasks = visible_tasks.preload(:user).order(due_at: :asc)
   end
 
-  def new; end
-  def create; end
+  def new
+    @parent_task = Task.find_by(id: params[:parent_id])
+    @task = Task.new(parent: @parent_task)
+  end
+
+  def create
+    @task = Current.user.tasks.build(task_params)
+    @parent_task = @task.parent
+
+    if @task.save
+      redirect_to @task, notice: "タスクを登録しました"
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
 
   def show
   end
