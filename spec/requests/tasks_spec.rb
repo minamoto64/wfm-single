@@ -57,4 +57,53 @@ RSpec.describe "Tasks", type: :request do
       end
     end
   end
+
+  describe "GET /tasks/:id" do
+    context "when the user is logged in" do
+      before { sign_in(user) }
+
+      it "responds with HTTP 200 OK" do
+        get task_path(task)
+
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "displays the task information" do
+        get task_path(task)
+
+        expect(response.body).to include(task.title)
+        expect(response.body).to include(task.user.name)
+        expect(response.body).to include(I18n.l(task.due_at))
+        expect(response.body).to include(task.description)
+      end
+
+      it "cannot access a restricted task" do
+        restricted_task = create(:task, user: admin, restricted: true)
+
+        get task_path(restricted_task)
+
+        expect(response).to redirect_to tasks_path
+      end
+    end
+
+    context "when the user is an admin" do
+      before { sign_in(admin) }
+
+      it "can access a restricted task" do
+        restricted_task = create(:task, user: admin, restricted: true)
+
+        get task_path(restricted_task)
+
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "when the user is not logged in" do
+      it "redirects to the login page" do
+        get task_path(task)
+
+        expect(response).to redirect_to(new_session_path)
+      end
+    end
+  end
 end
