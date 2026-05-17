@@ -1,0 +1,40 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-4xl mx-auto px-4">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold">タスク一覧</h1>
+      <%= link_to "新規登録", new_task_path,
+            class: "px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 text-sm" %>
+    </div>
+    <div class="bg-white rounded-lg shadow">
+      <% if @tasks.any? %>
+        <table class="w-full text-sm">
+          <thead class="bg-gray-50 border-b">
+            <tr>
+              <th class="text-left p-3 text-gray-600">タイトル</th>
+              <th class="text-left p-3 text-gray-600">担当者</th>
+              <th class="text-left p-3 text-gray-600">期限</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y">
+            <% @tasks.each do |task| %>
+              <tr class="hover:bg-gray-50">
+                <td class="p-3">
+                  <%= link_to task.title, task_path(task),
+                        class: "text-blue-600 hover:underline" %>
+                </td>
+                <td class="p-3"><%= task.user.name %></td>
+                <td class="p-3">
+                  <%= task.due_at ? l(task.due_at) : "未設定" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <div class="p-8 text-center text-gray-500 text-sm">
+          まだタスクは登録されていません。
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

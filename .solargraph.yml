@@ -1,0 +1,26 @@
+---
+include:
+  - "./**/*.rb"
+exclude:
+  - spec/**/*
+  - test/**/*
+  - vendor/**/*
+  - ".bundle/**/*"
+require:
+  - rails
+domains: []
+reporters:
+  - rubocop
+  - require_not_found
+formatter:
+  rubocop:
+    cops: safe
+    except: []
+    only: []
+    extra_args: []
+type_checker:
+  rules: {}
+require_paths: []
+plugins:
+  - solargraph-rails
+max_files: 5000

@@ -12,6 +12,10 @@ ja:
         email: "メールアドレス"
         phone: "電話番号"
         key_notes: "重要メモ"
+      task:
+        title: "件名"
+        description: "内容"
+        due_at: "期限"
   time:
     formats:
       default: "%Y/%m/%d %H:%M"
