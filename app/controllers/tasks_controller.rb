@@ -26,8 +26,16 @@ class TasksController < ApplicationController
   def show
   end
 
-  def edit; end
-  def update; end
+  def edit
+  end
+
+  def update
+    if @task.update(task_params)
+      redirect_to @task, notice: "タスクを更新しました"
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
 
   private
 
