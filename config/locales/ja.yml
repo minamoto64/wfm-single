@@ -16,6 +16,12 @@ ja:
         title: "件名"
         description: "内容"
         due_at: "期限"
+      notice:
+        title: "件名"
+        content: "内容"
+        level: "重要度"
+        start_at: "開始日時"
+        end_at: "終了日時"
   time:
     formats:
       default: "%Y/%m/%d %H:%M"
@@ -27,4 +33,8 @@ ja:
         web: "Web"
         sns: "SNS"
         in_person: "対面"
+    notice:
+      level:
+        important: "高"
+        normal: "低"
 
