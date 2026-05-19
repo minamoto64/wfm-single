@@ -10,8 +10,7 @@ class Notice < ApplicationRecord
 
   enum :level, {
     important: "important",
-    normal: "normal",
-    confidential: "confidential"
+    normal: "normal"
   }
 
   validates :title, presence: true, length: { maximum: 50 }
