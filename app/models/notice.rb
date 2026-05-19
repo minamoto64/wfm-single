@@ -18,5 +18,6 @@ class Notice < ApplicationRecord
   validates :level, presence: true
   validates :restricted, inclusion: { in: [ true, false ] }
   validates :start_at, presence: true
-  validates :end_at, presence: true, comparison: { greater_than: :start_at }
+  validates :end_at, presence: true
+validates :end_at, comparison: { greater_than: :start_at }, if: -> { start_at.present? && end_at.present? }
 end
