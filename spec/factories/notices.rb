@@ -6,7 +6,7 @@ FactoryBot.define do
       association :parent, factory: :notice
     end
 
-    title { "タイトル" }
+    sequence(:title) { |n| "タイトル#{n}" }
     content { "内容" }
     level { "important" }
     restricted { false }
