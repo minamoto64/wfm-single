@@ -8,8 +8,21 @@ class NoticesController < ApplicationController
     @notices = visible_notices.preload(:user).order(start_at: :desc)
   end
 
-  def new; end
-  def create; end
+  def new
+    @parent_notice = Notice.find_by(id: params[:parent_id])
+    @notice = Notice.new(parent: @parent_notice)
+  end
+
+  def create
+    @notice = Current.user.notices.build(notice_params)
+    @parent_notice = @notice.parent
+
+    if @notice.save
+      redirect_to @notice, notice: "お知らせを更新しました"
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
 
   def show
   end
