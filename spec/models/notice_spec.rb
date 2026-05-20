@@ -37,7 +37,7 @@ RSpec.describe Notice, type: :model do
   describe 'enum' do
     it 'defines correct level values' do
       expect(described_class.levels.keys).to match_array(
-        %w[important normal confidential]
+        %w[important normal]
       )
     end
   end
