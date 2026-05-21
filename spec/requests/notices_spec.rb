@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe "Notices", type: :request do
   let(:user) { create(:user) }
+  let(:other_user) { create(:user) }
   let(:admin) { create(:user, admin: true) }
   let!(:notice) { create(:notice, user: user) }
   let!(:restricted_notice) { create(:notice, user: admin, restricted: true) }
@@ -275,6 +276,144 @@ RSpec.describe "Notices", type: :request do
     context "when the user is not logged in" do
       it "redirects to the login page" do
         post notices_path, params: {}
+
+        expect(response).to redirect_to new_session_path
+      end
+    end
+  end
+
+  describe "GET /notices/:id/edit" do
+    context "when the user is the creator" do
+      before { sign_in(user) }
+
+      it "responds with HTTP 200 OK" do
+        get edit_notice_path(notice)
+
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "does not display restricted check box" do
+        get edit_notice_path(notice)
+
+        expect(response.body).not_to include("管理者のみ")
+      end
+
+      it "cannot access a restricted notice and redirects to the index page" do
+        get edit_notice_path(restricted_notice)
+
+        expect(response).to redirect_to notices_path
+      end
+    end
+
+    context "when the user is not the creator" do
+      before { sign_in(other_user) }
+
+      it "redirects to the show page" do
+        get edit_notice_path(notice)
+
+        expect(response).to redirect_to notice_path(notice)
+      end
+    end
+
+    context "when the user is an admin and the creator" do
+      before { sign_in(admin) }
+
+      it "can access a restricted notice" do
+        get edit_notice_path(restricted_notice)
+
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "displays restricted check box" do
+        get edit_notice_path(restricted_notice)
+
+        expect(response.body).to include("管理者のみ")
+      end
+    end
+
+    context "when the user is an admin but not the creator" do
+      before { sign_in(admin) }
+
+      it "redirects to the show page" do
+        get edit_notice_path(notice)
+
+        expect(response).to redirect_to notice_path(notice)
+      end
+    end
+
+    context "when the user is not logged in" do
+      it "redirects to the login page" do
+        get edit_notice_path(notice)
+
+        expect(response).to redirect_to new_session_path
+      end
+    end
+  end
+
+  describe "PATCH /notices/:id" do
+    context "when the user is the creator" do
+      before { sign_in(user) }
+
+      it "updates the notice and redirects to the show page with valid params" do
+        patch notice_path(notice),
+          params: { notice: { content: "追記" } }
+
+        expect(notice.reload.content).to eq("追記")
+        expect(response).to redirect_to notice_path(notice)
+      end
+
+      it "does not update the notice and re-renders the edit template with invalid params" do
+        patch notice_path(notice), params: { notice: { title: nil } }
+
+        expect(notice.reload.title).not_to be_nil
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it "cannot update a restricted notice and redirects to the index template" do
+        patch notice_path(restricted_notice),
+          params: { notice: { content: "追記" } }
+
+        expect(restricted_notice.reload.content).not_to eq("追記")
+        expect(response).to redirect_to notices_path
+      end
+    end
+
+    context "when the user is not the creator" do
+      before { sign_in(other_user) }
+
+      it "does not update the notice and redirects to the show page" do
+        patch notice_path(notice), params: { notice: { content: "追記" } }
+
+        expect(notice.reload.content).not_to eq("追記")
+        expect(response).to redirect_to notice_path(notice)
+      end
+    end
+
+    context "when the usee is an admin and the creator" do
+      before { sign_in(admin) }
+
+      it "updates the restricted notice and redirects to the show page" do
+        patch notice_path(restricted_notice), params: { notice: { content: "追記" } }
+
+        expect(restricted_notice.reload.content).to eq("追記")
+        expect(response).to redirect_to notice_path(restricted_notice)
+      end
+    end
+
+    context "when the user is an admin but not the creator" do
+      before { sign_in(admin) }
+
+      it "does not update the notice and redirects to the show page" do
+        patch notice_path(notice), params: { notice: { content: "追記" } }
+
+        expect(notice.reload.content).not_to eq("追記")
+        expect(response).to redirect_to notice_path(notice)
+      end
+    end
+
+    context "when the user is not logged in" do
+      it "redirects to the login page" do
+        patch notice_path(notice), params: {}
 
         expect(response).to redirect_to new_session_path
       end
