@@ -1,8 +1,13 @@
 <div class="min-h-screen bg-gray-50 py-8">
   <div class="max-w-2xl mx-auto px-4">
     <div class="mb-4">
-      <%= link_to "← 一覧に戻る", notices_path,
-            class: "text-blue-600 hover:underline text-sm" %>
+      <% if @notice.parent %>
+        <%= link_to "← 元のお知らせに戻る", notice_path(@notice.parent),
+              class: "text-blue-600 hover:underline text-sm" %>
+      <% else %>
+        <%= link_to "← 一覧に戻る", notices_path,
+              class: "text-blue-600 hover:underline text-sm" %>
+      <% end %>
     </div>
     <div class="bg-white rounded-lg shadow-lg p-6">
       <div class="border-b-4 border-yellow-500 pb-4 mb-6">
