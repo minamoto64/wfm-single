@@ -1,0 +1,25 @@
+<div class="mb-6 border-t-4 border-blue-500 pt-6">
+  <h2 class="text-lg font-semibold mb-3">この案件の流れ</h2>
+  <div class="space-y-2 text-sm">
+    <% timeline.each do |item| %>
+      <div class="pl-4 border-l-2 <%= item == current_item ? 'border-blue-500' : 'border-gray-300' %>">
+        <% if item == current_item %>
+          <span class="font-medium">
+            <%= l item.created_at %>
+            <%= truncate(item.content, length: 30) %>
+            <span class="text-blue-600">★ 現在</span>
+          </span>
+        <% else %>
+          <%= link_to notice_path(item), class: "text-gray-700 hover:text-blue-600" do %>
+            <%= l item.created_at %> <%= truncate(item.content, length: 40) %>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+  <div class="mt-4">
+    <%= link_to "続きのお知らせを作成",
+          new_notice_path(parent_id: current_item.id),
+          class: "text-sm px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" %>
+  </div>
+</div>

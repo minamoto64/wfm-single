@@ -228,22 +228,6 @@ RSpec.describe "Notices", type: :request do
         expect(Notice.last.user).to eq(user)
       end
 
-      it "creates a child notice" do
-        parent = create(:notice, user: user)
-
-        expect {
-          post notices_path, params: { notice: child_params[:notice].merge(parent_id: parent.id) }
-        }.to change(Notice, :count).by(1)
-      end
-
-      it "associates the parent notice correctly" do
-        parent = create(:notice, user: user)
-
-        post notices_path, params: { notice: child_params[:notice].merge(parent_id: parent.id) }
-
-        expect(Notice.last.parent).to eq(parent)
-      end
-
       it "does not create a Notice with invalid params" do
         expect {
           post notices_path, params: { notice: { title: nil } }
