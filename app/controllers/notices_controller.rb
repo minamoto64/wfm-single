@@ -25,6 +25,7 @@ class NoticesController < ApplicationController
   end
 
   def show
+    @timeline = @notice.root.thread_notices.order(:created_at)
   end
 
   def edit
