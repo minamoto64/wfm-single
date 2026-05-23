@@ -177,9 +177,8 @@ end
 # 周知事項の種別を日本語に変換する
 def notice_level_label(level)
   {
-    important: "重要",
-    normal: "通常",
-    confidential: "管理者"
+    important: "高",
+    normal: "低",
   }[level.to_sym]
 end
 
@@ -213,12 +212,12 @@ notices = [
     start_at: Time.new(2026, 2, 2, 13, 0, 0, "+09:00"),
     end_at: Time.new(2026, 8, 2, 13, 0, 0, "+09:00"),
     user_id: 1,
-    parent_id: 3
+    parent_id: 2
   },
   {
     title: "従業員の退職申出について",
     content: "Uターンするため、退職したいと佐藤さんから申し入れがありました。少し掘り下げると、直近の業務でしんどい部分があったことも影響しているようです。ひとまず慰留しましたが、元気がなさそうであれば声がけするなど、管理者各位もフォローお願いします。",
-    level: :confidential,
+    level: :important,
     restricted: true,
     start_at: Time.new(2026, 2, 1, 12, 0, 0, "+09:00"),
     end_at: Time.new(2026, 8, 1, 12, 0, 0, "+09:00"),
@@ -228,7 +227,7 @@ notices = [
   {
     title: "退職申出の保留について",
     content: "佐藤さんとフォロー面談を実施した結果、もう少し将来についてゆっくり考えたいので、退職の話は一旦取り下げしたい都申出がありました。Uターンしてカフェを開業するという夢があるようです。全力で応援する気持ちと、現職で辛いことがあれば、管理者に気兼ねなく相談しても大丈夫と伝えてます。佐藤さんから何か相談があれば、快く相談にのってあげてください。",
-    level: :confidential,
+    level: :important,
     restricted: true,
     start_at: Time.new(2026, 2, 3, 11, 0, 0, "+09:00"),
     end_at: Time.new(2026, 8, 3, 11, 0, 0, "+09:00"),

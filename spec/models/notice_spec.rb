@@ -34,10 +34,42 @@ RSpec.describe Notice, type: :model do
     end
   end
 
+  describe "root assignment" do
+    let(:user) { create(:user) }
+
+    it "sets root_id for a child notice" do
+      parent = create(:notice, user: user)
+      child  = create(:notice, user: user, parent: parent)
+
+      expect(child.root_id).to eq(parent.id)
+    end
+
+    it "sets itself as root when it has no parent" do
+      notice = create(:notice, user: user)
+
+      expect(notice.root).to eq(notice)
+    end
+
+    it "inherits root from parent" do
+      parent = create(:notice, user: user)
+      child  = create(:notice, user: user, parent: parent)
+
+      expect(child.root).to eq(parent)
+    end
+
+    it "inherits root from the top-level notice" do
+      parent = create(:notice, user: user)
+      child = create(:notice, user: user, parent: parent)
+      grandchild = create(:notice, user: user, parent: child)
+
+      expect(grandchild.root).to eq(parent)
+    end
+  end
+
   describe 'enum' do
     it 'defines correct level values' do
       expect(described_class.levels.keys).to match_array(
-        %w[important normal confidential]
+        %w[important normal]
       )
     end
   end

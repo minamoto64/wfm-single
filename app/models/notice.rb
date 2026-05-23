@@ -1,8 +1,14 @@
 class Notice < ApplicationRecord
+  before_validation :assign_root
+  after_create :assign_self_as_root
+
   belongs_to :user
 
   belongs_to :parent, class_name: "Notice", optional: true
   has_many :children, class_name: "Notice", foreign_key: "parent_id"
+
+  belongs_to :root, class_name: "Notice", optional: true
+  has_many :thread_notices, class_name: "Notice", foreign_key: :root_id, dependent: :nullify
 
   # add associations after other models are created
   # has_many :interactions
@@ -10,8 +16,7 @@ class Notice < ApplicationRecord
 
   enum :level, {
     important: "important",
-    normal: "normal",
-    confidential: "confidential"
+    normal: "normal"
   }
 
   validates :title, presence: true, length: { maximum: 50 }
@@ -19,5 +24,18 @@ class Notice < ApplicationRecord
   validates :level, presence: true
   validates :restricted, inclusion: { in: [ true, false ] }
   validates :start_at, presence: true
-  validates :end_at, presence: true, comparison: { greater_than: :start_at }
+  validates :end_at, presence: true
+  validates :end_at, comparison: { greater_than: :start_at }, if: -> { start_at.present? && end_at.present? }
+
+  private
+
+  def assign_root
+    return unless parent
+
+    self.root = parent.root || parent
+  end
+
+  def assign_self_as_root
+    update_column(:root_id, id) if root_id.nil?
+  end
 end
