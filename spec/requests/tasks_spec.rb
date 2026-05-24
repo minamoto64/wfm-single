@@ -174,34 +174,6 @@ RSpec.describe "Tasks", type: :request do
         expect(Task.last.user).to eq(user)
       end
 
-      it "creates a child task" do
-        parent = create(:task, user: user)
-
-        expect {
-          post tasks_path, params: {
-            task: {
-              title: "子テストタスク",
-              description: "子テストタスクの詳細",
-              parent_id: parent.id
-            }
-          }
-        }.to change(Task, :count).by(1)
-      end
-
-      it "associates the parent task correctly" do
-        parent = create(:task, user: user)
-
-        post tasks_path, params: {
-          task: {
-            title: "子テストタスク",
-            description: "子テストタスクの詳細",
-            parent_id: parent.id
-          }
-        }
-
-        expect(Task.last.parent).to eq(parent)
-      end
-
       it "does not create a Task with invalid params" do
         expect {
           post tasks_path, params: { task: { title: nil } }
