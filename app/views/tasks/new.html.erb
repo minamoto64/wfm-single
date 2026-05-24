@@ -1,8 +1,8 @@
 <div class="min-h-screen bg-gray-50 py-8">
   <div class="max-w-2xl mx-auto px-4">
     <div class="mb-4">
-      <% if @parent_task %>
-        <%= link_to "← 関連タスクに戻る", task_path(@parent_task),
+      <% if @task.parent %>
+        <%= link_to "← 元のタスクに戻る", task_path(@parent_task),
               class: "text-blue-600 hover:underline text-sm" %>
       <% else %>
         <%= link_to "← 一覧に戻る", tasks_path,
