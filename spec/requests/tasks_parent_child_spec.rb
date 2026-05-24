@@ -176,9 +176,7 @@ RSpec.describe "Tasks parent-child", type: :request do
         task: {
           title: "子お知らせ",
           description: "子の詳細",
-          level: "normal",
-          start_at: 1.hour.ago,
-          end_at: 1.week.from_now,
+          due_at: 1.hour.ago,
           parent_id: parent.id
         }
       }
@@ -210,9 +208,7 @@ RSpec.describe "Tasks parent-child", type: :request do
           task: {
             title: "ルートお知らせ",
             description: "詳細",
-            level: "normal",
-            start_at: 1.hour.ago,
-            end_at: 1.week.from_now
+            due_at: 1.hour.ago
           }
         }
 
