@@ -1,13 +1,8 @@
 <div class="min-h-screen bg-gray-50 py-8">
   <div class="max-w-4xl mx-auto px-4">
     <div class="mb-4">
-      <% if @interaction.parent %>
-        <%= link_to "← 親の応対履歴に戻る", interaction_path(@interaction.parent),
-              class: "text-blue-600 hover:underline text-sm" %>
-      <% else %>
-        <%= link_to "← 一覧に戻る", interactions_path,
-              class: "text-blue-600 hover:underline text-sm" %>
-      <% end %>
+      <%= link_to "← 一覧に戻る", interactions_path,
+            class: "text-blue-600 hover:underline text-sm" %>
     </div>
     <div class="bg-white rounded-lg shadow-lg p-6">
       <div class="border-b-4 border-blue-500 pb-4 mb-6">

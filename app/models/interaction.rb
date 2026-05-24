@@ -1,5 +1,6 @@
 class Interaction < ApplicationRecord
   before_validation :assign_root
+  before_validation :set_customer_from_parent
   after_create :assign_self_as_root
 
   belongs_to :customer
@@ -35,6 +36,10 @@ class Interaction < ApplicationRecord
     return unless parent
 
     self.root = parent.root || parent
+  end
+
+  def set_customer_from_parent
+    self.customer ||= parent&.customer
   end
 
   def assign_self_as_root

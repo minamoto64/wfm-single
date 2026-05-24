@@ -1,6 +1,6 @@
 class InteractionsController < ApplicationController
   before_action :set_interaction, only: [ :show, :edit, :update ]
-  before_action :require_creator, only: [ :edit, :update ]
+  before_action :authorize_edit!, only: [ :edit, :update ]
 
   def index
     @interactions = Interaction
@@ -9,17 +9,16 @@ class InteractionsController < ApplicationController
   end
 
   def new
-    @interaction = Interaction.new
     @parent_interaction = Interaction.find_by(id: params[:parent_id])
-
-    if @parent_interaction
-      @interaction.parent = @parent_interaction
-      @interaction.customer = @parent_interaction.customer
-    end
+    @interaction = Interaction.new(
+      parent: @parent_interaction,
+      customer: @parent_interaction&.customer
+    )
   end
 
   def create
-    @interaction = Current.user.interactions.new(interaction_params)
+    @interaction = Current.user.interactions.build(interaction_params)
+    @parent_interaction = @interaction.parent
 
     if @interaction.save
       redirect_to @interaction, notice: "応対履歴を登録しました"
@@ -29,8 +28,7 @@ class InteractionsController < ApplicationController
   end
 
   def show
-    root = @interaction.parent || @interaction
-    @timeline = [ root, *root.children ].sort_by(&:occurred_at)
+
   end
 
   def edit
@@ -61,9 +59,9 @@ class InteractionsController < ApplicationController
     )
   end
 
-  def require_creator
-    unless @interaction.user == Current.user
-      redirect_to @interaction, alert: "編集権限がありません"
-    end
+  def authorize_edit!
+    return if @interaction.user == Current.user
+
+    redirect_to @interaction, alert: "編集権限がありません"
   end
 end
