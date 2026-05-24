@@ -10,49 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_24_014132) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_24_090829) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
-
-  create_table "active_storage_attachments", force: :cascade do |t|
-    t.bigint "blob_id", null: false
-    t.datetime "created_at", null: false
-    t.string "name", null: false
-    t.bigint "record_id", null: false
-    t.string "record_type", null: false
-    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
-    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
-  end
-
-  create_table "active_storage_blobs", force: :cascade do |t|
-    t.bigint "byte_size", null: false
-    t.string "checksum"
-    t.string "content_type"
-    t.datetime "created_at", null: false
-    t.string "filename", null: false
-    t.string "key", null: false
-    t.text "metadata"
-    t.string "service_name", null: false
-    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
-  end
-
-  create_table "active_storage_variant_records", force: :cascade do |t|
-    t.bigint "blob_id", null: false
-    t.string "variation_digest", null: false
-    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
-  end
-
-  create_table "comments", force: :cascade do |t|
-    t.bigint "commentable_id", null: false
-    t.string "commentable_type", null: false
-    t.text "content", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable_type_and_commentable_id"
-    t.index ["created_at"], name: "index_comments_on_created_at"
-    t.index ["user_id"], name: "index_comments_on_user_id"
-  end
 
   create_table "customers", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -65,19 +25,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_24_014132) do
     t.index ["uuid"], name: "index_customers_on_uuid", unique: true
   end
 
-  create_table "interaction_notices", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "interaction_id", null: false
-    t.bigint "notice_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["interaction_id", "notice_id"], name: "index_interaction_notices_on_interaction_and_notice", unique: true
-    t.index ["interaction_id"], name: "index_interaction_notices_on_interaction_id"
-    t.index ["notice_id"], name: "index_interaction_notices_on_notice_id"
-  end
-
   create_table "interactions", force: :cascade do |t|
     t.string "channel", null: false
-    t.integer "children_count", default: 0, null: false
     t.boolean "completed", default: false, null: false
     t.datetime "created_at", null: false
     t.bigint "customer_id", null: false
@@ -133,17 +82,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_24_014132) do
     t.index ["user_id"], name: "index_task_assignments_on_user_id"
   end
 
-  create_table "task_relations", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "relatable_id", null: false
-    t.string "relatable_type", null: false
-    t.bigint "task_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["relatable_type", "relatable_id"], name: "index_task_relations_on_relatable_type_and_relatable_id"
-    t.index ["task_id", "relatable_type", "relatable_id"], name: "index_task_relations_on_task_and_relatable", unique: true
-    t.index ["task_id"], name: "index_task_relations_on_task_id"
-  end
-
   create_table "tasks", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description", null: false
@@ -169,11 +107,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_24_014132) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
-  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "comments", "users"
-  add_foreign_key "interaction_notices", "interactions"
-  add_foreign_key "interaction_notices", "notices"
   add_foreign_key "interactions", "customers"
   add_foreign_key "interactions", "interactions", column: "parent_id"
   add_foreign_key "interactions", "interactions", column: "root_id"
@@ -184,7 +117,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_24_014132) do
   add_foreign_key "sessions", "users"
   add_foreign_key "task_assignments", "tasks"
   add_foreign_key "task_assignments", "users"
-  add_foreign_key "task_relations", "tasks"
   add_foreign_key "tasks", "tasks", column: "parent_id"
   add_foreign_key "tasks", "tasks", column: "root_id"
   add_foreign_key "tasks", "users"
