@@ -28,7 +28,7 @@ class InteractionsController < ApplicationController
   end
 
   def show
-
+    @timeline = @interaction.root.thread_interactions.order(:occurred_at)
   end
 
   def edit
