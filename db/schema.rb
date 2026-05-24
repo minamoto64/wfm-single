@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_23_134727) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_24_014132) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -85,11 +85,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_134727) do
     t.bigint "parent_id"
     t.text "request_content", null: false
     t.text "response_result", null: false
+    t.bigint "root_id"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["channel"], name: "index_interactions_on_channel"
     t.index ["customer_id", "occurred_at"], name: "index_interactions_on_customer_id_and_occurred_at"
     t.index ["parent_id"], name: "index_interactions_on_parent_id"
+    t.index ["root_id"], name: "index_interactions_on_root_id"
     t.index ["user_id", "occurred_at"], name: "index_interactions_on_user_id_and_occurred_at"
   end
 
@@ -174,6 +176,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_134727) do
   add_foreign_key "interaction_notices", "notices"
   add_foreign_key "interactions", "customers"
   add_foreign_key "interactions", "interactions", column: "parent_id"
+  add_foreign_key "interactions", "interactions", column: "root_id"
   add_foreign_key "interactions", "users"
   add_foreign_key "notices", "notices", column: "parent_id"
   add_foreign_key "notices", "notices", column: "root_id"

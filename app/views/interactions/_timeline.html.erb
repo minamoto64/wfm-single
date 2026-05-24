@@ -6,12 +6,12 @@
         <% if item == current_item %>
           <span class="font-medium">
             <%= l item.occurred_at %>
-            <%= truncate(item.request_content, length: 30) %>
+            <%= truncate(item.response_result, length: 30) %>
             <span class="text-blue-600">★ 現在</span>
           </span>
         <% else %>
           <%= link_to interaction_path(item), class: "text-gray-700 hover:text-blue-600" do %>
-            <%= l item.occurred_at %> <%= truncate(item.request_content, length: 40) %>
+            <%= l item.occurred_at %> <%= truncate(item.response_result, length: 40) %>
           <% end %>
           <span class="ml-2 text-xs <%= item.completed? ? 'text-gray-600' : 'text-blue-600' %>">
             <%= item.completed? ? "完了" : "対応中" %>
@@ -21,7 +21,7 @@
     <% end %>
   </div>
   <div class="mt-4">
-    <%= link_to "続きの応対履歴を作成",
+    <%= link_to "関連応対履歴を作成",
           new_interaction_path(parent_id: current_item.id),
           class: "text-sm px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" %>
   </div>
