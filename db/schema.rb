@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_23_033703) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_23_134727) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -148,11 +148,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_033703) do
     t.datetime "due_at"
     t.bigint "parent_id"
     t.boolean "restricted", default: false, null: false
+    t.bigint "root_id"
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["due_at"], name: "index_tasks_on_due_at"
     t.index ["parent_id"], name: "index_tasks_on_parent_id"
+    t.index ["root_id"], name: "index_tasks_on_root_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -181,5 +183,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_033703) do
   add_foreign_key "task_assignments", "users"
   add_foreign_key "task_relations", "tasks"
   add_foreign_key "tasks", "tasks", column: "parent_id"
+  add_foreign_key "tasks", "tasks", column: "root_id"
   add_foreign_key "tasks", "users"
 end

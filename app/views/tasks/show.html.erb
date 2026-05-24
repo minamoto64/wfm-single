@@ -33,6 +33,9 @@
           <%= @task.description %>
         </div>
       </div>
+
+      <%= render "timeline", timeline: @timeline, current_item: @task %>
+
       <% if @task.user == Current.user %>
         <div class="mt-6 flex justify-end border-t pt-4">
           <%= link_to "編集", edit_task_path(@task),
