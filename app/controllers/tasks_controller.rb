@@ -24,6 +24,7 @@ class TasksController < ApplicationController
   end
 
   def show
+    @timeline = @task.root.thread_tasks.order(:created_at)
   end
 
   def edit
