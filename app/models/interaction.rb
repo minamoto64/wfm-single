@@ -12,8 +12,8 @@ class Interaction < ApplicationRecord
   belongs_to :root, class_name: "Interaction", optional: true
   has_many :thread_interactions, class_name: "Interaction", foreign_key: :root_id, dependent: :nullify
 
-  # add associations after other models are created
-  # has_many :notices
+  has_many :interaction_notices
+  has_many :notices, through: :interaction_notices
   # has_many :tasks
 
   enum :channel, {
