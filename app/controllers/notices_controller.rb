@@ -18,6 +18,10 @@ class NoticesController < ApplicationController
     @parent_notice = @notice.parent
 
     if @notice.save
+      if params[:interaction_id].present?
+        @notice.interactions << Interaction.find(params[:interaction_id])
+      end
+
       redirect_to @notice, notice: "お知らせを更新しました"
     else
       render :new, status: :unprocessable_entity
