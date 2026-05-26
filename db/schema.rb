@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_24_090829) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_25_134459) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -23,6 +23,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_24_090829) do
     t.datetime "updated_at", null: false
     t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.index ["uuid"], name: "index_customers_on_uuid", unique: true
+  end
+
+  create_table "interaction_notices", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "interaction_id", null: false
+    t.bigint "notice_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["interaction_id", "notice_id"], name: "index_interaction_notices_on_interaction_id_and_notice_id", unique: true
+    t.index ["interaction_id"], name: "index_interaction_notices_on_interaction_id"
+    t.index ["notice_id"], name: "index_interaction_notices_on_notice_id"
   end
 
   create_table "interactions", force: :cascade do |t|
@@ -107,6 +117,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_24_090829) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "interaction_notices", "interactions"
+  add_foreign_key "interaction_notices", "notices"
   add_foreign_key "interactions", "customers"
   add_foreign_key "interactions", "interactions", column: "parent_id"
   add_foreign_key "interactions", "interactions", column: "root_id"

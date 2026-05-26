@@ -49,6 +49,7 @@
       </div>
 
       <%= render "timeline", timeline: @timeline, current_item: @notice %>
+      <%= render "related_interactions", notice: @notice %>
 
       <% if @notice.user == Current.user %>
         <div class="mt-6 flex justify-end border-t pt-4">

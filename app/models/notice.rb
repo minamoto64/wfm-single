@@ -10,8 +10,8 @@ class Notice < ApplicationRecord
   belongs_to :root, class_name: "Notice", optional: true
   has_many :thread_notices, class_name: "Notice", foreign_key: :root_id, dependent: :nullify
 
-  # add associations after other models are created
-  # has_many :interactions
+  has_many :interaction_notices
+  has_many :interactions, through: :interaction_notices
   # has_many :tasks
 
   enum :level, {
