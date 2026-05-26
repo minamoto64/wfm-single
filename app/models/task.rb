@@ -10,9 +10,11 @@ class Task < ApplicationRecord
   belongs_to :root, class_name: "Task", optional: true
   has_many :thread_tasks, class_name: "Task", foreign_key: :root_id, dependent: :nullify
 
-  # add associations after other models are created
   has_many :task_assignments
   has_many :assigned_users, through: :task_assignments, source: :user
+
+  has_many :interaction_tasks
+  has_many :interactions, through: :interaction_tasks
 
   validates :title, presence: true, length: { maximum: 50 }
   validates :description, presence: true, length: { maximum: 2000 }
