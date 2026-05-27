@@ -14,7 +14,9 @@ class Interaction < ApplicationRecord
 
   has_many :interaction_notices
   has_many :notices, through: :interaction_notices
-  # has_many :tasks
+
+  has_many :interaction_tasks
+  has_many :tasks, through: :interaction_tasks
 
   enum :channel, {
     phone: "phone",
