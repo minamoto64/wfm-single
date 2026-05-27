@@ -12,7 +12,9 @@ class Notice < ApplicationRecord
 
   has_many :interaction_notices
   has_many :interactions, through: :interaction_notices
-  # has_many :tasks
+
+  has_many :notice_tasks
+  has_many :tasks, through: :notice_tasks
 
   enum :level, {
     important: "important",

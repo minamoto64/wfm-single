@@ -21,6 +21,10 @@ class TasksController < ApplicationController
         @task.interactions << Interaction.find(params[:interaction_id])
       end
 
+      if params[:notice_id].present?
+        @task.notices << Notice.find(params[:notice_id])
+      end
+
       redirect_to @task, notice: "タスクを登録しました"
     else
       render :new, status: :unprocessable_entity

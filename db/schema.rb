@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_26_224507) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_27_134402) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -62,6 +62,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_224507) do
     t.index ["parent_id"], name: "index_interactions_on_parent_id"
     t.index ["root_id"], name: "index_interactions_on_root_id"
     t.index ["user_id", "occurred_at"], name: "index_interactions_on_user_id_and_occurred_at"
+  end
+
+  create_table "notice_tasks", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "notice_id", null: false
+    t.bigint "task_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["notice_id", "task_id"], name: "index_notice_tasks_on_notice_id_and_task_id", unique: true
+    t.index ["notice_id"], name: "index_notice_tasks_on_notice_id"
+    t.index ["task_id"], name: "index_notice_tasks_on_task_id"
   end
 
   create_table "notices", force: :cascade do |t|
@@ -135,6 +145,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_224507) do
   add_foreign_key "interactions", "interactions", column: "parent_id"
   add_foreign_key "interactions", "interactions", column: "root_id"
   add_foreign_key "interactions", "users"
+  add_foreign_key "notice_tasks", "notices"
+  add_foreign_key "notice_tasks", "tasks"
   add_foreign_key "notices", "notices", column: "parent_id"
   add_foreign_key "notices", "notices", column: "root_id"
   add_foreign_key "notices", "users"

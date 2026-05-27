@@ -36,6 +36,7 @@
 
       <%= render "timeline", timeline: @timeline, current_item: @task %>
       <%= render "related_interactions", task: @task %>
+      <%= render "related_notices", task: @task %>
 
       <% if @task.user == Current.user %>
         <div class="mt-6 flex justify-end border-t pt-4">
