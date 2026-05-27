@@ -16,6 +16,9 @@ class Task < ApplicationRecord
   has_many :interaction_tasks
   has_many :interactions, through: :interaction_tasks
 
+  has_many :notice_tasks
+  has_many :notices, through: :notice_tasks
+
   validates :title, presence: true, length: { maximum: 50 }
   validates :description, presence: true, length: { maximum: 2000 }
   validates :restricted, inclusion: { in: [ true, false ] }
