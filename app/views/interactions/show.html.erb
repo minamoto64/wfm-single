@@ -55,6 +55,7 @@
       <%= render "timeline", timeline: @timeline, current_item: @interaction %>
       <%= render "related_notices", interaction: @interaction %>
       <%= render "related_tasks", interaction: @interaction %>
+      <%= render "shared/comment_thread", commentable: @interaction %>
 
       <% if @interaction.user == Current.user %>
         <div class="mt-6 flex justify-end border-t pt-4">
