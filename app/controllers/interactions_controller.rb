@@ -47,7 +47,8 @@ class InteractionsController < ApplicationController
   def set_interaction
     @interaction = Interaction.preload(
       :customer,
-      :user
+      :user,
+      comments: [ :user ]
     ).find(params[:id])
   end
 

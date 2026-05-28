@@ -49,7 +49,10 @@ class TasksController < ApplicationController
   private
 
   def set_task
-    @task = Task.preload(:user).find(params[:id])
+    @task = Task.preload(
+      :user,
+      comments: [ :user ]
+    ).find(params[:id])
   end
 
   def visible_tasks
