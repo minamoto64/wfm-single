@@ -16,6 +16,8 @@ class Notice < ApplicationRecord
   has_many :notice_tasks
   has_many :tasks, through: :notice_tasks
 
+  has_many :comments, as: :commentable
+
   enum :level, {
     important: "important",
     normal: "normal"

@@ -9,6 +9,8 @@ class User < ApplicationRecord
   has_many :task_assignments
   has_many :assigned_tasks, through: :task_assignments, source: :task
 
+  has_many :comments
+
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 
   validates :email_address, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }

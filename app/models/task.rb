@@ -19,6 +19,8 @@ class Task < ApplicationRecord
   has_many :notice_tasks
   has_many :notices, through: :notice_tasks
 
+  has_many :comments, as: :commentable
+
   validates :title, presence: true, length: { maximum: 50 }
   validates :description, presence: true, length: { maximum: 2000 }
   validates :restricted, inclusion: { in: [ true, false ] }

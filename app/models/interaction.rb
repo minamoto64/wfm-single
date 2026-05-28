@@ -18,6 +18,8 @@ class Interaction < ApplicationRecord
   has_many :interaction_tasks
   has_many :tasks, through: :interaction_tasks
 
+  has_many :comments, as: :commentable
+
   enum :channel, {
     phone: "phone",
     email: "email",
