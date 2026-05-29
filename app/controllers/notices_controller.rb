@@ -46,7 +46,10 @@ class NoticesController < ApplicationController
   private
 
   def set_notice
-    @notice = Notice.preload(:user).find(params[:id])
+    @notice = Notice.preload(
+      :user,
+      comments: [ :user ]
+    ).find(params[:id])
   end
 
   def visible_notices
