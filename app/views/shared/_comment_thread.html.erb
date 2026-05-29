@@ -1,0 +1,13 @@
+<div class="border-t-4 border-gray-400 pt-6">
+  <h2 class="text-lg font-semibold mb-3">コメント</h2>
+  <div class="space-y-3 mb-4">
+    <% if commentable.comments.any? %>
+      <%= render commentable.comments %>
+    <% else %>
+      <div class="bg-gray-50 p-3 rounded text-sm text-gray-500">
+        まだコメントはありません。
+      </div>
+    <% end %>
+  </div>
+  <%= render 'comments/form', commentable: commentable %>
+</div>
