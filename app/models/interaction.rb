@@ -19,6 +19,7 @@ class Interaction < ApplicationRecord
   has_many :tasks, through: :interaction_tasks
 
   has_many :comments, as: :commentable
+  has_many_attached :images
 
   enum :channel, {
     phone: "phone",
@@ -33,6 +34,9 @@ class Interaction < ApplicationRecord
   validates :request_content, presence: true
   validates :response_result, presence: true
   validates :completed, inclusion: { in: [ true, false ] }
+  validates :images,
+    content_type: %w[image/jpeg image/png image/gif],
+    size: { less_than_or_equal_to: 10.megabytes }
 
   private
 
