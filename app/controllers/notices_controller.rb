@@ -76,10 +76,11 @@ class NoticesController < ApplicationController
       start_at
       end_at
       parent_id
+      images: []
     ]
 
     permitted << :restricted if Current.user.admin?
 
-    params.require(:notice).permit(permitted)
+    params.require(:notice).permit(*permitted, images: [])
   end
 end
