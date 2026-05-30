@@ -48,6 +48,8 @@
         <div class="bg-gray-50 p-4 rounded text-sm whitespace-pre-wrap"><%= @notice.content %></div>
       </div>
 
+      <%= render "shared/images", record: @notice %>
+
       <%= render "timeline", timeline: @timeline, current_item: @notice %>
       <%= render "related_interactions", notice: @notice %>
       <%= render "related_tasks", notice: @notice %>
