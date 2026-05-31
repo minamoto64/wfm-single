@@ -97,5 +97,40 @@ RSpec.describe Task, type: :model do
         expect(task).to be_invalid
       end
     end
+
+    describe "images" do
+      let(:user) { create(:user) }
+      let(:task) { create(:task, user: user) }
+
+      it "has_many_attached :images" do
+        expect(described_class.reflect_on_attachment(:images)).to be_present
+      end
+
+      it "is valid with a jpeg image" do
+        task.images.attach(valid_image)
+
+        expect(task).to be_valid
+      end
+
+      it "is invalid with a non-image file" do
+        task.images.attach(invalid_file)
+
+        expect(task).not_to be_valid
+        expect(task.errors[:images]).to be_present
+      end
+
+      it "is invalid when image exceeds 10MB" do
+        task.images.attach(oversized_file)
+
+        expect(task).not_to be_valid
+        expect(task.errors[:images]).to be_present
+      end
+
+      it "is destroyed when record is destroyed" do
+        task.images.attach(valid_image)
+
+        expect { task.destroy }.to change(ActiveStorage::Attachment, :count).by(-1)
+      end
+    end
   end
 end

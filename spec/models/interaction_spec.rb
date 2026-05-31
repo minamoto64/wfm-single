@@ -97,5 +97,40 @@ RSpec.describe Interaction, type: :model do
         expect(interaction).to be_invalid
       end
     end
+
+    describe "images" do
+      let(:user)        { create(:user) }
+      let(:interaction) { create(:interaction, user: user) }
+
+      it "has_many_attached :images" do
+        expect(described_class.reflect_on_attachment(:images)).to be_present
+      end
+
+      it "is valid with a jpeg image" do
+        interaction.images.attach(valid_image)
+
+        expect(interaction).to be_valid
+      end
+
+      it "is invalid with a non-image file" do
+        interaction.images.attach(invalid_file)
+
+        expect(interaction).not_to be_valid
+        expect(interaction.errors[:images]).to be_present
+      end
+
+      it "is invalid when image exceeds 10MB" do
+        interaction.images.attach(oversized_file)
+
+        expect(interaction).not_to be_valid
+        expect(interaction.errors[:images]).to be_present
+      end
+
+      it "is destroyed when record is destroyed" do
+        interaction.images.attach(valid_image)
+
+        expect { interaction.destroy }.to change(ActiveStorage::Attachment, :count).by(-1)
+      end
+    end
   end
 end
