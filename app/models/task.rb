@@ -20,10 +20,14 @@ class Task < ApplicationRecord
   has_many :notices, through: :notice_tasks
 
   has_many :comments, as: :commentable
+  has_many_attached :images
 
   validates :title, presence: true, length: { maximum: 50 }
   validates :description, presence: true, length: { maximum: 2000 }
   validates :restricted, inclusion: { in: [ true, false ] }
+  validates :images,
+    content_type: %w[image/jpeg image/png image/gif],
+    size: { less_than_or_equal_to: 10.megabytes }
 
   private
 

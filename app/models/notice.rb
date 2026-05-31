@@ -17,6 +17,7 @@ class Notice < ApplicationRecord
   has_many :tasks, through: :notice_tasks
 
   has_many :comments, as: :commentable
+  has_many_attached :images
 
   enum :level, {
     important: "important",
@@ -30,6 +31,9 @@ class Notice < ApplicationRecord
   validates :start_at, presence: true
   validates :end_at, presence: true
   validates :end_at, comparison: { greater_than: :start_at }, if: -> { start_at.present? && end_at.present? }
+  validates :images,
+    content_type: %w[image/jpeg image/png image/gif],
+    size: { less_than_or_equal_to: 10.megabytes }
 
   private
 

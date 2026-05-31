@@ -77,10 +77,11 @@ class TasksController < ApplicationController
       description
       due_at
       parent_id
+      images: []
     ]
 
     permitted << :restricted if Current.user.admin?
 
-    params.require(:task).permit(permitted)
+    params.require(:task).permit(*permitted, images: [])
   end
 end

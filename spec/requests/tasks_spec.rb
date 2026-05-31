@@ -224,6 +224,37 @@ RSpec.describe "Tasks", type: :request do
     end
   end
 
+  describe "POST /tasks (with images)" do
+    subject(:perform_request) do
+      post tasks_path, params: {
+        task: attributes_for(:task).merge(images: images)
+      }
+    end
+
+    before { sign_in(user) }
+
+    context "with a valid image" do
+      let(:images) { [ valid_image ] }
+
+      it "creates a task with images" do
+        expect { perform_request }
+          .to change(Task, :count).by(1)
+
+        expect(response).to redirect_to(task_path(Task.last))
+        expect(Task.last.images).to be_attached
+      end
+    end
+
+    context "with a invalid file" do
+      let(:images) { [ invalid_file ] }
+
+      it "does not create a task" do
+        expect { perform_request }
+          .not_to change(Task, :count)
+      end
+    end
+  end
+
   describe "GET /tasks/:id/edit" do
     let(:other_user) { create(:user) }
 
@@ -369,6 +400,19 @@ RSpec.describe "Tasks", type: :request do
 
         expect(response).to redirect_to(new_session_path)
       end
+    end
+  end
+
+  describe "PATCH /tasks/:id (with images)" do
+    before { sign_in(user) }
+
+    it "updates a task with images" do
+      patch task_path(task), params: {
+        task: { images: [ valid_image ] }
+      }
+
+      expect(response).to redirect_to(task_path(task))
+      expect(task.reload.images).to be_attached
     end
   end
 end

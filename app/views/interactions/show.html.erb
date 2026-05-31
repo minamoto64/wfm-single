@@ -52,6 +52,8 @@
         </div>
       </div>
 
+      <%= render "shared/images", record: @interaction %>
+
       <%= render "timeline", timeline: @timeline, current_item: @interaction %>
       <%= render "related_notices", interaction: @interaction %>
       <%= render "related_tasks", interaction: @interaction %>
