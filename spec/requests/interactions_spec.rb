@@ -121,6 +121,45 @@ RSpec.describe "Interactions", type: :request do
     end
   end
 
+  describe "POST /interactions (with images)" do
+    subject(:perform_request) do
+      post interactions_path, params: {
+        interaction: interaction_params
+      }
+    end
+
+    let(:customer) { create(:customer) }
+    let(:interaction_params) do
+      attributes_for(
+        :interaction,
+        customer_id: customer.id
+      ).merge(images: images)
+    end
+
+    before { sign_in(user) }
+
+    context "with a valid image" do
+      let(:images) { [ valid_image ] }
+
+      it "creates an interaction with images" do
+        expect { perform_request }
+          .to change(Interaction, :count).by(1)
+
+        expect(response).to redirect_to(interaction_path(Interaction.last))
+        expect(Interaction.last.images).to be_attached
+      end
+    end
+
+    context "with an invalid file" do
+      let(:images) { [ invalid_file ] }
+
+      it "does not create an interaction" do
+        expect { perform_request }
+          .not_to change(Interaction, :count)
+      end
+    end
+  end
+
   describe "GET /interactions/:id" do
     let(:interaction) { create(:interaction, user: user) }
 
@@ -256,6 +295,21 @@ RSpec.describe "Interactions", type: :request do
         patch interaction_path(interaction), params: {}
         expect(response).to redirect_to(new_session_path)
       end
+    end
+  end
+
+  describe "PATCH /interactions/:id (with images)" do
+    let(:interaction) { create(:interaction, user: user) }
+
+    before { sign_in(user) }
+
+    it "updates an interaction with images" do
+      patch interaction_path(interaction), params: {
+        interaction: { images: [ valid_image ] }
+      }
+
+      expect(response).to redirect_to(interaction_path(interaction))
+      expect(interaction.reload.images).to be_attached
     end
   end
 end

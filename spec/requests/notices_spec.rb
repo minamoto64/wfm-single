@@ -266,6 +266,43 @@ RSpec.describe "Notices", type: :request do
     end
   end
 
+  describe "POST /notices (with images)" do
+    subject(:perform_request) do
+      post notices_path, params: {
+        notice: attributes_for(:notice).merge(images: images)
+      }
+    end
+
+    before { sign_in(user) }
+
+    context "with a valid image" do
+      it "creates a notice with images" do
+        expect {
+          post notices_path, params: {
+            notice: attributes_for(:notice).merge(
+              images: [ valid_image ]
+            )
+          }
+        }.to change(Notice, :count).by(1)
+
+        expect(response).to redirect_to(notice_path(Notice.last))
+        expect(Notice.last.images).to be_attached
+      end
+    end
+
+    context "with an invalid file" do
+      it "does not create a notice" do
+        expect {
+          post notices_path, params: {
+            notice: attributes_for(:notice).merge(
+              images: [ invalid_file ]
+            )
+          }
+        }.not_to change(Notice, :count)
+      end
+    end
+  end
+
   describe "GET /notices/:id/edit" do
     context "when the user is the creator" do
       before { sign_in(user) }
@@ -401,6 +438,19 @@ RSpec.describe "Notices", type: :request do
 
         expect(response).to redirect_to new_session_path
       end
+    end
+  end
+
+  describe "PATCH /notices/:id (with images)" do
+    before { sign_in(user) }
+
+    it "updates a notice with images" do
+      patch notice_path(notice), params: {
+        notice: { images: [ valid_image ] }
+      }
+
+      expect(response).to redirect_to(notice_path(notice))
+      expect(notice.reload.images).to be_attached
     end
   end
 end
