@@ -1,6 +1,15 @@
 ja:
+  users:
+    admin:
+      true: "管理者"
+      false: "一般"
   activerecord:
     attributes:
+      user:
+        name: "従業員名"
+        email_address: "メールアドレス"
+        password_digest: "パスワード"
+        admin: "権限"
       interaction:
         customer: "顧客"
         occurred_at: "対応日時"
