@@ -114,4 +114,129 @@ RSpec.describe "Users", type: :request do
       end
     end
   end
+
+  describe "GET /users/new" do
+    context "when the current user is an admin" do
+      before { sign_in(admin) }
+
+      it "responds with HTTP 200 OK" do
+        get new_user_path
+
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "renders the new template" do
+        get new_user_path
+
+        expect(response.body).to include("氏名")
+        expect(response.body).to include("メールアドレス")
+        expect(response.body).to include("パスワード")
+        expect(response.body).to include("管理者権限を付与")
+      end
+    end
+
+    context "when the current user is not an admin" do
+      before { sign_in(user) }
+
+      it "redirects to the root page" do
+        get new_user_path
+
+        expect(response).to redirect_to root_path
+      end
+
+      it "sets an alert message" do
+        get new_user_path
+
+        expect(flash[:alert]).to eq("管理者権限が必要です")
+      end
+    end
+
+    context "when the user is not logged in" do
+      it "redirects to the login page" do
+        get new_user_path
+
+        expect(response).to redirect_to new_session_path
+      end
+    end
+  end
+
+  describe "POST /users" do
+    let(:valid_params) do
+      {
+        user: {
+          name: "John Doe",
+          email_address: "john@example.com",
+          password: "password123"
+        }
+      }
+    end
+
+    let(:invalid_params) do
+      {
+        user: {
+          name: "",
+          email_address: "",
+          password: ""
+        }
+      }
+    end
+
+    context "when the current user is an admin" do
+      before { sign_in(admin) }
+
+      it "creates a User with valid params" do
+        expect {
+          post users_path, params: valid_params
+        }.to change(User, :count).by(1)
+      end
+
+      it "redirects to the show page with valid params" do
+        post users_path, params: valid_params
+
+        expect(response).to redirect_to(user_path(User.last))
+      end
+
+      it "sets a success notice" do
+        post users_path, params: valid_params
+
+        expect(flash[:notice]).to eq("従業員を登録しました")
+      end
+
+      it "re-renders the new template with invalid params" do
+        post users_path, params: invalid_params
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "when the current user is not an admin" do
+      before { sign_in(user) }
+
+      it "does not create a user" do
+        expect {
+          post users_path, params: valid_params
+        }.not_to change(User, :count)
+      end
+
+      it "redirects to the root page" do
+        post users_path, params: valid_params
+
+        expect(response).to redirect_to root_path
+      end
+
+      it "sets an alert message" do
+        post users_path, params: valid_params
+
+        expect(flash[:alert]).to eq("管理者権限が必要です")
+      end
+    end
+
+    context "when the user is not logged in" do
+      it "redirects to the login page" do
+        post users_path, params: {}
+
+        expect(response).to redirect_to(new_session_path)
+      end
+    end
+  end
 end
