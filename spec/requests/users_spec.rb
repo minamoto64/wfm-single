@@ -239,4 +239,135 @@ RSpec.describe "Users", type: :request do
       end
     end
   end
+
+  describe "GET /users/:id/edit" do
+    context "when the current user is an admin" do
+      before { sign_in(admin) }
+
+      it "responds with HTTP 200 OK" do
+        get edit_user_path(user)
+
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "renders the edit template" do
+        get edit_user_path(user)
+
+        expect(response.body).to include("氏名")
+        expect(response.body).to include("メールアドレス")
+        expect(response.body).to include("パスワード（変更する場合のみ）")
+        expect(response.body).to include("管理者権限を付与")
+      end
+    end
+
+    context "when the current user is not an admin" do
+      before { sign_in(user) }
+
+      it "redirects to the root page" do
+        get edit_user_path(user)
+
+        expect(response).to redirect_to(root_path)
+      end
+
+      it "sets an alert message" do
+        get edit_user_path(user)
+
+        expect(flash[:alert]).to eq("管理者権限が必要です")
+      end
+    end
+  end
+
+  describe "PATCH /users/:id" do
+    let(:valid_params) do
+      {
+        user: {
+          name: "Updated Name",
+          email_address: "updated@example.com"
+        }
+      }
+    end
+
+    let(:invalid_params) do
+      {
+        user: {
+          name: "",
+          email_address: ""
+        }
+      }
+    end
+
+    context "when the current user is an admin" do
+      before { sign_in(admin) }
+
+      it "updates the user" do
+        patch user_path(user), params: valid_params
+
+        expect(user.reload.name).to eq("Updated Name")
+        expect(user.reload.email_address).to eq("updated@example.com")
+      end
+
+      it "redirects to the user page" do
+        patch user_path(user), params: valid_params
+
+        expect(response).to redirect_to user_path(user)
+      end
+
+      it "sets a success notice" do
+        patch user_path(user), params: valid_params
+
+        expect(flash[:notice]).to eq("従業員情報を更新しました")
+      end
+
+      it "does not update the password when password is blank" do
+        old_digest = user.password_digest
+
+        patch user_path(user), params: {
+          user: {
+            name: "Updated Name",
+            password: ""
+          }
+        }
+
+        expect(user.reload.password_digest).to eq(old_digest)
+      end
+
+      it "does not update the user with invalid parameters" do
+        original_name = user.name
+
+        patch user_path(user), params: invalid_params
+
+        expect(user.reload.name).to eq(original_name)
+      end
+
+      it "re-renders the edit template with invalid params" do
+        patch user_path(user), params: invalid_params
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "when the current user is not an admin" do
+      before { sign_in(user) }
+
+      it "does not update the user" do
+        original_name = user.name
+
+        patch user_path(user), params: valid_params
+
+        expect(user.reload.name).to eq(original_name)
+      end
+
+      it "redirects to the root page" do
+        patch user_path(user), params: valid_params
+
+        expect(response).to redirect_to(root_path)
+      end
+
+      it "sets an alert message" do
+        patch user_path(user), params: valid_params
+
+        expect(flash[:alert]).to eq("管理者権限が必要です")
+      end
+    end
+  end
 end

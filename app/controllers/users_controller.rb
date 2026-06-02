@@ -23,8 +23,16 @@ class UsersController < ApplicationController
     end
   end
 
-  def edit; end
-  def update; end
+  def edit
+  end
+
+  def update
+    if @user.update(user_params)
+      redirect_to @user, notice: "従業員情報を更新しました"
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
 
   private
 
