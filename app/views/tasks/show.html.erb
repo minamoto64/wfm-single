@@ -36,6 +36,7 @@
 
       <%= render "shared/images", record: @task %>
 
+      <%= render "assignees", task: @task %>
       <%= render "timeline", timeline: @timeline, current_item: @task %>
       <%= render "related_interactions", task: @task %>
       <%= render "related_notices", task: @task %>

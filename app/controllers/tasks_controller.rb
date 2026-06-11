@@ -83,12 +83,11 @@ class TasksController < ApplicationController
   end
 
   def task_params
-    permitted = %i[
-      title
-      description
-      due_at
-      parent_id
-      images: []
+    permitted = [
+      :title,
+      :description,
+      :due_at,
+      :parent_id
     ]
 
     permitted << :restricted if Current.user.admin?
