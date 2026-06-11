@@ -29,6 +29,16 @@
     <%= f.datetime_local_field :due_at,
           class: "w-full border border-gray-300 rounded px-3 py-2 text-sm" %>
   </div>
+  <div>
+    <%= label_tag :assignee_ids, "担当者", class: "block text-sm font-medium text-gray-700 mb-1" %>
+    <%= select_tag "assignee_ids[]",
+          options_from_collection_for_select(User.order(:name), :id, :name, params[:assignee_ids]),
+          multiple: true,
+          class: "w-full border border-gray-300 rounded px-3 py-2 text-sm" %>
+    <p class="mt-1 text-xs text-gray-400">
+      複数選択可。Windows: Ctrl+クリック / Mac: Command+クリックで複数選択
+    </p>
+  </div>
   <% if Current.user.admin? %>
     <div class="flex items-center gap-2">
       <%= f.check_box :restricted, class: "rounded" %>
