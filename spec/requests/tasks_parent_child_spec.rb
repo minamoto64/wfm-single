@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe "Tasks parent-child", type: :request do
+  include TaskRequestHelpers
+
   let(:user)  { create(:user) }
   let(:admin) { create(:user, admin: true) }
 
@@ -187,14 +189,14 @@ RSpec.describe "Tasks parent-child", type: :request do
 
       it "creates a task and associates it with the parent" do
         expect {
-          post tasks_path, params: child_params
+          post tasks_path, params: create_task_with_assignees(child_params)
         }.to change(Task, :count).by(1)
 
         expect(Task.last.parent).to eq(parent)
       end
 
       it "redirects to the child task page" do
-        post tasks_path, params: child_params
+        post tasks_path, params: create_task_with_assignees(child_params)
 
         expect(response).to redirect_to task_path(Task.last)
       end
