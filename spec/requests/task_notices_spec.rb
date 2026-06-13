@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe "Task Notices", type: :request do
+  include TaskRequestHelpers
+
   let(:user) { create(:user) }
   let(:notice) { create(:notice) }
 
@@ -32,19 +34,19 @@ RSpec.describe "Task Notices", type: :request do
     end
 
     it "links the task to the notice" do
-      post tasks_path, params: valid_params
+      post tasks_path, params: create_task_with_assignees(valid_params)
 
       expect(Task.last.notices).to include(notice)
     end
 
     it "redirects to the created task" do
-      post tasks_path, params: valid_params
+      post tasks_path, params: create_task_with_assignees(valid_params)
 
       expect(response).to redirect_to(task_path(Task.last))
     end
 
     it "does not link when notice_id is absent" do
-      post tasks_path, params: valid_params.except(:notice_id)
+      post tasks_path, params: create_task_with_assignees(valid_params).except(:notice_id)
 
       expect(Task.last.notices).to be_empty
     end

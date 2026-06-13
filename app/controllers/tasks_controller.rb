@@ -16,19 +16,29 @@ class TasksController < ApplicationController
     @task = Current.user.tasks.build(task_params)
     @parent_task = @task.parent
 
-    if @task.save
-      if params[:interaction_id].present?
-        @task.interactions << Interaction.find(params[:interaction_id])
-      end
+    assignee_ids = Array(params[:assignee_ids]).reject(&:blank?)
 
-      if params[:notice_id].present?
-        @task.notices << Notice.find(params[:notice_id])
-      end
+    @task.valid?
 
-      redirect_to @task, notice: "タスクを登録しました"
-    else
+    @task.errors.add(:base, "担当者を1人以上選択してください") if assignee_ids.empty?
+
+    if @task.errors.any?
       render :new, status: :unprocessable_entity
+      return
     end
+
+    ActiveRecord::Base.transaction do
+      @task.save!
+
+      @task.interactions << Interaction.find(params[:interaction_id]) if params[:interaction_id].present?
+      @task.notices << Notice.find(params[:notice_id]) if params[:notice_id].present?
+
+      assignee_ids.each do |user_id|
+        @task.task_assignments.create!(user_id: user_id, status: :todo)
+      end
+    end
+
+    redirect_to @task, notice: "タスクを登録しました"
   end
 
   def show
@@ -51,6 +61,7 @@ class TasksController < ApplicationController
   def set_task
     @task = Task.preload(
       :user,
+      task_assignments: [ :user ],
       comments: [ :user ]
     ).find(params[:id])
   end
@@ -72,12 +83,11 @@ class TasksController < ApplicationController
   end
 
   def task_params
-    permitted = %i[
-      title
-      description
-      due_at
-      parent_id
-      images: []
+    permitted = [
+      :title,
+      :description,
+      :due_at,
+      :parent_id
     ]
 
     permitted << :restricted if Current.user.admin?

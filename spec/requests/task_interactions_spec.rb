@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe "Task Interactions", type: :request do
+  include TaskRequestHelpers
+
   let(:user) { create(:user) }
   let(:interaction) { create(:interaction) }
 
@@ -32,19 +34,19 @@ RSpec.describe "Task Interactions", type: :request do
     end
 
     it "links the task to the interaction" do
-      post tasks_path, params: valid_params
+      post tasks_path, params: create_task_with_assignees(valid_params)
 
       expect(Task.last.interactions).to include(interaction)
     end
 
     it "redirects to the created task" do
-      post tasks_path, params: valid_params
+      post tasks_path, params: create_task_with_assignees(valid_params)
 
       expect(response).to redirect_to(task_path(Task.last))
     end
 
     it "does not link when interaction_id is absent" do
-      post tasks_path, params: valid_params.except(:interaction_id)
+      post tasks_path, params: create_task_with_assignees(valid_params).except(:interaction_id)
 
       expect(Task.last.interactions).to be_empty
     end

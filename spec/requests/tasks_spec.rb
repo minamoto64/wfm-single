@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe "Tasks", type: :request do
+  include TaskRequestHelpers
+
   let(:user) { create(:user) }
   let(:admin) { create(:user, admin: true) }
   let!(:task) { create(:task, user: user) }
@@ -148,53 +150,49 @@ RSpec.describe "Tasks", type: :request do
 
       let(:valid_params) do
         {
-          task: {
-            title: "テストタスク",
-            description: "テストタスクの詳細",
-            due_at: 1.week.from_now
-          }
+          title:       "テストタスク",
+          description: "テストタスクの詳細",
+          due_at:      1.week.from_now
         }
       end
 
       it "creates a Task with valid params" do
         expect {
-          post tasks_path, params: valid_params
+          post tasks_path, params: create_task_with_assignees({ task: valid_params })
         }.to change(Task, :count).by(1)
       end
 
       it "redirects to the show page with valid params" do
-        post tasks_path, params: valid_params
-
+        post tasks_path, params: create_task_with_assignees({ task: valid_params })
         expect(response).to redirect_to(task_path(Task.last))
       end
 
       it "records the user who created it" do
-        post tasks_path, params: valid_params
-
+        post tasks_path, params: create_task_with_assignees({ task: valid_params })
         expect(Task.last.user).to eq(user)
       end
 
       it "does not create a Task with invalid params" do
         expect {
-          post tasks_path, params: { task: { title: nil } }
+          post tasks_path, params: create_task_with_assignees({ task: { title: nil } })
         }.not_to change(Task, :count)
       end
 
       it "re-renders the new template with invalid params" do
-        post tasks_path, params: { task: { title: nil } }
-
+        post tasks_path, params: create_task_with_assignees({ task: { title: nil } })
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
       it "ignores restricted parameter" do
-        post tasks_path, params: {
-          task: {
-            title: "テストタスク",
-            description: "テストタスクの詳細",
-            restricted: true
+        post tasks_path, params: create_task_with_assignees(
+          {
+            task: {
+              title:       "テストタスク",
+              description: "テストタスクの詳細",
+              restricted:  true
+            }
           }
-        }
-
+        )
         expect(Task.last.restricted).to be(false)
       end
     end
@@ -203,14 +201,15 @@ RSpec.describe "Tasks", type: :request do
       before { sign_in(admin) }
 
       it "allows to set restricted" do
-        post tasks_path, params: {
-          task: {
-            title: "テストタスク",
-            description: "テストタスクの詳細",
-            restricted: true
+        post tasks_path, params: create_task_with_assignees(
+          {
+            task: {
+              title:       "テストタスク",
+              description: "テストタスクの詳細",
+              restricted:  true
+            }
           }
-        }
-
+        )
         expect(Task.last.restricted).to be(true)
       end
     end
@@ -218,7 +217,6 @@ RSpec.describe "Tasks", type: :request do
     context "when the user is not logged in" do
       it "redirects to the login page" do
         post tasks_path, params: {}
-
         expect(response).to redirect_to(new_session_path)
       end
     end
@@ -226,9 +224,9 @@ RSpec.describe "Tasks", type: :request do
 
   describe "POST /tasks (with images)" do
     subject(:perform_request) do
-      post tasks_path, params: {
+      post tasks_path, params: create_task_with_assignees({
         task: attributes_for(:task).merge(images: images)
-      }
+      })
     end
 
     before { sign_in(user) }
