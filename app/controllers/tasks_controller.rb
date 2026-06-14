@@ -10,35 +10,25 @@ class TasksController < ApplicationController
   def new
     @parent_task = Task.find_by(id: params[:parent_id])
     @task = Task.new(parent: @parent_task)
+    @form = TaskForm.new(task: @task)
   end
 
   def create
     @task = Current.user.tasks.build(task_params)
     @parent_task = @task.parent
 
-    assignee_ids = Array(params[:assignee_ids]).reject(&:blank?)
+    @form = TaskForm.new(
+      task:           @task,
+      assignee_ids:   params[:assignee_ids],
+      interaction_id: params[:interaction_id],
+      notice_id:      params[:notice_id]
+    )
 
-    @task.valid?
-
-    @task.errors.add(:base, "担当者を1人以上選択してください") if assignee_ids.empty?
-
-    if @task.errors.any?
+    if @form.save
+      redirect_to @task, notice: "タスクを登録しました"
+    else
       render :new, status: :unprocessable_entity
-      return
     end
-
-    ActiveRecord::Base.transaction do
-      @task.save!
-
-      @task.interactions << Interaction.find(params[:interaction_id]) if params[:interaction_id].present?
-      @task.notices << Notice.find(params[:notice_id]) if params[:notice_id].present?
-
-      assignee_ids.each do |user_id|
-        @task.task_assignments.create!(user_id: user_id, status: :todo)
-      end
-    end
-
-    redirect_to @task, notice: "タスクを登録しました"
   end
 
   def show
@@ -46,12 +36,15 @@ class TasksController < ApplicationController
   end
 
   def edit
+    @form = TaskForm.new(task: @task)
   end
 
   def update
     if @task.update(task_params)
       redirect_to @task, notice: "タスクを更新しました"
     else
+      @form = TaskForm.new(task: @task)
+      @form.valid? # task.errors を form.errors に取り込む
       render :edit, status: :unprocessable_entity
     end
   end
@@ -72,13 +65,11 @@ class TasksController < ApplicationController
 
   def authorize_view!
     return if Current.user.admin? || !@task.restricted
-
     redirect_to tasks_path, alert: "アクセス権限がありません"
   end
 
   def authorize_edit!
     return if @task.user == Current.user
-
     redirect_to @task, alert: "編集権限がありません"
   end
 
@@ -89,9 +80,7 @@ class TasksController < ApplicationController
       :due_at,
       :parent_id
     ]
-
     permitted << :restricted if Current.user.admin?
-
     params.require(:task).permit(*permitted, images: [])
   end
 end

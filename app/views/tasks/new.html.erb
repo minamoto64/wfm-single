@@ -15,7 +15,7 @@
           <%= @parent_task ? "関連タスクを登録" : "タスクを新規登録" %>
         </h1>
       </div>
-      <%= render "form", task: @task %>
+      <%= render "form", task: @task, form: @form %>
     </div>
   </div>
 </div>
