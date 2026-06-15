@@ -53,4 +53,12 @@ class Interaction < ApplicationRecord
   def assign_self_as_root
     update_column(:root_id, id) if root_id.nil?
   end
+
+  def self.ransackable_attributes(auth_object = nil)
+    %w[channel completed occurred_at]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    %w[customer user]
+  end
 end
