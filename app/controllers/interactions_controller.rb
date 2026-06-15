@@ -3,9 +3,10 @@ class InteractionsController < ApplicationController
   before_action :authorize_edit!, only: [ :edit, :update ]
 
   def index
-    @interactions = Interaction
-                      .preload(:customer, :user)
-                      .order(occurred_at: :desc)
+    @q = Interaction.ransack(params[:q])
+    @interactions = @q.result
+                    .preload(:customer, :user)
+                    .order(occurred_at: :desc)
   end
 
   def new
