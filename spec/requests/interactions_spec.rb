@@ -4,6 +4,9 @@ RSpec.describe "Interactions", type: :request do
   include InteractionsHelper
 
   let(:user) { create(:user) }
+  let(:customer) { create(:customer, name: "鈴木太郎", phone: "090-1111-2222", email: "suzuki@example.com") }
+  let(:other_customer) { create(:customer, name: "佐藤花子", phone: "080-3333-4444", email: "sato@example.com") }
+
 
   def sign_in(user)
     post session_path, params: { email_address: user.email_address, password: "password55" }
@@ -32,6 +35,16 @@ RSpec.describe "Interactions", type: :request do
         get interactions_path
         expect(response.body).to include("完了")
         expect(response.body).to include("対応中")
+      end
+
+      it "ignores unauthorized customer email filter and returns unfiltered results" do
+        create(:interaction, customer: customer, user: user)
+        create(:interaction, customer: other_customer, user: user)
+
+        get interactions_path, params: { q: { customer_email_cont: customer.email } }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include(customer.name, other_customer.name)
       end
     end
 
