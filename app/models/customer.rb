@@ -12,6 +12,11 @@ class Customer < ApplicationRecord
   private
 
   def self.ransackable_attributes(auth_object = nil)
-    %w[name phone]
+    base = %w[name phone]
+    auth_object == :customer_list ? base + %w[email] : base
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    []
   end
 end

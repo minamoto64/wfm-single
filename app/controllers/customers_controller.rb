@@ -2,7 +2,8 @@ class CustomersController < ApplicationController
   before_action :set_customer, only: [ :show, :edit, :update ]
 
   def index
-    @customers = Customer.order(:name)
+    @q = Customer.ransack(params[:q], auth_object: :customer_list)
+    @customers = @q.result.order(:name)
   end
 
   def new
