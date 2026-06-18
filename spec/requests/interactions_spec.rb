@@ -46,6 +46,19 @@ RSpec.describe "Interactions", type: :request do
         expect(response).to have_http_status(:ok)
         expect(response.body).to include(customer.name, other_customer.name)
       end
+
+      it "ignores unauthorized user email_address, admin filter and returns unfiltered results" do
+        admin = create(:user, admin: true)
+        create(:interaction, customer: customer, user: user)
+        create(:interaction, customer: other_customer, user: admin)
+
+        get interactions_path, params: {
+          q: { email_address_cont: admin.email_address, admin_eq: true }
+        }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include(customer.name, other_customer.name)
+      end
     end
 
     context "when the user is not logged in" do
