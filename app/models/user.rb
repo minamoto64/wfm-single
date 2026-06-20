@@ -20,6 +20,11 @@ class User < ApplicationRecord
   private
 
   def self.ransackable_attributes(auth_object = nil)
-    %w[name]
+    base = %w[name]
+    auth_object == :user_list ? base + %w[email_address admin] : base
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    []
   end
 end

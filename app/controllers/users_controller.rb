@@ -3,7 +3,8 @@ class UsersController < ApplicationController
   before_action :require_admin, only: %i[new create edit update]
 
   def index
-    @users = User.order(:name)
+    @q = User.ransack(params[:q], auth_object: :user_list)
+    @users = @q.result.order(:name)
   end
 
   def show

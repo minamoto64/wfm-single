@@ -101,4 +101,25 @@ RSpec.describe User, type: :model do
       end
     end
   end
+
+  describe 'ransackable_attributes' do
+    context "when auth_object is :user_list" do
+      it "permits email_address and admin_status in addition to name" do
+        expect(described_class.ransackable_attributes(:user_list)).to include("name", "email_address", "admin")
+      end
+    end
+
+    context "when auth_object is nil" do
+      it "does not permit email or admin" do
+        expect(described_class.ransackable_attributes(nil)).to include("name")
+        expect(described_class.ransackable_attributes(nil)).not_to include("email_address", "admin")
+      end
+    end
+
+    context "when auth_object is some other unexpected value" do
+      it "falls back to the restricted list" do
+        expect(described_class.ransackable_attributes(:something_else)).not_to include("email_address", "admin")
+      end
+    end
+  end
 end
