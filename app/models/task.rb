@@ -40,4 +40,29 @@ class Task < ApplicationRecord
   def assign_self_as_root
     update_column(:root_id, id) if root_id.nil?
   end
+
+  scope :due_within, ->(period) {
+    from = Time.current.beginning_of_day
+    case period
+    when "unset" then where(due_at: nil)
+    when "overdue" then where(due_at: ...Time.current.beginning_of_day)
+    when "today" then where(due_at: from..Time.current.end_of_day)
+    when "week"  then where(due_at: from..Time.current.end_of_week.end_of_day)
+    when "month" then where(due_at: from..Time.current.end_of_month.end_of_day)
+    else all
+    end
+  }
+
+  def self.ransackable_attributes(auth_object = nil)
+    base = %w[title description due_at]
+    auth_object == :admin ? base + %w[restricted] : base
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    %w[task_assignments user]
+  end
+
+  def self.ransackable_scopes(auth_object = nil)
+    %w[due_within]
+  end
 end

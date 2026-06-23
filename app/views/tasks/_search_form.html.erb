@@ -1,0 +1,59 @@
+<h2 class="text-sm font-semibold mb-3">検索</h2>
+<%= search_form_for @q, url: tasks_path, method: :get, html: { class: "text-sm w-full" } do |f| %>
+  <div class="flex flex-nowrap items-end gap-3 w-full">
+    <div class="w-64 shrink-0">
+      <%= f.label :title_or_description_cont, "キーワード", class: "block text-xs text-gray-600 mb-1" %>
+      <%= f.search_field :title_or_description_cont,
+            class: "w-full border rounded px-3 py-2 h-10",
+            placeholder: "タイトル・本文" %>
+    </div>
+    <div class="w-44 shrink-0">
+      <%= f.label :user_name_cont, "作成者名", class: "block text-xs text-gray-600 mb-1" %>
+      <%= f.search_field :user_name_cont,
+            class: "w-full border rounded px-3 py-2 h-10",
+            placeholder: "例）田中" %>
+    </div>
+    <div class="w-44 shrink-0">
+      <%= f.label :task_assignments_user_name_cont, "担当者名", class: "block text-xs text-gray-600 mb-1" %>
+      <%= f.search_field :task_assignments_user_name_cont,
+            class: "w-full border rounded px-3 py-2 h-10",
+            placeholder: "例）佐藤" %>
+    </div>
+    <div class="w-32 shrink-0">
+      <%= f.label :task_assignments_status_eq, "進捗状況", class: "block text-xs text-gray-600 mb-1" %>
+      <%= f.select :task_assignments_status_eq,
+            [["指定なし", ""], ["未着手", "todo"], ["進行中", "in_progress"], ["完了", "done"]],
+            {},
+            class: "w-full border rounded px-3 py-2 h-10" %>
+    </div>
+    <div class="w-32 shrink-0">
+      <%= f.label :due_within, "期限", class: "block text-xs text-gray-600 mb-1" %>
+      <%= f.select :due_within,
+            [
+              ["指定なし",   ""],
+              ["期限未設定", "unset"],
+              ["期限超過", "overdue"],
+              ["今日まで",   "today"],
+              ["今週末まで",   "week"],
+              ["今月末まで",   "month"]
+            ],
+            {},
+            class: "w-full border rounded px-3 py-2 h-10" %>
+    </div>
+    <% if Current.user.admin? %>
+      <div class="w-32 shrink-0">
+        <%= f.label :restricted_eq, "公開範囲", class: "block text-xs text-gray-600 mb-1" %>
+        <%= f.select :restricted_eq,
+              [["指定なし", ""], ["全員", false], ["管理者のみ", true]],
+              {},
+              class: "w-full border rounded px-3 py-2 h-10" %>
+      </div>
+    <% end %>
+    <div class="flex items-end gap-2 ml-auto shrink-0">
+      <%= link_to "クリア", tasks_path,
+            class: "px-3 py-2 border rounded text-gray-600 h-10 inline-flex items-center whitespace-nowrap" %>
+      <%= f.submit "検索",
+            class: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 h-10 whitespace-nowrap" %>
+    </div>
+  </div>
+<% end %>

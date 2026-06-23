@@ -38,6 +38,34 @@ RSpec.describe "Tasks", type: :request do
 
         expect(response.body).not_to include(restricted_task.title)
       end
+
+      it "ignores unauthorized creator user filters and returns unfiltered results" do
+        other_task = create(:task, user: admin, restricted: false)
+
+        get tasks_path, params: {
+          q: {
+            user_email_address_cont: admin.email_address,
+            user_admin_eq: true
+          }
+        }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include(task.title, other_task.title)
+      end
+
+      it "ignores unauthorized assignee user filters and returns unfiltered results" do
+        other_task = create(:task, user: admin, restricted: false)
+
+        get tasks_path, params: {
+          q: {
+            task_assignments_user_email_address_cont: admin.email_address,
+            task_assignments_user_admin_eq: true
+          }
+        }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include(task.title, other_task.title)
+      end
     end
 
     context "when the user is an admin" do
