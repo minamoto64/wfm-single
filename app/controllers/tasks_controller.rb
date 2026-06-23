@@ -4,7 +4,10 @@ class TasksController < ApplicationController
   before_action :authorize_edit!, only: [ :edit, :update ]
 
   def index
-    @tasks = visible_tasks.preload(:user).order(due_at: :asc)
+    @q = visible_tasks.ransack(params[:q], auth_object: :admin)
+    @tasks = @q.result
+               .preload(:user)
+               .order(due_at: :asc)
   end
 
   def new

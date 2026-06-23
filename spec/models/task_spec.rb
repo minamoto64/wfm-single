@@ -14,7 +14,7 @@ RSpec.describe Task, type: :model do
   end
 
   describe 'associations' do
-    it 'belongs to user)' do
+    it 'belongs to user' do
       association = described_class.reflect_on_association(:user)
       expect(association.macro).to eq(:belongs_to)
     end
@@ -42,7 +42,7 @@ RSpec.describe Task, type: :model do
       association = described_class.reflect_on_association(:assigned_users)
       expect(association.macro).to eq(:has_many)
       expect(association.options[:through]).to eq(:task_assignments)
-      expect(association.options[:source]).to eq (:user)
+      expect(association.options[:source]).to eq(:user)
     end
   end
 
@@ -131,6 +131,103 @@ RSpec.describe Task, type: :model do
 
         expect { task.destroy }.to change(ActiveStorage::Attachment, :count).by(-1)
       end
+    end
+  end
+
+  describe "ransackable_attributes" do
+    it "permits restricted in addition to base attributes when auth_object is :admin" do
+      expect(described_class.ransackable_attributes(:admin)).to include("title", "description", "due_at", "restricted")
+    end
+
+    it "does not permit restricted when auth_object is nil" do
+      expect(described_class.ransackable_attributes(nil)).to include("title", "description", "due_at")
+      expect(described_class.ransackable_attributes(nil)).not_to include("restricted")
+    end
+
+    it "falls back to the base list without restricted for unexpected auth_object values" do
+      expect(described_class.ransackable_attributes(:something_else)).not_to include("restricted")
+    end
+  end
+
+  describe "ransackable_associations" do
+    it "permits task_assignments and user" do
+      expect(described_class.ransackable_associations).to include("task_assignments", "user")
+    end
+  end
+
+  describe "ransackable_scopes" do
+    it "permits due_within" do
+      expect(described_class.ransackable_scopes).to include("due_within")
+    end
+  end
+
+  describe "due_within" do
+    # Fixed date: Tuesday, June 11, 2024
+    # end_of_week = Sunday, June 16, 2024
+    # end_of_month = June 30, 2024
+    around do |example|
+      travel_to(Time.zone.local(2024, 6, 11, 12, 0, 0), &example)
+    end
+
+    let(:tasks) do
+      {
+        no_due: create(:task, due_at: nil),
+        overdue: create(:task, due_at: Time.zone.local(2024, 6, 10, 9, 0, 0)),
+        today: create(:task, due_at: Time.zone.local(2024, 6, 11, 15, 0, 0)),
+        this_week: create(:task, due_at: Time.zone.local(2024, 6, 14, 12, 0, 0)),
+        next_week: create(:task, due_at: Time.zone.local(2024, 6, 17, 12, 0, 0)),
+        this_month: create(:task, due_at: Time.zone.local(2024, 6, 28, 12, 0, 0)),
+        next_month: create(:task, due_at: Time.zone.local(2024, 7, 15, 12, 0, 0))
+      }
+    end
+
+    it "returns only tasks with no due date when 'unset'" do
+      result = described_class.due_within("unset")
+
+      expect(result).to include(tasks[:no_due])
+      expect(result).not_to include(tasks[:today])
+    end
+
+    it "returns only tasks past the start of today when 'overdue'" do
+      result = described_class.due_within("overdue")
+
+      expect(result).to include(tasks[:overdue])
+      expect(result).not_to include(tasks[:today])
+    end
+
+    it "returns only tasks due within today when 'today'" do
+      result = described_class.due_within("today")
+
+      expect(result).to include(tasks[:today])
+      expect(result).not_to include(tasks[:overdue], tasks[:this_week])
+    end
+
+    it "returns tasks due from today through end of this week when 'week'" do
+      result = described_class.due_within("week")
+
+      expect(result).to include(tasks[:today], tasks[:this_week])
+      expect(result).not_to include(tasks[:overdue], tasks[:next_week])
+    end
+
+    it "returns tasks due from today through end of this month when 'month'" do
+      result = described_class.due_within("month")
+
+      expect(result).to include(tasks[:today], tasks[:next_week], tasks[:this_month])
+      expect(result).not_to include(tasks[:overdue], tasks[:next_month])
+    end
+
+    it "returns all tasks when the period is an unknown value" do
+      result = described_class.due_within("unknown")
+
+      expect(result).to include(
+        tasks[:no_due],
+        tasks[:overdue],
+        tasks[:today],
+        tasks[:this_week],
+        tasks[:next_week],
+        tasks[:this_month],
+        tasks[:next_month]
+      )
     end
   end
 end
