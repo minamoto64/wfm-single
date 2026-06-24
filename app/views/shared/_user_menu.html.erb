@@ -24,7 +24,7 @@
             class: "block px-4 py-2 hover:bg-gray-50" %>
     </div>
     <div class="border-t py-1">
-      <%= button_to "ログアウト", session_path,
+      <%= button_to "ログアウト", logout_path,
             method: :delete,
             form_class: "block",
             data: { turbo_confirm: "ログアウトしますか？" },
