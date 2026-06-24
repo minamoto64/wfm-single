@@ -58,6 +58,20 @@ RSpec.describe "Notices", type: :request do
 
         expect(response.body).not_to include(restricted_notice.title)
       end
+
+      it "ignores unauthorized creator user filters and returns unfiltered results" do
+        other_notice = create(:notice, user: admin, restricted: false)
+
+        get notices_path, params: {
+          q: {
+            user_email_address_cont: admin.email_address,
+            user_admin_eq: true
+          }
+        }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include(notice.title, other_notice.title)
+      end
     end
 
     context "when the user is admin" do

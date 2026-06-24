@@ -46,4 +46,26 @@ class Notice < ApplicationRecord
   def assign_self_as_root
     update_column(:root_id, id) if root_id.nil?
   end
+
+  scope :status, ->(value) {
+    now = Time.current
+    case value
+    when "active" then where("start_at <= ? AND end_at >= ?", now, now)
+    when "expired" then where("end_at < ?", now)
+    else all
+    end
+  }
+
+  def self.ransackable_attributes(auth_object = nil)
+    base = %w[title content level start_at end_at]
+    auth_object == :admin ? base + %w[restricted] : base
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    %w[user]
+  end
+
+  def self.ransackable_scopes(auth_object = nil)
+    %w[status]
+  end
 end
