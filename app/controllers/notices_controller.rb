@@ -5,7 +5,10 @@ class NoticesController < ApplicationController
 
 
   def index
-    @notices = visible_notices.preload(:user).order(start_at: :desc)
+    @q = visible_notices.ransack(params[:q], auth_object: :admin)
+    @notices = @q.result
+               .preload(:user)
+               .order(start_at: :desc)
   end
 
   def new

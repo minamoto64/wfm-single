@@ -196,4 +196,71 @@ RSpec.describe Notice, type: :model do
       expect { notice.destroy }.to change(ActiveStorage::Attachment, :count).by(-1)
     end
   end
+
+  describe "ransackable_attributes" do
+    it "permits restricted in addition to base attributes when auth_object is :admin" do
+      expect(described_class.ransackable_attributes(:admin)).to match_array(%w[title content level start_at end_at restricted])
+    end
+
+    it "does not permit restricted when auth_object is nil" do
+      expect(described_class.ransackable_attributes(nil)).to match_array(%w[title content level start_at end_at])
+    end
+
+    it "falls back to the base list without restricted for unexpected auth_object values" do
+      expect(described_class.ransackable_attributes(:something_else)).to match_array(%w[title content level start_at end_at])
+    end
+  end
+
+  describe "ransackable_associations" do
+    it "permits user" do
+      expect(described_class.ransackable_associations).to include("user")
+    end
+  end
+
+  describe "ransackable_scopes" do
+    it "permits status" do
+      expect(described_class.ransackable_scopes).to include("status")
+    end
+  end
+
+  describe "status" do
+    # Fixed date: Wednesday, June 11, 2025 12:00
+    around do |example|
+      travel_to(Time.zone.local(2025, 6, 11, 12, 0, 0), &example)
+    end
+
+    let(:notices) do
+      {
+        active:         create(:notice, start_at: 1.hour.ago,   end_at: 1.week.from_now),
+        upcoming:        create(:notice, start_at: 1.hour.from_now, end_at: 2.hours.from_now),
+        expired:        create(:notice, start_at: 2.weeks.ago,  end_at: 1.hour.ago),
+        ends_now_edge:  create(:notice, start_at: 1.day.ago,    end_at: Time.current)
+      }
+    end
+
+    it "returns only notices where start_at is past and end_at is future when 'active'" do
+      result = described_class.status("active")
+
+      expect(result).to include(notices[:active], notices[:ends_now_edge])
+      expect(result).not_to include(notices[:upcoming], notices[:expired])
+    end
+
+    it "returns only notices where end_at is past when 'expired'" do
+      result = described_class.status("expired")
+
+      expect(result).to include(notices[:expired])
+      expect(result).not_to include(notices[:active], notices[:upcoming])
+    end
+
+    it "returns all notices when the value is an unknown string" do
+      result = described_class.status("unknown")
+
+      expect(result).to include(
+        notices[:active],
+        notices[:upcoming],
+        notices[:expired],
+        notices[:ends_now_edge]
+      )
+    end
+  end
 end
