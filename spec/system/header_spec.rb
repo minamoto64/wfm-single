@@ -4,13 +4,13 @@ RSpec.describe "Header", type: :system do
   let(:user) { create(:user, password: "password55") }
 
   def sign_in(user)
-    visit new_session_path
+    visit login_path
 
     fill_in "email_address", with: user.email_address
     fill_in "password", with: "password55"
-    click_button "Sign in"
+    click_button "ログイン"
 
-    expect(page).to have_current_path(root_path)
+    expect(page).to have_current_path(interactions_path)
   end
 
   describe "navigation tabs" do

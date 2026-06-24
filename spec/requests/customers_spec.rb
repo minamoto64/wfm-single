@@ -4,7 +4,7 @@ RSpec.describe "Customers", type: :request do
   let(:user) { create(:user) }
 
   def sign_in(user)
-    post session_path, params: { email_address: user.email_address, password: "password55" }
+    post login_path, params: { email_address: user.email_address, password: "password55" }
   end
 
   describe "GET /customers" do
@@ -29,7 +29,7 @@ RSpec.describe "Customers", type: :request do
     context "when the user is not logged in" do
       it "redirects to the login page" do
         get customers_path
-        expect(response).to redirect_to(new_session_path)
+        expect(response).to redirect_to(login_path)
       end
     end
   end
@@ -47,7 +47,7 @@ RSpec.describe "Customers", type: :request do
     context "when the user is not logged in" do
       it "redirects to the login page" do
         get new_customer_path
-        expect(response).to redirect_to(new_session_path)
+        expect(response).to redirect_to(login_path)
       end
     end
   end
@@ -93,7 +93,7 @@ RSpec.describe "Customers", type: :request do
     context "when the user is not logged in" do
       it "redirects to the login page" do
         post customers_path, params: {}
-        expect(response).to redirect_to(new_session_path)
+        expect(response).to redirect_to(login_path)
       end
     end
   end
@@ -121,7 +121,7 @@ RSpec.describe "Customers", type: :request do
     context "when the user is not logged in" do
       it "redirects to the login page" do
         get customer_path(customer)
-        expect(response).to redirect_to(new_session_path)
+        expect(response).to redirect_to(login_path)
       end
     end
   end
@@ -141,7 +141,7 @@ RSpec.describe "Customers", type: :request do
     context "when the user is not logged in" do
       it "redirects to the login page" do
         get edit_customer_path(customer)
-        expect(response).to redirect_to(new_session_path)
+        expect(response).to redirect_to(login_path)
       end
     end
   end
@@ -174,7 +174,7 @@ RSpec.describe "Customers", type: :request do
     context "when the user is not logged in" do
       it "redirects to the login page" do
         patch customer_path(customer), params: {}
-        expect(response).to redirect_to(new_session_path)
+        expect(response).to redirect_to(login_path)
       end
     end
   end

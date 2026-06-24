@@ -1,7 +1,6 @@
 # This file should ensure the existence of records required to run the application in every environment (production,
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-
 # ==============================================================================
 # パスワードの読み込み
 # 本番環境では環境変数を必ず設定すること。
@@ -422,5 +421,35 @@ task_assignments_data.each do |attrs|
     puts "タスク: #{assignment.task.title}"
     puts "担当: #{assignment.user.name}"
     puts "状態: #{task_status_label(assignment.status)}"
+  end
+end
+
+# ==============================================================================
+# デモ用ユーザーの作成
+# ==============================================================================
+demo_users_data = [
+  {
+    name: "Taro Manager",
+    email_address: "manager@example.com",
+    password: "Admin2026!",
+    admin: true
+  },
+  {
+    name: "Hanako Member",
+    email_address: "member@example.com",
+    password: "User2026!",
+    admin: false
+  }
+]
+
+demo_users_data.each do |attrs|
+  user = User.find_or_create_by!(email_address: attrs[:email_address]) do |u|
+    u.assign_attributes(attrs)
+  end
+
+  if user.previously_new_record?
+    puts "デモユーザーを作成しました！"
+    puts "名前: #{user.name}"
+    puts "メールアドレス: #{user.email_address}"
   end
 end

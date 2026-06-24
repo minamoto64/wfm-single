@@ -7,7 +7,7 @@ RSpec.describe "Tasks parent-child", type: :request do
   let(:admin) { create(:user, admin: true) }
 
   def sign_in(user)
-    post session_path, params: { email_address: user.email_address, password: "password55" }
+    post login_path, params: { email_address: user.email_address, password: "password55" }
   end
 
   describe "GET /tasks/:id - back link" do

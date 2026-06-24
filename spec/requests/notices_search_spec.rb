@@ -15,7 +15,7 @@ RSpec.describe "Notices search", type: :request do
   end
 
   def sign_in(user)
-    post session_path, params: { email_address: user.email_address, password: "password55" }
+    post login_path, params: { email_address: user.email_address, password: "password55" }
   end
 
   describe "GET /notices" do

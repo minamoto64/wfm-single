@@ -9,7 +9,7 @@ RSpec.describe "Interactions", type: :request do
 
 
   def sign_in(user)
-    post session_path, params: { email_address: user.email_address, password: "password55" }
+    post login_path, params: { email_address: user.email_address, password: "password55" }
   end
 
   describe "GET /interactions" do
@@ -64,7 +64,7 @@ RSpec.describe "Interactions", type: :request do
     context "when the user is not logged in" do
       it "redirects to the login page" do
         get interactions_path
-        expect(response).to redirect_to(new_session_path)
+        expect(response).to redirect_to(login_path)
       end
     end
   end
@@ -88,7 +88,7 @@ RSpec.describe "Interactions", type: :request do
     context "when the user is not logged in" do
       it "redirects to the login page" do
         get interactions_path
-        expect(response).to redirect_to(new_session_path)
+        expect(response).to redirect_to(login_path)
       end
     end
   end
@@ -142,7 +142,7 @@ RSpec.describe "Interactions", type: :request do
     context "when the user is not logged in" do
       it "redirects to the login page" do
         post interactions_path, params: {}
-        expect(response).to redirect_to(new_session_path)
+        expect(response).to redirect_to(login_path)
       end
     end
   end
@@ -241,7 +241,7 @@ RSpec.describe "Interactions", type: :request do
     context "when the user is not logged in" do
       it "redirects to the login page" do
         get interaction_path(interaction)
-        expect(response).to redirect_to(new_session_path)
+        expect(response).to redirect_to(login_path)
       end
     end
   end
@@ -271,7 +271,7 @@ RSpec.describe "Interactions", type: :request do
       it "redirects to the login page" do
         interaction = create(:interaction, user: user)
         get edit_interaction_path(interaction)
-        expect(response).to redirect_to(new_session_path)
+        expect(response).to redirect_to(login_path)
       end
     end
   end
@@ -319,7 +319,7 @@ RSpec.describe "Interactions", type: :request do
     context "when the user is not logged in" do
       it "redirects to the login page" do
         patch interaction_path(interaction), params: {}
-        expect(response).to redirect_to(new_session_path)
+        expect(response).to redirect_to(login_path)
       end
     end
   end

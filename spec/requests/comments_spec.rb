@@ -5,7 +5,7 @@ RSpec.describe "Comments", type: :request do
   let(:other_user) { create(:other_user) }
 
   def sign_in(user)
-    post session_path, params: { email_address: user.email_address, password: "password55" }
+    post login_path, params: { email_address: user.email_address, password: "password55" }
   end
 
   before { sign_in(user) }
