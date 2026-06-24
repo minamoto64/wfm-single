@@ -9,7 +9,7 @@ RSpec.describe "Tasks", type: :request do
   let(:restricted_task) { create(:task, user: admin, restricted: true) }
 
   def sign_in(user)
-    post session_path, params: { email_address: user.email_address, password: "password55" }
+    post login_path, params: { email_address: user.email_address, password: "password55" }
   end
 
   describe "GET /tasks" do
@@ -86,7 +86,7 @@ RSpec.describe "Tasks", type: :request do
       it "redirects to the login page" do
         get tasks_path
 
-        expect(response).to redirect_to(new_session_path)
+        expect(response).to redirect_to(login_path)
       end
     end
   end
@@ -131,7 +131,7 @@ RSpec.describe "Tasks", type: :request do
       it "redirects to the login page" do
         get task_path(task)
 
-        expect(response).to redirect_to(new_session_path)
+        expect(response).to redirect_to(login_path)
       end
     end
   end
@@ -167,7 +167,7 @@ RSpec.describe "Tasks", type: :request do
       it "redirects to the login page" do
         get new_task_path
 
-        expect(response).to redirect_to(new_session_path)
+        expect(response).to redirect_to(login_path)
       end
     end
   end
@@ -245,7 +245,7 @@ RSpec.describe "Tasks", type: :request do
     context "when the user is not logged in" do
       it "redirects to the login page" do
         post tasks_path, params: {}
-        expect(response).to redirect_to(new_session_path)
+        expect(response).to redirect_to(login_path)
       end
     end
   end
@@ -349,7 +349,7 @@ RSpec.describe "Tasks", type: :request do
       it "redirects to the login page" do
         get edit_task_path(task)
 
-        expect(response).to redirect_to(new_session_path)
+        expect(response).to redirect_to(login_path)
       end
     end
   end
@@ -424,7 +424,7 @@ RSpec.describe "Tasks", type: :request do
       it "redirects to the login page" do
         patch task_path(task), params: {}
 
-        expect(response).to redirect_to(new_session_path)
+        expect(response).to redirect_to(login_path)
       end
     end
   end

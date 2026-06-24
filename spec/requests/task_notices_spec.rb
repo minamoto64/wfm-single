@@ -7,7 +7,7 @@ RSpec.describe "Task Notices", type: :request do
   let(:notice) { create(:notice) }
 
   def sign_in(user)
-    post session_path, params: { email_address: user.email_address, password: "password55" }
+    post login_path, params: { email_address: user.email_address, password: "password55" }
   end
 
   before { sign_in(user) }

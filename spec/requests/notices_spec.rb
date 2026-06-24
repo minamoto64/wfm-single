@@ -8,7 +8,7 @@ RSpec.describe "Notices", type: :request do
   let!(:restricted_notice) { create(:notice, user: admin, restricted: true) }
 
   def sign_in(user)
-    post session_path, params: { email_address: user.email_address, password: "password55" }
+    post login_path, params: { email_address: user.email_address, password: "password55" }
   end
 
   def valid_params
@@ -89,7 +89,7 @@ RSpec.describe "Notices", type: :request do
       it "redirects to the login page" do
         get notices_path
 
-        expect(response).to redirect_to new_session_path
+        expect(response).to redirect_to login_path
       end
     end
   end
@@ -179,7 +179,7 @@ RSpec.describe "Notices", type: :request do
       it "redirects to the login page" do
         get notice_path(notice)
 
-        expect(response).to redirect_to new_session_path
+        expect(response).to redirect_to login_path
       end
     end
   end
@@ -215,7 +215,7 @@ RSpec.describe "Notices", type: :request do
       it "redirects to the login page" do
         get new_notice_path
 
-        expect(response).to redirect_to new_session_path
+        expect(response).to redirect_to login_path
       end
     end
   end
@@ -275,7 +275,7 @@ RSpec.describe "Notices", type: :request do
       it "redirects to the login page" do
         post notices_path, params: {}
 
-        expect(response).to redirect_to new_session_path
+        expect(response).to redirect_to login_path
       end
     end
   end
@@ -380,7 +380,7 @@ RSpec.describe "Notices", type: :request do
       it "redirects to the login page" do
         get edit_notice_path(notice)
 
-        expect(response).to redirect_to new_session_path
+        expect(response).to redirect_to login_path
       end
     end
   end
@@ -450,7 +450,7 @@ RSpec.describe "Notices", type: :request do
       it "redirects to the login page" do
         patch notice_path(notice), params: {}
 
-        expect(response).to redirect_to new_session_path
+        expect(response).to redirect_to login_path
       end
     end
   end

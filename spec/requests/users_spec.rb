@@ -5,7 +5,7 @@ RSpec.describe "Users", type: :request do
   let!(:admin) { create(:user, admin: true) }
 
   def sign_in(user)
-    post session_path, params: { email_address: user.email_address, password: "password55" }
+    post login_path, params: { email_address: user.email_address, password: "password55" }
   end
 
   describe "GET /users" do
@@ -31,7 +31,7 @@ RSpec.describe "Users", type: :request do
       it "redirects to the login page" do
         get users_path
 
-        expect(response).to redirect_to new_session_path
+        expect(response).to redirect_to login_path
       end
     end
   end
@@ -110,7 +110,7 @@ RSpec.describe "Users", type: :request do
       it "redirects to the login page" do
         get user_path(user)
 
-        expect(response).to redirect_to(new_session_path)
+        expect(response).to redirect_to(login_path)
       end
     end
   end
@@ -155,7 +155,7 @@ RSpec.describe "Users", type: :request do
       it "redirects to the login page" do
         get new_user_path
 
-        expect(response).to redirect_to new_session_path
+        expect(response).to redirect_to login_path
       end
     end
   end
@@ -235,7 +235,7 @@ RSpec.describe "Users", type: :request do
       it "redirects to the login page" do
         post users_path, params: {}
 
-        expect(response).to redirect_to(new_session_path)
+        expect(response).to redirect_to(login_path)
       end
     end
   end

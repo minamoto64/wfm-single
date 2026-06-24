@@ -9,7 +9,7 @@ RSpec.describe "Tasks search", type: :request do
   let!(:user_task)       { create(:task, title: "ユーザータスク", description: "一般ユーザーの作業", user: regular_user) }
 
   def sign_in(user)
-    post session_path, params: { email_address: user.email_address, password: "password55" }
+    post login_path, params: { email_address: user.email_address, password: "password55" }
   end
 
   describe "GET /tasks" do
