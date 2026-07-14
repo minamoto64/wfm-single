@@ -1,0 +1,6 @@
+<% if @interactions.any? %>
+  <%= render "list_mobile", interactions: @interactions %>
+  <%= render "list_desktop", interactions: @interactions %>
+<% else %>
+  <%= render "list_empty" %>
+<% end %>
