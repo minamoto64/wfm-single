@@ -1,15 +1,25 @@
-require 'rails_helper'
+require "rails_helper"
 
-# Specs in this file have access to a helper object that includes
-# the InteractionsHelper. For example:
-#
-# describe InteractionsHelper do
-#   describe "string concat" do
-#     it "concats two strings with spaces" do
-#       expect(helper.concat_strings("this","that")).to eq("this that")
-#     end
-#   end
-# end
 RSpec.describe InteractionsHelper, type: :helper do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe "#interaction_channel_label" do
+    it "returns the translated channel label" do
+      interaction = build(:interaction, channel: "phone")
+
+      expect(helper.interaction_channel_label(interaction)).to eq("電話")
+    end
+  end
+
+  describe "#interaction_status_label" do
+    it "returns completed for completed interactions" do
+      interaction = build(:interaction, completed: true)
+
+      expect(helper.interaction_status_label(interaction)).to eq("完了済")
+    end
+
+    it "returns in progress for incomplete interactions" do
+      interaction = build(:interaction, completed: false)
+
+      expect(helper.interaction_status_label(interaction)).to eq("対応中")
+    end
+  end
 end

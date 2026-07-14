@@ -10,7 +10,8 @@ FactoryBot.define do
     completed { false }
 
     trait :with_parent do
-      parent { association :interaction, customer: customer }
+      customer { nil }
+      parent { association :interaction }
     end
   end
 end
