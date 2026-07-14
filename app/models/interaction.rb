@@ -7,7 +7,10 @@ class Interaction < ApplicationRecord
   belongs_to :user
 
   belongs_to :parent, class_name: "Interaction", optional: true
-  has_many :children, class_name: "Interaction", foreign_key: "parent_id"
+  has_many :children,
+           -> { order(occurred_at: :desc) },
+           class_name: "Interaction",
+           foreign_key: "parent_id"
 
   belongs_to :root, class_name: "Interaction", optional: true
   has_many :thread_interactions, class_name: "Interaction", foreign_key: :root_id, dependent: :nullify
@@ -37,6 +40,11 @@ class Interaction < ApplicationRecord
   validates :images,
     content_type: %w[image/jpeg image/png image/gif],
     size: { less_than_or_equal_to: 10.megabytes }
+
+  def related_interactions
+    thread_interactions_all = root.thread_interactions
+    thread_interactions_all.reject { |interaction| interaction.id == id }.sort_by(&:occurred_at)
+  end
 
   private
 

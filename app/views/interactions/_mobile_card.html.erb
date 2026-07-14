@@ -1,0 +1,65 @@
+<div class="bg-white rounded shadow-sm px-3 py-2 w-full hover:bg-gray-50 cursor-pointer"
+     data-controller="clickable"
+     data-related-toggle-target="card"
+     data-clickable-url-value="<%= interaction_path(interaction) %>"
+     data-action="click->clickable#open">
+
+  <div class="text-xs w-full leading-none">
+    <div class="flex items-center justify-between w-full h-5">
+      <div class="w-12 flex-none text-gray-600 whitespace-nowrap text-left leading-none">
+        <%= l interaction.occurred_at.to_date, format: :short %>
+      </div>
+
+      <div class="flex-1 min-w-0 text-blue-600 text-center mx-1 overflow-hidden">
+        <%= link_to interaction.customer.name,
+                    customer_path(interaction.customer),
+                    class: "block truncate text-blue-600 hover:text-blue-800",
+                    onclick: "event.stopPropagation();",
+                    data: { turbo_frame: "_top" } %>
+      </div>
+
+      <div class="flex-1 min-w-0 text-gray-600 text-center mx-1">
+        <%= interaction_channel_label(interaction) %>
+      </div>
+
+      <div class="flex-1 min-w-0 text-blue-600 text-center mx-1 overflow-hidden">
+        <%= link_to interaction.user.name,
+                    user_path(interaction.user),
+                    class: "block truncate text-blue-600 hover:text-blue-800",
+                    onclick: "event.stopPropagation();",
+                    data: { turbo_frame: "_top" } %>
+      </div>
+
+      <div class="flex-1 flex justify-center items-center mx-1">
+        <span class="<%= interaction_status_badge_class(interaction) %> px-1 py-1 inline-flex items-center justify-center rounded-sm sm:px-2">
+          <%= interaction_status_label(interaction) %>
+        </span>
+      </div>
+
+      <div class="w-10 flex justify-end">
+        <% if show_related_button %>
+          <button
+            type="button"
+            class="related-toggle-button inline-flex items-center gap-1 text-blue-600"
+            data-action="click->related-toggle#toggle"
+            data-related-toggle-target="button"
+            aria-expanded="false">
+
+            <span>関連</span>
+
+            <span class="toggle-icon text-xs" data-related-toggle-target="icon">▼</span>
+          </button>
+
+        <% else %>
+          <span class="text-gray-400">-</span>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="pt-2">
+      <div class="text-gray-600 truncate">
+        <%= interaction.request_content %>
+      </div>
+    </div>
+  </div>
+</div>

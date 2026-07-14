@@ -44,7 +44,7 @@ RSpec.describe "Interactions parent-child", type: :request do
       it "renders a timeline including only itself" do
         get interaction_path(interaction)
 
-        expect(response.body).to include(interaction.response_result.truncate(30))
+        expect(response.body).to include(interaction.response_result)
       end
     end
 
@@ -56,8 +56,8 @@ RSpec.describe "Interactions parent-child", type: :request do
       it "displays all children in the timeline" do
         get interaction_path(parent)
 
-        expect(response.body).to include(child.response_result.truncate(40))
-        expect(response.body).to include(grandchild.response_result.truncate(40))
+        expect(response.body).to include(child.response_result)
+        expect(response.body).to include(grandchild.response_result)
       end
     end
 
@@ -69,13 +69,13 @@ RSpec.describe "Interactions parent-child", type: :request do
       it "displays the parent in the timeline" do
         get interaction_path(child)
 
-        expect(response.body).to include(parent.response_result.truncate(40))
+        expect(response.body).to include(parent.response_result)
       end
 
-      it "displays sibling interactions in the timeline" do
+      it "displays other interactions in the same thread regardless of hierarchy" do
         get interaction_path(child)
 
-        expect(response.body).to include(grandchild.response_result.truncate(40))
+        expect(response.body).to include(grandchild.response_result)
       end
     end
 

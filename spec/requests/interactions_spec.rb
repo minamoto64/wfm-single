@@ -29,12 +29,43 @@ RSpec.describe "Interactions", type: :request do
         expect(response.body).to include(interaction.request_content)
       end
 
+      it "uses full-page navigation for customer and user links inside turbo frame" do
+        interaction = create(:interaction, user: user)
+
+        get interactions_path
+
+        expect(response.body).to include('data-turbo-frame="_top"')
+        expect(response.body).to include(customer_path(interaction.customer))
+        expect(response.body).to include(user_path(interaction.user))
+      end
+
       it "displays completed status badge" do
         create(:interaction, user: user, completed: true)
         create(:interaction, user: user, completed: false)
         get interactions_path
         expect(response.body).to include("完了")
         expect(response.body).to include("対応中")
+      end
+
+      it "renders related interactions under the parent interaction row" do
+        parent_interaction = create(:interaction, user: user)
+        related_interaction = create(:interaction, user: user, parent: parent_interaction, request_content: "関連履歴の内容")
+
+        get interactions_path
+
+        expect(response.body).to include("関連")
+        expect(response.body).to include(related_interaction.request_content)
+      end
+
+      it "renders sibling interactions as related, not just direct children" do
+        parent_interaction = create(:interaction, user: user)
+        first_sibling_interaction = create(:interaction, user: user, parent: parent_interaction, request_content: "関連履歴A")
+        second_sibling_interaction = create(:interaction, user: user, parent: parent_interaction, request_content: "関連履歴B")
+
+        get interactions_path
+
+        expect(response.body).to include(first_sibling_interaction.request_content)
+        expect(response.body).to include(second_sibling_interaction.request_content)
       end
 
       it "ignores unauthorized customer email filter and returns unfiltered results" do
@@ -135,7 +166,7 @@ RSpec.describe "Interactions", type: :request do
 
       it "re-renders the new template with invalid params" do
         post interactions_path, params: { interaction: { channel: nil } }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 
@@ -223,7 +254,7 @@ RSpec.describe "Interactions", type: :request do
       it "displays completed status when interaction is completed" do
         completed_interaction = create(:interaction, user: user, completed: true)
         get interaction_path(completed_interaction)
-        expect(response.body).to include("対応完了")
+        expect(response.body).to include("完了済")
       end
 
       it "displays the edit button when the user is the owner" do
@@ -301,7 +332,7 @@ RSpec.describe "Interactions", type: :request do
       it "re-renders the edit template" do
         patch interaction_path(interaction),
               params: { interaction: { channel: nil } }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 

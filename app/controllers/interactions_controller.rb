@@ -5,7 +5,13 @@ class InteractionsController < ApplicationController
   def index
     @q = Interaction.ransack(params[:q])
     @interactions = @q.result
-                    .preload(:customer, :user)
+                    .preload(
+                      :customer,
+                      :user,
+                      root: {
+                        thread_interactions: [ :customer, :user ]
+                      }
+                    )
                     .order(occurred_at: :desc)
   end
 
@@ -24,7 +30,7 @@ class InteractionsController < ApplicationController
     if @interaction.save
       redirect_to @interaction, notice: "応対履歴を登録しました"
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -39,7 +45,7 @@ class InteractionsController < ApplicationController
     if @interaction.update(interaction_params)
       redirect_to @interaction, notice: "応対履歴を更新しました"
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 

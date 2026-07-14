@@ -1,70 +1,87 @@
-<div class="min-h-screen bg-gray-50 py-8">
-  <div class="max-w-4xl mx-auto px-4">
-    <div class="mb-4">
-      <%= link_to "← 一覧に戻る", interactions_path,
-            class: "text-blue-600 hover:underline text-sm" %>
+<div class="max-w-4xl mx-auto px-4 py-4">
+  <div class="mb-4">
+    <%= link_to "← 一覧に戻る",
+                interactions_path,
+                class: "text-blue-600 hover:underline text-xs sm:text-sm" %>
+  </div>
+
+  <div class="bg-white rounded-lg shadow-lg p-6">
+    <div class="border-b-4 border-blue-500 pb-4 mb-6">
+      <h1 class="text-lg sm:text-xl font-bold">応対履歴詳細</h1>
     </div>
-    <div class="bg-white rounded-lg shadow-lg p-6">
-      <div class="border-b-4 border-blue-500 pb-4 mb-6">
-        <h1 class="text-2xl font-bold">応対履歴詳細</h1>
-      </div>
-      <div class="mb-6">
-        <h2 class="text-lg font-semibold mb-3 border-b-2 border-gray-300 pb-2">基本情報</h2>
-        <div class="bg-gray-50 p-4 rounded text-sm">
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <span class="text-gray-600">日時:</span>
-              <span class="ml-2"><%= l @interaction.occurred_at %></span>
-            </div>
-            <div>
-              <span class="text-gray-600">顧客:</span>
-              <span class="ml-2"><%= @interaction.customer.name %></span>
-            </div>
-            <div>
-              <span class="text-gray-600">担当:</span>
-              <span class="ml-2"><%= @interaction.user.name %></span>
-            </div>
-            <div>
-              <span class="text-gray-600">種別:</span>
-              <span class="ml-2">
-                <%= interaction_channel_label(@interaction) %>
-              </span>
-            </div>
-            <div>
-              <span class="text-gray-600">状態:</span>
-              <span class="ml-2">
-                <%= @interaction.completed? ? "対応完了" : "対応中" %>
-              </span>
-            </div>
+
+    <div class="mb-6">
+      <h2 class="text-base sm:text-lg font-semibold mb-3 border-b-2 border-gray-300 pb-2">基本情報</h2>
+
+      <div class="bg-gray-50 p-4 rounded text-xs sm:text-sm">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-3">
+          <div class="flex items-center">
+            <span class="w-20 shrink-0 text-gray-600">応対日時:</span>
+            <span><%= l @interaction.occurred_at %></span>
+          </div>
+
+          <div class="flex items-center">
+            <span class="w-20 shrink-0 text-gray-600">顧客名:</span>
+            <span>
+              <%= link_to @interaction.customer.name,
+                          customer_path(@interaction.customer),
+                          class: "text-blue-600 hover:text-blue-800" %>
+            </span>
+          </div>
+
+          <div class="flex items-center">
+            <span class="w-20 shrink-0 text-gray-600">問合せ種別:</span>
+            <span><%= interaction_channel_label(@interaction) %></span>
+          </div>
+
+          <div class="flex items-center">
+            <span class="w-20 shrink-0 text-gray-600">電話番号:</span>
+            <span><%= @interaction.customer.phone.presence || "ー" %></span>
+          </div>
+
+          <div class="flex items-center">
+            <span class="w-20 shrink-0 text-gray-600">担当者名:</span>
+            <span>
+              <%= link_to @interaction.user.name,
+                          user_path(@interaction.user),
+                          class: "text-blue-600 hover:text-blue-800" %>
+            </span>
+          </div>
+
+          <div class="flex items-center">
+            <span class="w-20 shrink-0 text-gray-600">対応状況:</span>
+            <span class="<%= interaction_status_badge_class(@interaction) %> px-2 py-1 inline-block leading-none">
+              <%= interaction_status_label(@interaction) %>
+            </span>
           </div>
         </div>
       </div>
-      <div class="mb-6">
-        <h2 class="text-lg font-semibold mb-3 border-b-2 border-gray-300 pb-2">要望内容</h2>
-        <div class="bg-gray-50 p-4 rounded text-sm whitespace-pre-wrap">
-          <%= @interaction.request_content %>
-        </div>
-      </div>
-      <div class="mb-6">
-        <h2 class="text-lg font-semibold mb-3 border-b-2 border-gray-300 pb-2">対応結果</h2>
-        <div class="bg-gray-50 p-4 rounded text-sm whitespace-pre-wrap">
-          <%= @interaction.response_result %>
-        </div>
-      </div>
-
-      <%= render "shared/images", record: @interaction %>
-
-      <%= render "timeline", timeline: @timeline, current_item: @interaction %>
-      <%= render "related_notices", interaction: @interaction %>
-      <%= render "related_tasks", interaction: @interaction %>
-      <%= render "shared/comment_thread", commentable: @interaction %>
-
-      <% if @interaction.user == Current.user %>
-        <div class="mt-6 flex justify-end border-t pt-4">
-          <%= link_to "編集", edit_interaction_path(@interaction),
-                class: "px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 text-sm" %>
-        </div>
-      <% end %>
     </div>
+
+    <div class="mb-6">
+      <h2 class="text-base sm:text-base sm:text-lg font-semibold mb-3 border-b-2 border-gray-300 pb-2">要望内容</h2>
+
+      <div class="bg-gray-50 p-4 rounded text-xs sm:text-sm whitespace-pre-wrap"><%= @interaction.request_content %></div>
+    </div>
+
+    <div class="mb-6">
+      <h2 class="text-base sm:text-base sm:text-lg font-semibold mb-3 border-b-2 border-gray-300 pb-2">対応結果</h2>
+
+      <div class="bg-gray-50 p-4 rounded text-xs sm:text-sm whitespace-pre-wrap"><%= @interaction.response_result %></div>
+    </div>
+
+    <%= render "shared/images", record: @interaction %>
+    <%= render "timeline", timeline: @timeline, current_item: @interaction %>
+    <%= render "related_notices", interaction: @interaction %>
+    <%= render "related_tasks", interaction: @interaction %>
+    <%= render "shared/comment_thread", commentable: @interaction %>
+
+    <% if @interaction.user == Current.user %>
+      <div class="mt-6 flex justify-end border-t-4 border-gray-300 pt-6">
+        <%= link_to "編集",
+                    edit_interaction_path(@interaction),
+                    class: "px-3 xl:px-4 h-8 sm:h-9 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs sm:text-sm inline-flex items-center justify-center whitespace-nowrap" %>
+      </div>
+    <% end %>
   </div>
 </div>

@@ -1,0 +1,23 @@
+<div class="block md:hidden space-y-2 mb-4">
+  <% interactions.each do |interaction| %>
+    <% related_interactions = interaction.related_interactions %>
+
+    <div class="w-full" data-controller="related-toggle">
+
+      <%= render "mobile_card",
+                  interaction: interaction,
+                  show_related_button: related_interactions.any? %>
+
+      <% if related_interactions.any? %>
+        <div class="hidden" data-related-toggle-target="list">
+          <% related_interactions.each do |related_interaction| %>
+            <%= render "mobile_card",
+                        interaction: related_interaction,
+                        show_related_button: false %>
+          <% end %>
+        </div>
+      <% end %>
+
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,134 @@
+<div class="hidden md:block overflow-x-auto bg-white rounded-lg shadow">
+  <table class="w-full text-xs sm:text-sm border-collapse table-fixed">
+    <thead class="bg-gray-50 text-gray-600">
+      <tr>
+        <th class="w-36 px-4 py-3 text-center whitespace-nowrap align-middle leading-none">応対日時</th>
+        <th class="w-28 px-4 py-3 text-center whitespace-nowrap align-middle leading-none">顧客名</th>
+        <th class="w-28 px-4 py-3 text-center whitespace-nowrap align-middle leading-none">問合せ種別</th>
+        <th class="w-28 px-4 py-3 text-center whitespace-nowrap align-middle leading-none">担当者名</th>
+        <th class="px-2 md:px-4 xl:px-8 py-3 text-left whitespace-nowrap align-middle leading-none">要望内容</th>
+        <th class="w-24 px-4 py-3 text-center whitespace-nowrap align-middle leading-none">対応状況</th>
+        <th class="w-24 px-4 py-3 text-center whitespace-nowrap align-middle leading-none"></th>
+      </tr>
+    </thead>
+
+    <tbody data-controller="related-toggle-list">
+      <% interactions.each do |interaction| %>
+        <% related_interactions = interaction.related_interactions %>
+        <tr class="hover:bg-gray-100 cursor-pointer"
+            data-interaction-id="<%= interaction.id %>"
+            data-controller="clickable"
+            data-clickable-url-value="<%= interaction_path(interaction) %>"
+            data-action="click->clickable#open">
+
+          <td class="w-36 px-4 py-3 text-center whitespace-nowrap align-middle leading-none text-gray-600">
+            <%= l interaction.occurred_at %>
+          </td>
+
+          <td class="w-28 px-4 py-3 text-center whitespace-nowrap truncate align-middle leading-none">
+            <%= link_to interaction.customer.name,
+                        customer_path(interaction.customer),
+                        class: "text-blue-600 hover:text-blue-800",
+                        onclick: "event.stopPropagation();",
+                        data: { turbo_frame: "_top" } %>
+          </td>
+
+          <td class="w-28 px-4 py-3 text-center whitespace-nowrap align-middle leading-none text-gray-600">
+            <%= interaction_channel_label(interaction) %>
+          </td>
+
+          <td class="w-28 px-4 py-3 text-center whitespace-nowrap truncate align-middle leading-none">
+            <%= link_to interaction.user.name,
+                        user_path(interaction.user),
+                        class: "text-blue-600 hover:text-blue-800",
+                        data: { turbo_frame: "_top" } %>
+          </td>
+
+          <td class="px-2 md:px-4 xl:px-8 py-3 text-left align-middle leading-none text-gray-600">
+            <div class="w-0 min-w-full truncate">
+              <%= interaction.request_content %>
+            </div>
+          </td>
+
+          <td class="w-24 px-4 py-3 text-center whitespace-nowrap align-middle leading-none">
+            <span class="<%= interaction_status_badge_class(interaction) %> px-2 py-1 inline-block leading-none">
+              <%= interaction_status_label(interaction) %>
+            </span>
+          </td>
+
+          <td class="w-24 px-4 py-3 text-center whitespace-nowrap align-middle leading-none text-gray-600">
+            <% if related_interactions.any? %>
+              <button
+                type="button"
+                class="related-toggle-button inline-flex items-center gap-1 text-blue-600"
+                data-interaction-id="<%= interaction.id %>"
+                data-action="click->related-toggle-list#toggle"
+                data-related-toggle-list-target="button"
+                aria-expanded="false">
+
+                <span>関連</span>
+
+                <span class="toggle-icon text-xs" data-related-toggle-list-target="icon">▼</span>
+
+              </button>
+            <% else %>
+              <span class="text-gray-400">-</span>
+            <% end %>
+          </td>
+        </tr>
+
+        <% if related_interactions.any? %>
+          <% related_interactions.each do |related_interaction| %>
+            <tr
+              class="related-list-row hidden hover:bg-gray-100"
+              data-controller="clickable"
+              data-clickable-url-value="<%= interaction_path(related_interaction) %>"
+              data-action="click->clickable#open">
+              <td class="w-36 px-4 py-3 text-center whitespace-nowrap align-middle leading-none text-gray-600">
+                <%= l related_interaction.occurred_at %>
+              </td>
+
+              <td class="w-28 px-4 py-3 text-center whitespace-nowrap truncate align-middle leading-none">
+                <%= link_to related_interaction.customer.name,
+                            customer_path(related_interaction.customer),
+                            class: "text-blue-600 hover:text-blue-800",
+                            onclick: "event.stopPropagation();",
+                            data: { turbo_frame: "_top" } %>
+              </td>
+
+              <td class="w-28 px-4 py-3 text-center whitespace-nowrap align-middle leading-none text-gray-600">
+                <%= interaction_channel_label(related_interaction) %>
+              </td>
+
+              <td class="w-28 px-4 py-3 text-center whitespace-nowrap truncate align-middle leading-none">
+                <%= link_to related_interaction.user.name,
+                            user_path(related_interaction.user),
+                            class: "text-blue-600 hover:text-blue-800",
+                            data: { turbo_frame: "_top" } %>
+              </td>
+
+              <td class="px-2 md:px-4 xl:px-8 py-3 text-left align-middle leading-none text-gray-600">
+                <div class="w-0 min-w-full truncate">
+                  <%= link_to truncate(related_interaction.request_content, length: 60),
+                              interaction_path(related_interaction),
+                              class: "block truncate hover:text-blue-600",
+                              data: { turbo_frame: "_top" } %>
+                </div>
+              </td>
+
+              <td class="w-24 px-4 py-3 text-center whitespace-nowrap align-middle leading-none">
+                <span class="<%= interaction_status_badge_class(related_interaction) %> px-2 py-1 inline-block leading-none">
+                  <%= interaction_status_label(related_interaction) %>
+                </span>
+              </td>
+
+              <td class="w-24 px-4 py-3 text-center whitespace-nowrap align-middle leading-none text-gray-400">
+                -
+              </td>
+            </tr>
+          <% end %>
+        <% end %>
+      <% end %>
+    </tbody>
+  </table>
+</div>

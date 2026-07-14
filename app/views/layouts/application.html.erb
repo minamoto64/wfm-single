@@ -14,32 +14,47 @@
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
     <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
-
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-gray-50">
+  <body class="bg-gray-50 [scrollbar-gutter:stable]">
     <% if Current.user.present? %>
       <%= render "shared/header" %>
-      <div class="pt-24">
+
+      <nav class="bg-white border-gray-300"
+          data-controller="tabs"
+          data-tabs-current-value="<%= controller_name %>"
+          aria-label="メインナビゲーション">
+        <div class="max-w-7xl mx-auto px-4">
+          <div class="flex gap-1" role="tablist">
+            <% navigation_tabs.each do |tab| %>
+              <%= tab_link_to(tab) %>
+            <% end %>
+          </div>
+        </div>
+      </nav>
+
       <% if notice %>
-        <div class="max-w-7xl mx-auto px-4 py-2 mb-2 bg-green-100 text-green-800 rounded">
-          <%= notice %>
-        </div>
+        <div class="max-w-7xl mx-auto px-4 py-2 bg-green-100 text-green-800 rounded"><%= notice %></div>
       <% end %>
+
       <% if alert %>
-        <div class="max-w-7xl mx-auto px-4 py-2 mb-2 bg-red-100 text-red-800 rounded">
-          <%= alert %>
-        </div>
+        <div class="max-w-7xl mx-auto px-4 py-2 bg-red-100 text-red-800 rounded"><%= alert %></div>
       <% end %>
+
       <%= yield %>
-    </div>
     <% else %>
+      <% if notice %>
+        <div class="max-w-7xl mx-auto px-4 py-2 bg-green-100 text-green-800 rounded"><%= notice %></div>
+      <% end %>
+
+      <% if alert %>
+        <div class="max-w-7xl mx-auto px-4 py-2 bg-red-100 text-red-800 rounded"><%= alert %></div>
+      <% end %>
+
       <%= yield %>
     <% end %>
   </body>
+</html>

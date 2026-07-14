@@ -11,13 +11,13 @@ module ApplicationHelper
 
   def tab_link_to(tab)
     active  = controller_name == tab[:name]
-    classes = %w[flex-1 text-center py-3 font-medium border-b-2]
-    classes += active ? %w[border-blue-500 text-blue-600]
-                      : %w[border-transparent text-gray-600 hover:text-gray-900]
+    classes = %w[flex-1 text-center py-3 border-b-2 text-sm sm:text-base]
+    classes += active ? %w[border-blue-500 text-blue-600 font-bold]
+                      : %w[border-transparent text-gray-600 hover:text-gray-900 font-normal]
 
     link_to tab[:path],
             class: classes,
-            data:  { tabs_target: "tab", tab_name: tab[:name] } do
+            data:  { tab_name: tab[:name] } do
       tab[:label]
     end
   end
