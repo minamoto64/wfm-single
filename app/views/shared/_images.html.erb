@@ -1,10 +1,10 @@
 <% if record.images.attached? %>
   <div class="mb-6">
-    <h2 class="text-lg font-semibold mb-3 border-b-2 border-gray-300 pb-2">添付画像</h2>
-    <div class="grid grid-cols-3 gap-3">
+    <h2 class="text-base sm:text-lg font-semibold mb-3 border-b-2 border-gray-300 pb-2">添付画像</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
       <% record.images.each do |image| %>
         <div class="bg-gray-50 rounded p-2 text-center">
-          <%= image_tag image, alt: image.filename.to_s, class: "rounded object-cover w-full" %>
+          <%= image_tag image, alt: image.filename.to_s, class: "rounded object-cover w-full h-auto" %>
         </div>
       <% end %>
     </div>

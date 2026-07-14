@@ -1,22 +1,13 @@
-<header class="bg-white shadow fixed top-0 inset-x-0 z-20">
-  <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-    <h1 class="text-xl font-bold">
-      <%= link_to "店舗業務管理システム", root_path, class: "hover:text-blue-600" %>
-    </h1>
+<header class="bg-white shadow sticky top-0 z-20">
+  <div class="max-w-7xl mx-auto px-3 sm:px-4">
+    <div class="flex justify-between items-center gap-2 pt-3 pb-2 sm:pt-5 sm:pb-3">
+      <h1 class="text-base sm:text-xl font-bold truncate min-w-0">
+        <%= link_to "店舗業務管理システム", root_path, class: "hover:text-blue-600" %>
+      </h1>
 
-    <%= render "shared/user_menu" %>
-  </div>
-
-  <nav class="bg-white border-b-2 border-gray-300"
-        data-controller="tabs"
-        data-tabs-current-value="<%= controller_name %>"
-        aria-label="メインナビゲーション">
-    <div class="max-w-7xl mx-auto px-4">
-      <div class="flex gap-1" role="tablist">
-        <% navigation_tabs.each do |tab| %>
-          <%= tab_link_to(tab) %>
-        <% end %>
+      <div class="shrink-0">
+        <%= render "shared/user_menu" %>
       </div>
     </div>
-  </nav>
+  </div>
 </header>
