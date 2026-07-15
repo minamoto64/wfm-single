@@ -5,7 +5,10 @@ class Task < ApplicationRecord
   belongs_to :user
 
   belongs_to :parent, class_name: "Task", optional: true
-  has_many :children, class_name: "Task", foreign_key: "parent_id"
+  has_many :children,
+           -> { order(created_at: :desc) },
+           class_name: "Task",
+           foreign_key: "parent_id"
 
   belongs_to :root, class_name: "Task", optional: true
   has_many :thread_tasks, class_name: "Task", foreign_key: :root_id, dependent: :nullify
@@ -28,6 +31,11 @@ class Task < ApplicationRecord
   validates :images,
     content_type: %w[image/jpeg image/png image/gif],
     size: { less_than_or_equal_to: 10.megabytes }
+
+  def related_tasks
+    thread_tasks_all = root.thread_tasks
+    thread_tasks_all.reject { |task| task.id == id }.sort_by(&:created_at)
+  end
 
   private
 

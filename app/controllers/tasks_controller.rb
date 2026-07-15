@@ -6,7 +6,13 @@ class TasksController < ApplicationController
   def index
     @q = visible_tasks.ransack(params[:q], auth_object: :admin)
     @tasks = @q.result
-               .preload(:user)
+               .preload(
+                 :user,
+                 task_assignments: [ :user ],
+                 root: {
+                   thread_tasks: [ :user, task_assignments: [ :user ] ]
+                 }
+               )
                .order(due_at: :asc)
   end
 
@@ -30,7 +36,7 @@ class TasksController < ApplicationController
     if @form.save
       redirect_to @task, notice: "タスクを登録しました"
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -48,7 +54,7 @@ class TasksController < ApplicationController
     else
       @form = TaskForm.new(task: @task)
       @form.valid? # task.errors を form.errors に取り込む
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 

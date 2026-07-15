@@ -1,0 +1,33 @@
+<% compact = local_assigns.fetch(:compact, false) %>
+<% row_height = compact ? "h-9" : "py-3" %>
+
+<% if task.task_assignments.any? %>
+  <div class="bg-gray-50 rounded overflow-hidden text-xs sm:text-sm">
+    <div class="grid grid-cols-2 items-center bg-gray-100 text-xs sm:text-sm font-bold text-center text-gray-600 <%= row_height %>">
+      <div class="px-4">担当者</div>
+      <div class="px-4">進捗状況</div>
+    </div>
+
+    <% task.task_assignments.each do |assignment| %>
+      <div class="grid grid-cols-2 items-center border-t border-gray-200 hover:bg-gray-100 <%= row_height %>">
+        <div class="flex items-center justify-center px-4 break-words">
+          <%= link_to assignment.user.name,
+                user_path(assignment.user),
+                class: "text-blue-600 hover:text-blue-800",
+                onclick: "event.stopPropagation();",
+                data: { turbo_frame: "_top" } %>
+        </div>
+
+        <div class="flex items-center justify-center px-4 break-words">
+          <span class="<%= task_status_badge_class(assignment) %> px-2 py-1">
+            <%= task_status_label(assignment) %>
+          </span>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <p class="text-xs sm:text-sm text-gray-500 bg-gray-50 p-4 rounded">
+    まだ誰にも割り当てられていません。
+  </p>
+<% end %>

@@ -8,6 +8,7 @@ RSpec.describe Task, type: :model do
 
     it 'has a valid task with parent' do
       task = create(:task, :with_parent)
+
       expect(task).to be_valid
       expect(task.parent).to be_present
     end
@@ -16,11 +17,13 @@ RSpec.describe Task, type: :model do
   describe 'associations' do
     it 'belongs to user' do
       association = described_class.reflect_on_association(:user)
+
       expect(association.macro).to eq(:belongs_to)
     end
 
     it 'belongs to parent task (optional)' do
       association = described_class.reflect_on_association(:parent)
+
       expect(association.macro).to eq(:belongs_to)
       expect(association.options[:class_name]).to eq("Task")
       expect(association.options[:optional]).to be(true)
@@ -28,6 +31,7 @@ RSpec.describe Task, type: :model do
 
     it 'has many children tasks' do
       association = described_class.reflect_on_association(:children)
+
       expect(association.macro).to eq(:has_many)
       expect(association.options[:class_name]).to eq("Task")
       expect(association.options[:foreign_key]).to eq("parent_id")
@@ -35,14 +39,80 @@ RSpec.describe Task, type: :model do
 
     it 'has many task_assignments' do
       association = described_class.reflect_on_association(:task_assignments)
+
       expect(association.macro).to eq(:has_many)
     end
 
     it 'has_many users through task_assignments' do
       association = described_class.reflect_on_association(:assigned_users)
+
       expect(association.macro).to eq(:has_many)
       expect(association.options[:through]).to eq(:task_assignments)
       expect(association.options[:source]).to eq(:user)
+    end
+
+    it 'belongs to root task (optional)' do
+      association = described_class.reflect_on_association(:root)
+
+      expect(association.macro).to eq(:belongs_to)
+      expect(association.options[:class_name]).to eq("Task")
+      expect(association.options[:optional]).to be(true)
+    end
+
+    it 'has many thread_tasks' do
+      association = described_class.reflect_on_association(:thread_tasks)
+
+      expect(association.macro).to eq(:has_many)
+      expect(association.options[:class_name]).to eq("Task")
+      expect(association.options[:foreign_key]).to eq(:root_id)
+    end
+  end
+
+  describe 'root assignment' do
+    it 'sets root to itself when there is no parent' do
+      task = create(:task)
+
+      expect(task.root).to eq(task)
+    end
+
+    it 'inherits the root from the parent' do
+      parent = create(:task)
+      child = create(:task, parent: parent)
+
+      expect(child.root).to eq(parent)
+    end
+
+    it 'inherits the same root across multiple generations' do
+      root = create(:task)
+      child = create(:task, parent: root)
+      grandchild = create(:task, parent: child)
+
+      expect(grandchild.root).to eq(root)
+    end
+  end
+
+  describe '#related_tasks' do
+    it 'returns other tasks in the same thread ordered by created_at' do
+      parent = create(:task)
+      earlier_related_task = create(:task, parent: parent)
+      later_related_task = create(:task, parent: parent)
+
+      expect(parent.related_tasks).to eq([ earlier_related_task, later_related_task ])
+      expect(earlier_related_task.related_tasks).to eq([ parent, later_related_task ])
+      expect(later_related_task.related_tasks).to eq([ parent, earlier_related_task ])
+    end
+
+    it 'returns an empty array when there are no related tasks' do
+      task = create(:task)
+
+      expect(task.related_tasks).to eq([])
+    end
+
+    it 'does not include itself' do
+      parent = create(:task)
+      create(:task, parent: parent)
+
+      expect(parent.related_tasks).not_to include(parent)
     end
   end
 
@@ -50,16 +120,19 @@ RSpec.describe Task, type: :model do
     describe 'title' do
       it 'is required' do
         task = build(:task, title: "")
+
         expect(task).to be_invalid
       end
 
       it 'accepts title up to 50 characters' do
         task = build(:task, title: 'あ' * 50)
+
         expect(task).to be_valid
       end
 
       it 'rejects title longer than 50 characters' do
         task = build(:task, title: 'あ' * 51)
+
         expect(task).to be_invalid
       end
     end
@@ -67,16 +140,19 @@ RSpec.describe Task, type: :model do
     describe 'description' do
       it 'is required' do
         task = build(:task, description: "")
+
         expect(task).to be_invalid
       end
 
       it 'accepts description up to 2000 characters' do
         task = build(:task, description: 'あ' * 2000)
+
         expect(task).to be_valid
       end
 
       it 'rejects description longer than 2000 characters' do
         task = build(:task, description: 'あ' * 2001)
+
         expect(task).to be_invalid
       end
     end
@@ -84,16 +160,19 @@ RSpec.describe Task, type: :model do
     describe 'restricted' do
       it 'is valid when restricted is true' do
         task = build(:task, restricted: true)
+
         expect(task).to be_valid
       end
 
       it 'is valid when restricted is false' do
         task = build(:task, restricted: false)
+
         expect(task).to be_valid
       end
 
       it 'is invalid when restricted is nil' do
         task = build(:task, restricted: nil)
+
         expect(task).to be_invalid
       end
     end

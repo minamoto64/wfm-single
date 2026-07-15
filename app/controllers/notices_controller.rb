@@ -25,6 +25,8 @@ class NoticesController < ApplicationController
         @notice.interactions << Interaction.find(params[:interaction_id])
       end
 
+      @notice.tasks << Task.find(params[:task_id]) if params[:task_id].present?
+
       redirect_to @notice, notice: "お知らせを更新しました"
     else
       render :new, status: :unprocessable_entity

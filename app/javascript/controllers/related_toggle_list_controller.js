@@ -7,7 +7,7 @@ export default class extends Controller {
 
     const button = event.currentTarget
     const icon = button.querySelector(".toggle-icon")
-    const parentRow = button.closest("tr")
+    const parentRow = button.closest("tr, .related-list-trigger")
 
     // 親行の直後に連続する関連行だけを集める
     const rows = []
