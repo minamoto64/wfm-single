@@ -1,0 +1,6 @@
+<% if @notices.any? %>
+  <%= render "list_mobile", notices: @notices %>
+  <%= render "list_desktop", notices: @notices %>
+<% else %>
+  <%= render "list_empty" %>
+<% end %>

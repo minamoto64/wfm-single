@@ -1,0 +1,106 @@
+<div class="hidden md:block overflow-x-auto bg-white rounded-lg shadow">
+  <table class="w-full text-xs sm:text-sm border-collapse table-fixed">
+    <thead class="bg-gray-50 text-gray-600">
+      <tr>
+        <th class="w-5/12 px-2 md:px-4 xl:px-8 py-3 text-left whitespace-nowrap align-middle leading-none">件名</th>
+        <th class="w-2/12 px-4 py-3 text-center whitespace-nowrap align-middle leading-none">重要度</th>
+        <th class="w-2/12 px-4 py-3 text-center whitespace-nowrap align-middle leading-none">作成者</th>
+        <th class="w-2/12 px-4 py-3 text-center whitespace-nowrap align-middle leading-none tabular-nums">公開日時</th>
+        <th class="w-1/12 px-4 py-3 text-center whitespace-nowrap align-middle leading-none"></th>
+      </tr>
+    </thead>
+
+    <tbody data-controller="related-toggle-list">
+      <% notices.each do |notice| %>
+        <% related_notices = notice.related_notices %>
+        <tr class="hover:bg-gray-100 cursor-pointer"
+            data-notice-id="<%= notice.id %>"
+            data-controller="clickable"
+            data-clickable-url-value="<%= notice_path(notice) %>"
+            data-action="click->clickable#open">
+
+          <td class="w-5/12 px-2 md:px-4 xl:px-8 py-3 text-left align-middle leading-none text-gray-600 truncate">
+            <%= notice.title %>
+          </td>
+
+          <td class="w-2/12 px-4 py-3 text-center whitespace-nowrap align-middle leading-none">
+            <span class="<%= notice_level_badge_class(notice) %> px-2 py-1 inline-block leading-none">
+              <%= notice_level_label(notice) %>
+            </span>
+          </td>
+
+          <td class="w-2/12 px-4 py-3 text-center whitespace-nowrap truncate align-middle leading-none">
+            <%= link_to notice.user.name,
+                        user_path(notice.user),
+                        class: "text-blue-600 hover:text-blue-800",
+                        onclick: "event.stopPropagation();",
+                        data: { turbo_frame: "_top" } %>
+          </td>
+
+          <td class="w-2/12 px-4 py-3 text-center whitespace-nowrap align-middle leading-none tabular-nums text-gray-600">
+            <%= l notice.start_at %>
+          </td>
+
+          <td class="w-1/12 px-4 py-3 text-center whitespace-nowrap align-middle leading-none text-gray-600">
+            <% if related_notices.any? %>
+              <button
+                type="button"
+                class="related-toggle-button inline-flex items-center gap-1 text-blue-600"
+                data-notice-id="<%= notice.id %>"
+                data-action="click->related-toggle-list#toggle"
+                data-related-toggle-list-target="button"
+                aria-expanded="false">
+
+                <span>関連</span>
+
+                <span class="toggle-icon text-xs" data-related-toggle-list-target="icon">▼</span>
+
+              </button>
+            <% else %>
+              <span class="text-gray-400">-</span>
+            <% end %>
+          </td>
+        </tr>
+
+        <% if related_notices.any? %>
+          <% related_notices.each do |related_notice| %>
+            <tr
+              class="related-list-row hidden hover:bg-gray-100"
+              data-controller="clickable"
+              data-clickable-url-value="<%= notice_path(related_notice) %>"
+              data-action="click->clickable#open">
+              <td class="w-5/12 px-2 md:px-4 xl:px-8 py-3 text-left align-middle leading-none text-gray-600 truncate">
+                <%= link_to truncate(related_notice.title, length: 60),
+                            notice_path(related_notice),
+                            class: "block truncate hover:text-blue-600",
+                            data: { turbo_frame: "_top" } %>
+              </td>
+
+              <td class="w-2/12 px-4 py-3 text-center whitespace-nowrap align-middle leading-none">
+                <span class="<%= notice_level_badge_class(related_notice) %> px-2 py-1 inline-block leading-none">
+                  <%= notice_level_label(related_notice) %>
+                </span>
+              </td>
+
+              <td class="w-2/12 px-4 py-3 text-center whitespace-nowrap truncate align-middle leading-none">
+                <%= link_to related_notice.user.name,
+                            user_path(related_notice.user),
+                            class: "text-blue-600 hover:text-blue-800",
+                            onclick: "event.stopPropagation();",
+                            data: { turbo_frame: "_top" } %>
+              </td>
+
+              <td class="w-2/12 px-4 py-3 text-center whitespace-nowrap align-middle leading-none tabular-nums text-gray-600">
+                <%= l related_notice.start_at %>
+              </td>
+
+              <td class="w-1/12 px-4 py-3 text-center whitespace-nowrap align-middle leading-none text-gray-400">
+                -
+              </td>
+            </tr>
+          <% end %>
+        <% end %>
+      <% end %>
+    </tbody>
+  </table>
+</div>

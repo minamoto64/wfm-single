@@ -32,6 +32,47 @@ RSpec.describe Notice, type: :model do
       expect(association.options[:class_name]).to eq("Notice")
       expect(association.options[:foreign_key]).to eq("parent_id")
     end
+
+    it 'belongs to root notice (optional)' do
+      association = described_class.reflect_on_association(:root)
+
+      expect(association.macro).to eq(:belongs_to)
+      expect(association.options[:class_name]).to eq("Notice")
+      expect(association.options[:optional]).to be(true)
+    end
+
+    it 'has many thread_notices' do
+      association = described_class.reflect_on_association(:thread_notices)
+
+      expect(association.macro).to eq(:has_many)
+      expect(association.options[:class_name]).to eq("Notice")
+      expect(association.options[:foreign_key]).to eq(:root_id)
+    end
+  end
+
+  describe '#related_notices' do
+    it 'returns other notices in the same thread ordered by created_at' do
+      parent = create(:notice)
+      earlier_related_notice = create(:notice, parent: parent)
+      later_related_notice = create(:notice, parent: parent)
+
+      expect(parent.related_notices).to eq([ earlier_related_notice, later_related_notice ])
+      expect(earlier_related_notice.related_notices).to eq([ parent, later_related_notice ])
+      expect(later_related_notice.related_notices).to eq([ parent, earlier_related_notice ])
+    end
+
+    it 'returns an empty array when there are no related notices' do
+      notice = create(:notice)
+
+      expect(notice.related_notices).to eq([])
+    end
+
+    it 'does not include itself' do
+      parent = create(:notice)
+      create(:notice, parent: parent)
+
+      expect(parent.related_notices).not_to include(parent)
+    end
   end
 
   describe "root assignment" do

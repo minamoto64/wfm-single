@@ -1,0 +1,57 @@
+<div class="bg-white rounded shadow-sm px-3 py-2 w-full hover:bg-gray-50 cursor-pointer"
+     data-controller="clickable"
+     data-related-toggle-target="card"
+     data-clickable-url-value="<%= notice_path(notice) %>"
+     data-action="click->clickable#open">
+
+  <div class="text-xs w-full leading-none">
+    <div class="flex items-center justify-between w-full h-5">
+      <div class="flex-1 min-w-0 text-gray-700 text-left mx-1 overflow-hidden">
+        <%= link_to notice.title,
+                    notice_path(notice),
+                    class: "block truncate text-gray-700 hover:text-blue-600",
+                    onclick: "event.stopPropagation();",
+                    data: { turbo_frame: "_top" } %>
+      </div>
+
+      <div class="w-12 flex-none flex justify-center items-center mx-1 overflow-hidden">
+        <span class="<%= notice_level_badge_class(notice) %> px-1 py-1 inline-flex items-center justify-center whitespace-nowrap rounded-sm sm:px-2">
+          <%= notice_level_label(notice) %>
+        </span>
+      </div>
+
+      <div class="flex-1 min-w-0 text-blue-600 text-center mx-1 overflow-hidden">
+        <%= link_to notice.user.name,
+                    user_path(notice.user),
+                    class: "block truncate text-blue-600 hover:text-blue-800",
+                    onclick: "event.stopPropagation();",
+                    data: { turbo_frame: "_top" } %>
+      </div>
+
+      <div class="w-10 flex justify-end">
+        <% if show_related_button %>
+          <button
+            type="button"
+            class="related-toggle-button inline-flex items-center gap-1 text-blue-600"
+            data-action="click->related-toggle#toggle"
+            data-related-toggle-target="button"
+            aria-expanded="false">
+
+            <span>関連</span>
+
+            <span class="toggle-icon text-xs" data-related-toggle-target="icon">▼</span>
+          </button>
+
+        <% else %>
+          <span class="text-gray-400">-</span>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="pt-2 ml-1">
+      <div class="text-gray-600 truncate">
+        <%= notice.content %>
+      </div>
+    </div>
+  </div>
+</div>
