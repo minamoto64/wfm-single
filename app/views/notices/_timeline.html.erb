@@ -1,25 +1,36 @@
-<div class="mb-6 border-t-4 border-blue-500 pt-6">
-  <h2 class="text-lg font-semibold mb-3">この案件の流れ</h2>
-  <div class="space-y-2 text-sm">
+<div class="mb-6 border-t-4 border-gray-300 pt-6">
+  <h2 class="text-base sm:text-lg font-semibold mb-3">この案件の流れ</h2>
+
+  <div class="space-y-2 text-xs sm:text-sm">
     <% timeline.each do |item| %>
       <div class="pl-4 border-l-2 <%= item == current_item ? 'border-blue-500' : 'border-gray-300' %>">
         <% if item == current_item %>
-          <span class="font-medium">
-            <%= l item.created_at %>
-            <%= truncate(item.content, length: 30) %>
-            <span class="text-blue-600">★ 現在</span>
-          </span>
+          <div class="flex items-center gap-1 py-1 px-2 bg-gray-50 rounded">
+            <span class="flex-1 min-w-0 truncate"><%= item.content %></span>
+            <span class="w-16 shrink-0 whitespace-nowrap text-blue-600">★ 現在</span>
+            <span class="w-10 sm:w-32 shrink-0 whitespace-nowrap text-right">
+              <span class="sm:hidden"><%= item.created_at.strftime("%-m/%-d") %></span>
+              <span class="hidden sm:inline"><%= l item.created_at %></span>
+            </span>
+          </div>
         <% else %>
-          <%= link_to notice_path(item), class: "text-gray-700 hover:text-blue-600" do %>
-            <%= l item.created_at %> <%= truncate(item.content, length: 40) %>
+          <%= link_to notice_path(item),
+                      class: "flex items-center gap-1 py-1 px-2 rounded hover:bg-gray-50 text-gray-700 hover:text-blue-600" do %>
+            <span class="flex-1 min-w-0 truncate"><%= item.content %></span>
+            <span class="w-16 shrink-0"></span>
+            <span class="w-10 sm:w-32 shrink-0 whitespace-nowrap text-right">
+              <span class="sm:hidden"><%= item.created_at.strftime("%-m/%-d") %></span>
+              <span class="hidden sm:inline"><%= l item.created_at %></span>
+            </span>
           <% end %>
         <% end %>
       </div>
     <% end %>
   </div>
+
   <div class="mt-4">
-    <%= link_to "続きのお知らせを作成",
-          new_notice_path(parent_id: current_item.id),
-          class: "text-sm px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" %>
+    <%= link_to "関連お知らせを作成",
+                new_notice_path(parent_id: current_item.id),
+                class: "px-3 h-8 sm:h-9 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs sm:text-sm inline-flex items-center justify-center whitespace-nowrap" %>
   </div>
 </div>
