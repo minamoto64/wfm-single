@@ -6,7 +6,7 @@
 
   <div class="text-xs w-full leading-none">
     <div class="flex items-center justify-between w-full h-5">
-      <div class="w-12 flex-none text-gray-600 whitespace-nowrap text-left leading-none">
+      <div class="w-12 flex-none text-gray-600 whitespace-nowrap text-left leading-none tabular-nums">
         <%= l interaction.occurred_at.to_date, format: :short %>
       </div>
 
@@ -18,7 +18,7 @@
                     data: { turbo_frame: "_top" } %>
       </div>
 
-      <div class="flex-1 min-w-0 text-gray-600 text-center mx-1">
+      <div class="flex-1 min-w-0 text-gray-600 text-center mx-1 whitespace-nowrap truncate overflow-hidden">
         <%= interaction_channel_label(interaction) %>
       </div>
 
@@ -30,8 +30,8 @@
                     data: { turbo_frame: "_top" } %>
       </div>
 
-      <div class="flex-1 flex justify-center items-center mx-1">
-        <span class="<%= interaction_status_badge_class(interaction) %> px-1 py-1 inline-flex items-center justify-center rounded-sm sm:px-2">
+      <div class="flex-1 min-w-0 flex justify-center items-center mx-1 overflow-hidden">
+        <span class="<%= interaction_status_badge_class(interaction) %> px-1 py-1 inline-flex items-center justify-center whitespace-nowrap rounded-sm sm:px-2">
           <%= interaction_status_label(interaction) %>
         </span>
       </div>

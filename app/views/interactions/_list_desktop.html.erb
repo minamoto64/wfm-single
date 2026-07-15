@@ -2,7 +2,7 @@
   <table class="w-full text-xs sm:text-sm border-collapse table-fixed">
     <thead class="bg-gray-50 text-gray-600">
       <tr>
-        <th class="w-36 px-4 py-3 text-center whitespace-nowrap align-middle leading-none">応対日時</th>
+        <th class="w-36 px-4 py-3 text-center whitespace-nowrap align-middle leading-none tabular-nums">応対日時</th>
         <th class="w-28 px-4 py-3 text-center whitespace-nowrap align-middle leading-none">顧客名</th>
         <th class="w-28 px-4 py-3 text-center whitespace-nowrap align-middle leading-none">問合せ種別</th>
         <th class="w-28 px-4 py-3 text-center whitespace-nowrap align-middle leading-none">担当者名</th>
@@ -21,7 +21,7 @@
             data-clickable-url-value="<%= interaction_path(interaction) %>"
             data-action="click->clickable#open">
 
-          <td class="w-36 px-4 py-3 text-center whitespace-nowrap align-middle leading-none text-gray-600">
+          <td class="w-36 px-4 py-3 text-center whitespace-nowrap align-middle leading-none tabular-nums text-gray-600">
             <%= l interaction.occurred_at %>
           </td>
 
@@ -45,7 +45,7 @@
           </td>
 
           <td class="px-2 md:px-4 xl:px-8 py-3 text-left align-middle leading-none text-gray-600">
-            <div class="w-0 min-w-full truncate">
+            <div class="w-0 min-w-full h-4 overflow-hidden truncate">
               <%= interaction.request_content %>
             </div>
           </td>
@@ -84,7 +84,7 @@
               data-controller="clickable"
               data-clickable-url-value="<%= interaction_path(related_interaction) %>"
               data-action="click->clickable#open">
-              <td class="w-36 px-4 py-3 text-center whitespace-nowrap align-middle leading-none text-gray-600">
+              <td class="w-36 px-4 py-3 text-center whitespace-nowrap align-middle leading-none tabular-nums text-gray-600">
                 <%= l related_interaction.occurred_at %>
               </td>
 
@@ -108,7 +108,7 @@
               </td>
 
               <td class="px-2 md:px-4 xl:px-8 py-3 text-left align-middle leading-none text-gray-600">
-                <div class="w-0 min-w-full truncate">
+                <div class="w-0 min-w-full h-4 overflow-hidden truncate">
                   <%= link_to truncate(related_interaction.request_content, length: 60),
                               interaction_path(related_interaction),
                               class: "block truncate hover:text-blue-600",
