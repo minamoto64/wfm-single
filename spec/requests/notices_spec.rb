@@ -72,6 +72,32 @@ RSpec.describe "Notices", type: :request do
         expect(response).to have_http_status(:ok)
         expect(response.body).to include(notice.title, other_notice.title)
       end
+
+      it "uses full-page navigation for user links inside turbo frame" do
+        get notices_path
+
+        expect(response.body).to include('data-turbo-frame="_top"')
+        expect(response.body).to include(user_path(notice.user))
+      end
+
+      it "renders related notices under the parent notice row" do
+        related_notice = create(:notice, user: user, parent: notice, title: "関連お知らせの内容")
+
+        get notices_path
+
+        expect(response.body).to include("関連")
+        expect(response.body).to include(related_notice.title)
+      end
+
+      it "renders sibling notices as related, not just direct children" do
+        first_sibling_notice = create(:notice, user: user, parent: notice, title: "関連お知らせA")
+        second_sibling_notice = create(:notice, user: user, parent: notice, title: "関連お知らせB")
+
+        get notices_path
+
+        expect(response.body).to include(first_sibling_notice.title)
+        expect(response.body).to include(second_sibling_notice.title)
+      end
     end
 
     context "when the user is admin" do
@@ -251,7 +277,7 @@ RSpec.describe "Notices", type: :request do
       it "re-renders the new template with invalid params" do
         post notices_path, params: { notice: { title: nil } }
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it "ignores restricted parameter" do
@@ -401,7 +427,7 @@ RSpec.describe "Notices", type: :request do
         patch notice_path(notice), params: { notice: { title: nil } }
 
         expect(notice.reload.title).not_to be_nil
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it "cannot update a restricted notice and redirects to the index template" do

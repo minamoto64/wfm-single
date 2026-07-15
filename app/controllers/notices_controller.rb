@@ -1,5 +1,6 @@
 class NoticesController < ApplicationController
-  before_action :set_notice, only: %i[show edit update]
+  before_action :set_notice, only: %i[edit update]
+  before_action :set_notice_with_comments, only: :show
   before_action :authorize_view!, only: %i[show edit update]
   before_action :authorize_edit!, only: %i[edit update]
 
@@ -7,7 +8,12 @@ class NoticesController < ApplicationController
   def index
     @q = visible_notices.ransack(params[:q], auth_object: :admin)
     @notices = @q.result
-               .preload(:user)
+               .preload(
+                 :user,
+                 root: {
+                   thread_notices: [ :user ]
+                 }
+               )
                .order(start_at: :desc)
   end
 
@@ -29,7 +35,7 @@ class NoticesController < ApplicationController
 
       redirect_to @notice, notice: "お知らせを更新しました"
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -44,17 +50,18 @@ class NoticesController < ApplicationController
     if @notice.update(notice_params)
       redirect_to @notice, notice: "お知らせを更新しました"
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 
   private
 
   def set_notice
-    @notice = Notice.preload(
-      :user,
-      comments: [ :user ]
-    ).find(params[:id])
+    @notice = Notice.preload(:user).find(params[:id])
+  end
+
+  def set_notice_with_comments
+    @notice = Notice.preload(:user, comments: [ :user ]).find(params[:id])
   end
 
   def visible_notices
