@@ -1,0 +1,13 @@
+<div class="block md:hidden mb-4">
+  <div class="sticky top-20 z-10 flex items-center bg-gray-50 border border-gray-200 rounded shadow-sm px-3 py-2 mb-2 text-xs font-bold text-gray-600">
+    <div class="flex-1 min-w-0 text-left px-1 whitespace-nowrap truncate overflow-hidden">顧客名</div>
+    <div class="flex-1 min-w-0 text-center px-1 whitespace-nowrap truncate overflow-hidden">電話番号</div>
+    <div class="flex-1 min-w-0 text-center px-1 whitespace-nowrap truncate overflow-hidden">メールアドレス</div>
+  </div>
+
+  <div class="space-y-2">
+    <% customers.each do |customer| %>
+      <%= render "mobile_card", customer: customer %>
+    <% end %>
+  </div>
+</div>

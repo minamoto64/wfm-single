@@ -1,14 +1,15 @@
-<div class="min-h-screen bg-gray-50 py-8">
-  <div class="max-w-2xl mx-auto px-4">
-    <div class="mb-4">
-      <%= link_to "← 一覧に戻る", customers_path,
-            class: "text-blue-600 hover:underline text-sm" %>
+<div class="max-w-4xl mx-auto px-4 py-4">
+  <div class="mb-4">
+    <%= link_to "← 一覧に戻る",
+                customers_path,
+                class: "text-blue-600 hover:underline text-xs sm:text-sm" %>
+  </div>
+
+  <div class="bg-white rounded-lg shadow-lg p-6">
+    <div class="border-b-4 border-blue-500 pb-4 mb-6">
+      <h1 class="text-xl font-bold">顧客の新規登録</h1>
     </div>
-    <div class="bg-white rounded-lg shadow-lg p-6">
-      <div class="border-b-4 border-blue-500 pb-4 mb-6">
-        <h1 class="text-2xl font-bold">顧客を新規登録</h1>
-      </div>
-      <%= render "form", customer: @customer %>
-    </div>
+
+    <%= render "form", customer: @customer %>
   </div>
 </div>
