@@ -1,0 +1,32 @@
+<div class="block md:hidden mb-4">
+  <div class="sticky top-20 z-10 flex items-center bg-gray-50 border border-gray-200 rounded shadow-sm px-3 py-2 mb-2 text-xs font-bold text-gray-600">
+    <div class="flex-1 min-w-0 text-left mx-1 whitespace-nowrap truncate overflow-hidden">件名</div>
+    <div class="w-12 flex-none text-center mx-1 whitespace-nowrap truncate overflow-hidden">重要度</div>
+    <div class="flex-1 min-w-0 text-center mx-1 whitespace-nowrap truncate overflow-hidden">作成者</div>
+    <div class="w-10 flex-none"></div>
+  </div>
+
+  <div class="space-y-2">
+    <% notices.each do |notice| %>
+      <% related_notices = notice.related_notices %>
+
+      <div class="w-full" data-controller="related-toggle">
+
+        <%= render "mobile_card",
+                    notice: notice,
+                    show_related_button: related_notices.any? %>
+
+        <% if related_notices.any? %>
+          <div class="hidden" data-related-toggle-target="list">
+            <% related_notices.each do |related_notice| %>
+              <%= render "mobile_card",
+                          notice: related_notice,
+                          show_related_button: false %>
+            <% end %>
+          </div>
+        <% end %>
+
+      </div>
+    <% end %>
+  </div>
+</div>

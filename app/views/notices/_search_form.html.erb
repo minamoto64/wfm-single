@@ -1,50 +1,68 @@
-<h2 class="text-sm font-semibold mb-3">検索</h2>
-<%= search_form_for @q, url: notices_path, method: :get, html: { class: "text-sm w-full" } do |f| %>
-  <div class="flex flex-nowrap items-end gap-3 w-full">
-    <div class="w-64 shrink-0">
-      <%= f.label :title_or_content_cont, "キーワード", class: "block text-xs text-gray-600 mb-1" %>
-      <%= f.search_field :title_or_content_cont,
-            class: "w-full border rounded px-3 py-2 h-10",
-            placeholder: "タイトル・内容" %>
-    </div>
-    <div class="w-44 shrink-0">
-      <%= f.label :user_name_cont, "作成者名", class: "block text-xs text-gray-600 mb-1" %>
-      <%= f.search_field :user_name_cont,
-            class: "w-full border rounded px-3 py-2 h-10",
-            placeholder: "例）田中" %>
-    </div>
-    <div class="w-36 shrink-0">
-      <%= f.label :level_eq, "重要度", class: "block text-xs text-gray-600 mb-1" %>
-      <%= f.select :level_eq,
-            [["指定なし", ""], ["高", "important"], ["低", "normal"]],
-            {},
-            class: "w-full border rounded px-3 py-2 h-10" %>
-    </div>
-    <% if Current.user.admin? %>
-      <div class="w-36 shrink-0">
-        <%= f.label :restricted_eq, "公開範囲", class: "block text-xs text-gray-600 mb-1" %>
-        <%= f.select :restricted_eq,
-              [["指定なし", ""], ["全員", false], ["管理者のみ", true]],
-              {},
-              class: "w-full border rounded px-3 py-2 h-10" %>
+<div class="flex items-center justify-between w-full">
+  <h2 class="text-sm font-semibold">検索</h2>
+
+  <svg data-disclosure-target="icon"
+       class="w-4 h-4 text-gray-500 transition-transform duration-200"
+       fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+  </svg>
+</div>
+
+<div data-disclosure-target="panel"
+     data-action="click->disclosure#stop"
+     class="hidden mt-3">
+  <%= search_form_for q, url: notices_path, method: :get,
+                      html: { class: "text-sm w-full", data: { turbo_frame: "notices_list" } } do |f| %>
+    <div class="grid grid-cols-2 md:grid-cols-4 xl:flex xl:flex-nowrap xl:items-end gap-2 xl:gap-3 w-full">
+
+      <div class="w-full xl:w-64 shrink-0 order-1">
+        <%= f.label :title_or_content_cont, "キーワード", class: "block text-xs text-gray-500 mb-1" %>
+        <%= f.search_field :title_or_content_cont,
+                           class: "w-full border border-gray-300 rounded px-3 h-8 sm:h-9 text-xs sm:text-sm text-gray-600",
+                           placeholder: "タイトル・内容" %>
       </div>
-    <% end %>
-    <div class="w-36 shrink-0">
-      <%= f.label :due_within, "公開日時", class: "block text-xs text-gray-600 mb-1" %>
-      <%= f.select :status,
-        [
-          ["指定なし", ""],
-          ["公開中", "active"],
-          ["終了済", "expired"]
-        ],
-        {},
-        class: "w-full border rounded px-3 py-2 h-10" %>
+
+      <div class="w-full xl:w-40 shrink-0 order-2">
+        <%= f.label :user_name_cont, "作成者名", class: "block text-xs text-gray-500 mb-1" %>
+        <%= f.search_field :user_name_cont,
+                           class: "w-full border border-gray-300 rounded px-3 h-8 sm:h-9 text-xs sm:text-sm text-gray-600",
+                           placeholder: "例）田中" %>
+      </div>
+
+      <div class="w-full xl:w-32 shrink-0 order-3">
+        <%= f.label :level_eq, "重要度", class: "block text-xs text-gray-500 mb-1" %>
+        <%= f.select :level_eq,
+                     [["指定なし", ""], ["高", "important"], ["低", "normal"]],
+                     {},
+                     class: "w-full border border-gray-300 rounded px-2 h-8 sm:h-9 text-xs sm:text-sm text-gray-600" %>
+      </div>
+
+      <% if Current.user.admin? %>
+        <div class="w-full xl:w-32 shrink-0 order-4">
+          <%= f.label :restricted_eq, "公開範囲", class: "block text-xs text-gray-500 mb-1" %>
+          <%= f.select :restricted_eq,
+                       [["指定なし", ""], ["全員", false], ["管理者のみ", true]],
+                       {},
+                       class: "w-full border border-gray-300 rounded px-2 h-8 sm:h-9 text-xs sm:text-sm text-gray-600" %>
+        </div>
+      <% end %>
+
+      <div class="w-full xl:w-32 shrink-0 order-5">
+        <%= f.label :status, "公開状況", class: "block text-xs text-gray-500 mb-1" %>
+        <%= f.select :status,
+                     [["指定なし", ""], ["公開中", "active"], ["終了済", "expired"]],
+                     {},
+                     class: "w-full border border-gray-300 rounded px-2 h-8 sm:h-9 text-xs sm:text-sm text-gray-600" %>
+      </div>
+
+      <div class="flex items-end justify-end justify-self-end gap-2 w-full order-6 md:col-start-4 xl:w-auto xl:ml-auto xl:mt-0 shrink-0 pt-1 xl:pt-0">
+        <%= link_to "クリア",
+                    notices_path,
+                    class: "w-auto px-3 h-8 sm:h-9 border border-gray-300 rounded text-gray-500 text-xs sm:text-sm inline-flex items-center justify-center whitespace-nowrap bg-white hover:bg-gray-50" %>
+
+        <%= f.submit "検索",
+                     class: "w-auto px-4 h-8 sm:h-9 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs sm:text-sm inline-flex items-center justify-center whitespace-nowrap cursor-pointer" %>
+      </div>
     </div>
-    <div class="flex items-end gap-2 ml-auto shrink-0">
-      <%= link_to "クリア", notices_path,
-            class: "px-3 py-2 border rounded text-gray-600 h-10 inline-flex items-center whitespace-nowrap" %>
-      <%= f.submit "検索",
-            class: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 h-10 whitespace-nowrap" %>
-    </div>
-  </div>
-<% end %>
+  <% end %>
+</div>
