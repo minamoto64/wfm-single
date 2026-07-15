@@ -1,32 +1,5 @@
-<div class="mb-6 border-t-4 border-blue-500 pt-6">
-  <h2 class="text-lg font-semibold mb-3">割り当て者と進捗状況</h2>
-  <% if task.task_assignments.any? %>
-    <div class="bg-gray-50 rounded overflow-hidden">
-      <table class="w-full text-sm">
-        <thead class="bg-gray-100 text-gray-600">
-          <tr>
-            <th class="px-16 py-3 text-left font-medium w-1/2">担当者</th>
-            <th class="px-16 py-3 text-left font-medium w-1/2">進捗状況</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-200">
-          <% task.task_assignments.each do |assignment| %>
-            <tr class="hover:bg-gray-100">
-              <td class="px-16 py-3">
-                <%= link_to assignment.user.name, user_path(assignment.user),
-                      class: "text-blue-600 hover:text-blue-800" %>
-              </td>
-              <td class="px-16 py-3 text-gray-600">
-                <%= task_status_label(assignment) %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-  <% else %>
-    <p class="text-sm text-gray-500 bg-gray-50 p-4 rounded">
-      まだ誰にも割り当てられていません。
-    </p>
-  <% end %>
+<div class="mb-6 border-t-4 border-gray-300 pt-6">
+  <h2 class="text-base sm:text-lg font-semibold mb-3">割り当て者と進捗状況</h2>
+
+  <%= render "tasks/assignment_table", task: task %>
 </div>
