@@ -1,0 +1,30 @@
+<div class="bg-white rounded shadow-sm px-3 py-2 w-full hover:bg-gray-50 cursor-pointer"
+     data-controller="clickable"
+     data-clickable-url-value="<%= customer_path(customer) %>"
+     data-action="click->clickable#open">
+
+  <div class="text-xs w-full leading-none">
+    <div class="flex items-center w-full h-5">
+      <div class="flex-1 min-w-0 text-left px-1 overflow-hidden">
+        <%= link_to customer.name,
+                    customer_path(customer),
+                    class: "block truncate text-blue-600 hover:text-blue-800",
+                    onclick: "event.stopPropagation();" %>
+      </div>
+
+      <div class="flex-1 min-w-0 text-center px-1 overflow-hidden text-gray-600 truncate tabular-nums">
+        <%= customer.phone %>
+      </div>
+
+      <div class="flex-1 min-w-0 text-center px-1 overflow-hidden text-gray-600 truncate">
+        <%= customer.email %>
+      </div>
+    </div>
+
+    <% if customer.key_notes.present? %>
+      <div class="pt-2 text-left mx-1 overflow-hidden text-gray-500 truncate">
+        <%= customer.key_notes %>
+      </div>
+    <% end %>
+  </div>
+</div>

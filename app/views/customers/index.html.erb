@@ -1,45 +1,19 @@
-<div class="min-h-screen bg-gray-50 py-8">
-  <div class="max-w-7xl mx-auto px-4">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold">顧客一覧</h1>
-      <%= link_to "新規登録", new_customer_path,
-            class: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm" %>
-    </div>
-    <div class="bg-white rounded-lg shadow p-4 mb-4">
-      <%= render "search_form" %>
-    </div>
-    <div class="bg-white rounded-lg shadow">
-      <% if @customers.any? %>
-        <table class="w-full text-sm">
-          <thead class="bg-gray-50 border-b">
-            <tr>
-              <th class="text-center p-3 text-gray-600">顧客名</th>
-              <th class="text-center p-3 text-gray-600">メールアドレス</th>
-              <th class="text-center p-3 text-gray-600">電話番号</th>
-              <th class="text-center p-3 text-gray-600">重要メモ</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y">
-            <% @customers.each do |customer| %>
-              <tr class="hover:bg-gray-50">
-                <td class="p-3 text-center">
-                  <%= link_to customer.name, customer_path(customer),
-                        class: "text-blue-600 hover:underline" %>
-                </td>
-                <td class="p-3 text-center"><%= customer.email %></td>
-                <td class="p-3 text-center"><%= customer.phone %></td>
-                <td class="p-3 text-center text-gray-500">
-                  <%= truncate(customer.key_notes, length: 60) %>
-                </td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-      <% else %>
-        <div class="p-8 text-center text-gray-500 text-sm">
-          まだ顧客は登録されていません。
-        </div>
-      <% end %>
-    </div>
+<div class="max-w-7xl mx-auto px-4 py-4">
+  <div class="flex justify-between items-center mb-4">
+    <h1 class="text-base sm:text-xl font-bold">顧客一覧</h1>
+
+    <%= link_to "新規登録",
+            new_customer_path,
+            class: "px-3 h-8 sm:h-9 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs sm:text-sm inline-flex items-center justify-center" %>
   </div>
+
+  <div data-controller="disclosure"
+       data-action="click->disclosure#toggle"
+       class="bg-white rounded-lg shadow overflow-hidden p-3 mb-4 cursor-pointer">
+    <%= render "search_form", q: @q %>
+  </div>
+
+  <%= turbo_frame_tag "customers_list" do %>
+    <%= render "list" %>
+  <% end %>
 </div>

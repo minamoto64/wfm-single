@@ -1,0 +1,30 @@
+<div class="mb-6 border-t-4 border-gray-300 pt-6 text-xs sm:text-sm">
+  <h2 class="text-base sm:text-lg font-semibold mb-3">応対履歴</h2>
+
+  <% if interactions.any? %>
+    <ul class="space-y-2">
+      <% interactions.each do |interaction| %>
+        <li class="flex items-center gap-3 p-2 bg-gray-50 rounded group">
+          <%= link_to interaction.request_content,
+                      interaction_path(interaction),
+                      class: "flex-1 min-w-0 truncate text-gray-700 group-hover:text-blue-600" %>
+
+          <span class="w-10 sm:w-32 shrink-0 whitespace-nowrap text-right text-gray-500 group-hover:text-blue-600">
+            <span class="sm:hidden"><%= interaction.occurred_at.strftime("%-m/%-d") %></span>
+            <span class="hidden sm:inline"><%= l interaction.occurred_at %></span>
+          </span>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <div class="text-gray-500">
+      まだ応対履歴は登録されていません。
+    </div>
+  <% end %>
+
+  <div class="mt-4">
+    <%= link_to "応対履歴を作成",
+                new_interaction_path,
+                class: "px-3 h-8 sm:h-9 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs sm:text-sm inline-flex items-center justify-center whitespace-nowrap" %>
+  </div>
+</div>

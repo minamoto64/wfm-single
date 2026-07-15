@@ -1,0 +1,6 @@
+<% if @customers.any? %>
+  <%= render "list_mobile", customers: @customers %>
+  <%= render "list_desktop", customers: @customers %>
+<% else %>
+  <%= render "list_empty" %>
+<% end %>

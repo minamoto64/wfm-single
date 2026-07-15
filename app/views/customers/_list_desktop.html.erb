@@ -1,0 +1,43 @@
+<div class="hidden md:block overflow-x-auto bg-white rounded-lg shadow">
+  <table class="w-full text-xs sm:text-sm border-collapse table-fixed">
+    <thead class="bg-gray-50 text-gray-600">
+      <tr>
+        <th class="w-40 px-4 py-3 text-center whitespace-nowrap align-middle leading-none">顧客名</th>
+        <th class="w-56 px-4 py-3 text-center whitespace-nowrap align-middle leading-none">メールアドレス</th>
+        <th class="w-40 px-4 py-3 text-center whitespace-nowrap align-middle leading-none">電話番号</th>
+        <th class="pl-8 md:pl-12 xl:pl-16 pr-4 py-3 text-left whitespace-nowrap align-middle leading-none">重要メモ</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% customers.each do |customer| %>
+        <tr class="h-12 hover:bg-gray-100 cursor-pointer"
+            data-controller="clickable"
+            data-clickable-url-value="<%= customer_path(customer) %>"
+            data-action="click->clickable#open">
+
+          <td class="w-40 px-4 py-3 text-center whitespace-nowrap truncate align-middle leading-none">
+            <%= link_to customer.name,
+                        customer_path(customer),
+                        class: "text-blue-600 hover:text-blue-800",
+                        onclick: "event.stopPropagation();" %>
+          </td>
+
+          <td class="w-56 px-4 py-3 text-center whitespace-nowrap truncate align-middle leading-none text-gray-600">
+            <%= customer.email %>
+          </td>
+
+          <td class="w-40 px-4 py-3 text-center whitespace-nowrap align-middle leading-none text-gray-600">
+            <%= customer.phone %>
+          </td>
+
+          <td class="pl-8 md:pl-12 xl:pl-16 pr-4 py-3 text-left align-middle leading-none text-gray-600">
+            <div class="w-0 min-w-full truncate">
+              <%= customer.key_notes %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
