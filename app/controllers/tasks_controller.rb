@@ -1,5 +1,6 @@
 class TasksController < ApplicationController
-  before_action :set_task, only: [ :show, :edit, :update ]
+  before_action :set_task, only: [ :edit, :update ]
+  before_action :set_task_with_associations, only: :show
   before_action :authorize_view!, only: [ :show, :edit, :update ]
   before_action :authorize_edit!, only: [ :edit, :update ]
 
@@ -61,11 +62,11 @@ class TasksController < ApplicationController
   private
 
   def set_task
-    @task = Task.preload(
-      :user,
-      task_assignments: [ :user ],
-      comments: [ :user ]
-    ).find(params[:id])
+    @task = Task.preload(:user).find(params[:id])
+  end
+
+  def set_task_with_associations
+    @task = Task.preload(:user, task_assignments: [ :user ], comments: [ :user ]).find(params[:id])
   end
 
   def visible_tasks

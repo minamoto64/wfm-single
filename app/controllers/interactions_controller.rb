@@ -1,5 +1,6 @@
 class InteractionsController < ApplicationController
-  before_action :set_interaction, only: [ :show, :edit, :update ]
+  before_action :set_interaction, only: [ :edit, :update ]
+  before_action :set_interaction_with_comments, only: :show
   before_action :authorize_edit!, only: [ :edit, :update ]
 
   def index
@@ -52,11 +53,11 @@ class InteractionsController < ApplicationController
   private
 
   def set_interaction
-    @interaction = Interaction.preload(
-      :customer,
-      :user,
-      comments: [ :user ]
-    ).find(params[:id])
+    @interaction = Interaction.preload(:customer, :user).find(params[:id])
+  end
+
+  def set_interaction_with_comments
+    @interaction = Interaction.preload(:customer, :user, comments: [ :user ]).find(params[:id])
   end
 
   def interaction_params
