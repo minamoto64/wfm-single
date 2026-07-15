@@ -1,0 +1,6 @@
+<% if @tasks.any? %>
+  <%= render "list_mobile", tasks: @tasks %>
+  <%= render "list_desktop", tasks: @tasks %>
+<% else %>
+  <%= render "list_empty" %>
+<% end %>

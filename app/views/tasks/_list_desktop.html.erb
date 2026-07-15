@@ -1,0 +1,93 @@
+<div class="hidden md:block bg-white rounded-lg shadow text-xs sm:text-sm">
+  <div class="flex rounded-t-lg bg-gray-50 text-xs sm:text-sm font-bold text-gray-600">
+    <div class="flex-1 min-w-0 px-2 md:px-4 xl:px-8 py-3 text-left whitespace-nowrap align-middle leading-none">件名</div>
+    <div class="flex-1 min-w-0 px-4 py-3 text-center whitespace-nowrap align-middle leading-none">作成者</div>
+    <div class="flex-1 min-w-0 px-4 py-3 text-center whitespace-nowrap align-middle leading-none tabular-nums">期限</div>
+    <div class="w-24 flex-none px-4 py-3 text-center whitespace-nowrap align-middle leading-none"></div>
+  </div>
+
+  <div data-controller="related-toggle-list">
+    <% tasks.each do |task| %>
+      <% related_tasks = task.related_tasks %>
+      <div class="group related-list-trigger relative flex items-center hover:bg-gray-100 cursor-pointer"
+          data-task-id="<%= task.id %>"
+          data-controller="clickable"
+          data-clickable-url-value="<%= task_path(task) %>"
+          data-action="click->clickable#open">
+
+        <div class="flex-1 min-w-0 px-2 md:px-4 xl:px-8 py-3 text-left align-middle leading-none text-gray-600 truncate">
+          <%= task.title %>
+        </div>
+
+        <div class="flex-1 min-w-0 px-4 py-3 text-center whitespace-nowrap truncate align-middle leading-none">
+          <%= link_to task.user.name,
+                      user_path(task.user),
+                      class: "text-blue-600 hover:text-blue-800",
+                      onclick: "event.stopPropagation();",
+                      data: { turbo_frame: "_top" } %>
+        </div>
+
+        <div class="flex-1 min-w-0 px-4 py-3 text-center whitespace-nowrap align-middle leading-none tabular-nums text-gray-600">
+          <%= task.due_at ? l(task.due_at) : "未設定" %>
+        </div>
+
+        <div class="w-24 flex-none px-4 py-3 text-center whitespace-nowrap align-middle leading-none text-gray-600">
+          <% if related_tasks.any? %>
+            <button
+              type="button"
+              class="related-toggle-button inline-flex items-center gap-1 text-blue-600"
+              data-task-id="<%= task.id %>"
+              data-action="click->related-toggle-list#toggle"
+              data-related-toggle-list-target="button"
+              aria-expanded="false">
+
+              <span>関連</span>
+
+              <span class="toggle-icon text-xs" data-related-toggle-list-target="icon">▼</span>
+
+            </button>
+          <% else %>
+            <span class="text-gray-400">-</span>
+          <% end %>
+        </div>
+
+        <%= render "tasks/assignment_popup", task: task %>
+      </div>
+
+      <% if related_tasks.any? %>
+        <% related_tasks.each do |related_task| %>
+          <div
+            class="group related-list-row relative hidden flex items-center hover:bg-gray-100"
+            data-controller="clickable"
+            data-clickable-url-value="<%= task_path(related_task) %>"
+            data-action="click->clickable#open">
+            <div class="flex-1 min-w-0 px-2 md:px-4 xl:px-8 py-3 text-left align-middle leading-none text-gray-600 truncate">
+              <%= link_to truncate(related_task.title, length: 60),
+                          task_path(related_task),
+                          class: "block truncate hover:text-blue-600",
+                          data: { turbo_frame: "_top" } %>
+            </div>
+
+            <div class="flex-1 min-w-0 px-4 py-3 text-center whitespace-nowrap truncate align-middle leading-none">
+              <%= link_to related_task.user.name,
+                          user_path(related_task.user),
+                          class: "text-blue-600 hover:text-blue-800",
+                          onclick: "event.stopPropagation();",
+                          data: { turbo_frame: "_top" } %>
+            </div>
+
+            <div class="flex-1 min-w-0 px-4 py-3 text-center whitespace-nowrap align-middle leading-none tabular-nums text-gray-600">
+              <%= related_task.due_at ? l(related_task.due_at) : "未設定" %>
+            </div>
+
+            <div class="w-24 flex-none px-4 py-3 text-center whitespace-nowrap align-middle leading-none text-gray-400">
+              -
+            </div>
+
+            <%= render "tasks/assignment_popup", task: related_task %>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+</div>
