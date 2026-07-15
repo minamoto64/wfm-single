@@ -5,7 +5,10 @@ class Notice < ApplicationRecord
   belongs_to :user
 
   belongs_to :parent, class_name: "Notice", optional: true
-  has_many :children, class_name: "Notice", foreign_key: "parent_id"
+  has_many :children,
+           -> { order(created_at: :desc) },
+           class_name: "Notice",
+           foreign_key: "parent_id"
 
   belongs_to :root, class_name: "Notice", optional: true
   has_many :thread_notices, class_name: "Notice", foreign_key: :root_id, dependent: :nullify
@@ -34,6 +37,11 @@ class Notice < ApplicationRecord
   validates :images,
     content_type: %w[image/jpeg image/png image/gif],
     size: { less_than_or_equal_to: 10.megabytes }
+
+  def related_notices
+    thread_notices_all = root.thread_notices
+    thread_notices_all.reject { |notice| notice.id == id }.sort_by(&:created_at)
+  end
 
   private
 
