@@ -13,6 +13,7 @@
   <% end %>
   <%= f.hidden_field :parent_id %>
   <%= hidden_field_tag :interaction_id, params[:interaction_id] if params[:interaction_id].present? %>
+  <%= hidden_field_tag :task_id, params[:task_id] if params[:task_id].present? %>
   <div>
     <%= f.label :title, "件名", class: "block text-sm font-medium text-gray-700 mb-1" %>
     <%= f.text_field :title,
