@@ -66,6 +66,32 @@ RSpec.describe "Tasks", type: :request do
         expect(response).to have_http_status(:ok)
         expect(response.body).to include(task.title, other_task.title)
       end
+
+      it "uses full-page navigation for user links inside turbo frame" do
+        get tasks_path
+
+        expect(response.body).to include('data-turbo-frame="_top"')
+        expect(response.body).to include(user_path(task.user))
+      end
+
+      it "renders related tasks under the parent task row" do
+        related_task = create(:task, user: user, parent: task, title: "関連タスクの内容")
+
+        get tasks_path
+
+        expect(response.body).to include("関連")
+        expect(response.body).to include(related_task.title)
+      end
+
+      it "renders sibling tasks as related, not just direct children" do
+        first_sibling_task = create(:task, user: user, parent: task, title: "関連タスクA")
+        second_sibling_task = create(:task, user: user, parent: task, title: "関連タスクB")
+
+        get tasks_path
+
+        expect(response.body).to include(first_sibling_task.title)
+        expect(response.body).to include(second_sibling_task.title)
+      end
     end
 
     context "when the user is an admin" do
@@ -208,7 +234,7 @@ RSpec.describe "Tasks", type: :request do
 
       it "re-renders the new template with invalid params" do
         post tasks_path, params: create_task_with_assignees({ task: { title: nil } })
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it "ignores restricted parameter" do
@@ -372,7 +398,7 @@ RSpec.describe "Tasks", type: :request do
         patch task_path(task), params: { task: { title: nil } }
 
         expect(task.reload.title).not_to be_nil
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it "cannot update a restricted task and redirects to the index template" do
