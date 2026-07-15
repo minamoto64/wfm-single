@@ -86,7 +86,7 @@ RSpec.describe "Customers", type: :request do
 
       it "re-renders the new template with invalid params" do
         post customers_path, params: { customer: { name: nil } }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 
@@ -167,7 +167,7 @@ RSpec.describe "Customers", type: :request do
       it "re-renders the edit template with invalid parameters" do
         patch customer_path(customer),
           params: { customer: { name: nil } }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 
