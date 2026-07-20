@@ -86,4 +86,47 @@ RSpec.describe "Task Assignments", type: :request do
       end
     end
   end
+
+  describe "PATCH /task_assignments/:id" do
+    let(:assignment) do
+      create(:task_assignment, task: create(:task, user: task_creator), user: first_assignee, status: :todo)
+    end
+
+    context "when the current user is the assignee" do
+      before { sign_in(first_assignee) }
+
+      it "updates the status" do
+        patch task_assignment_path(assignment), params: { task_assignment: { status: "done" } }
+
+        expect(assignment.reload.status).to eq("done")
+        expect(response).to redirect_to(task_path(assignment.task))
+      end
+    end
+
+    context "when the current user is not the assignee" do
+      before { sign_in(second_assignee) }
+
+      it "does not update the status" do
+        patch task_assignment_path(assignment), params: { task_assignment: { status: "done" } }
+
+        expect(assignment.reload.status).to eq("todo")
+      end
+
+      it "redirects to the task page with an alert" do
+        patch task_assignment_path(assignment), params: { task_assignment: { status: "done" } }
+
+        expect(response).to redirect_to(task_path(assignment.task))
+      end
+    end
+
+    context "when not signed in" do
+      before { delete logout_path }
+
+      it "redirects to the login page" do
+        patch task_assignment_path(assignment), params: { task_assignment: { status: "done" } }
+
+        expect(response).to redirect_to(login_path)
+      end
+    end
+  end
 end

@@ -19,9 +19,18 @@
         </div>
 
         <div class="flex items-center justify-center px-4 break-words">
-          <span class="<%= task_status_badge_class(assignment) %> px-2 py-1">
-            <%= task_status_label(assignment) %>
-          </span>
+          <% if !compact && assignment.user == Current.user %>
+            <%= form_with model: assignment, url: task_assignment_path(assignment), method: :patch, class: "inline-block", data: { controller: "auto-submit" } do |f| %>
+              <%= f.select :status,
+                    TaskAssignment.statuses.keys.map { |status| [ I18n.t("enums.task_assignment.status.#{status}"), status ] },
+                    { selected: assignment.status },
+                    class: "#{task_status_badge_class(assignment)} px-2 py-1", data: { action: "change->auto-submit#submit" } %>
+            <% end %>
+          <% else %>
+            <span class="<%= task_status_badge_class(assignment) %> px-2 py-1">
+              <%= task_status_label(assignment) %>
+            </span>
+          <% end %>
         </div>
       </div>
     <% end %>
