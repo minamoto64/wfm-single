@@ -30,7 +30,7 @@
 
         <div class="flex items-center min-w-0">
           <span class="w-32 shrink-0 text-gray-600">メールアドレス:</span>
-          <span class="truncate"><%= @customer.email.presence || "ー" %></span>
+          <span class="min-w-0 break-all"><%= @customer.email.presence || "ー" %></span>
         </div>
       </div>
     </div>
