@@ -9,7 +9,7 @@
   <div data-controller="related-toggle-list">
     <% tasks.each do |task| %>
       <% related_tasks = task.related_tasks %>
-      <div class="group related-list-trigger relative flex items-center hover:bg-gray-100 cursor-pointer"
+      <div class="group related-list-trigger relative flex items-center min-h-12 hover:bg-gray-100 cursor-pointer"
           data-task-id="<%= task.id %>"
           data-controller="clickable"
           data-clickable-url-value="<%= task_path(task) %>"
@@ -57,7 +57,7 @@
       <% if related_tasks.any? %>
         <% related_tasks.each do |related_task| %>
           <div
-            class="group related-list-row relative hidden flex items-center hover:bg-gray-100"
+            class="group related-list-row relative hidden flex items-center min-h-12 hover:bg-gray-100"
             data-controller="clickable"
             data-clickable-url-value="<%= task_path(related_task) %>"
             data-action="click->clickable#open">

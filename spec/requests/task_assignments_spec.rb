@@ -47,7 +47,7 @@ RSpec.describe "Task Assignments", type: :request do
       it "returns 422 and shows error when assignee_ids is empty" do
         post tasks_path, params: { task: valid_task_attributes, assignee_ids: [] }
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include("担当者を1人以上選択してください")
       end
 

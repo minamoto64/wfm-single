@@ -128,7 +128,7 @@ RSpec.describe "Users", type: :request do
       it "renders the new template" do
         get new_user_path
 
-        expect(response.body).to include("氏名")
+        expect(response.body).to include("従業員名")
         expect(response.body).to include("メールアドレス")
         expect(response.body).to include("パスワード")
         expect(response.body).to include("管理者権限を付与")
@@ -205,7 +205,7 @@ RSpec.describe "Users", type: :request do
       it "re-renders the new template with invalid params" do
         post users_path, params: invalid_params
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 
@@ -253,7 +253,7 @@ RSpec.describe "Users", type: :request do
       it "renders the edit template" do
         get edit_user_path(user)
 
-        expect(response.body).to include("氏名")
+        expect(response.body).to include("従業員名")
         expect(response.body).to include("メールアドレス")
         expect(response.body).to include("パスワード（変更する場合のみ）")
         expect(response.body).to include("管理者権限を付与")
@@ -342,7 +342,7 @@ RSpec.describe "Users", type: :request do
       it "re-renders the edit template with invalid params" do
         patch user_path(user), params: invalid_params
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 

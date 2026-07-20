@@ -8,6 +8,7 @@ class UsersController < ApplicationController
   end
 
   def show
+    @interactions = @user.interactions.order(occurred_at: :desc)
   end
 
   def new
@@ -20,7 +21,7 @@ class UsersController < ApplicationController
     if @user.save
       redirect_to @user, notice: "従業員を登録しました"
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -31,7 +32,7 @@ class UsersController < ApplicationController
     if @user.update(user_params)
       redirect_to @user, notice: "従業員情報を更新しました"
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 

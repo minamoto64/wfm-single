@@ -1,0 +1,38 @@
+<div class="hidden md:block overflow-x-auto bg-white rounded-lg shadow">
+  <table class="w-full text-xs sm:text-sm border-collapse table-fixed">
+    <thead class="bg-gray-50 text-gray-600">
+      <tr>
+        <th class="px-4 py-3 text-center whitespace-nowrap align-middle leading-none">従業員名</th>
+        <th class="px-4 py-3 text-center whitespace-nowrap align-middle leading-none">メールアドレス</th>
+        <th class="px-4 py-3 text-center whitespace-nowrap align-middle leading-none">権限</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% users.each do |user| %>
+        <tr class="h-12 hover:bg-gray-100 cursor-pointer"
+            data-controller="clickable"
+            data-clickable-url-value="<%= user_path(user) %>"
+            data-action="click->clickable#open">
+
+          <td class="px-4 py-3 text-center whitespace-nowrap truncate align-middle leading-none">
+            <%= link_to user.name,
+                        user_path(user),
+                        class: "text-blue-600 hover:text-blue-800",
+                        onclick: "event.stopPropagation();" %>
+          </td>
+
+          <td class="px-4 py-3 text-center whitespace-nowrap truncate align-middle leading-none text-gray-600">
+            <%= user.email_address %>
+          </td>
+
+          <td class="px-4 py-3 text-center whitespace-nowrap align-middle leading-none">
+            <span class="<%= user_admin_badge_class(user) %> px-2 py-1 inline-block leading-none">
+              <%= user_admin_label(user) %>
+            </span>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

@@ -3,7 +3,7 @@
   <span class="w-16 sm:w-24 shrink-0 truncate text-right">
     <%= link_to comment.user.name, user_path(comment.user), class: "text-blue-600 hover:text-blue-800" %>
   </span>
-  <span class="w-10 sm:w-32 shrink-0 whitespace-nowrap text-right text-gray-500">
+  <span class="w-10 sm:w-32 shrink-0 whitespace-nowrap text-right tabular-nums text-gray-500">
     <span class="sm:hidden"><%= comment.created_at.strftime("%-m/%-d") %></span>
     <span class="hidden sm:inline"><%= l comment.created_at %></span>
   </span>
