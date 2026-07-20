@@ -26,6 +26,8 @@ class CommentsController < ApplicationController
     raise ActiveRecord::RecordNotFound unless klass
 
     @commentable = klass.find(params[:commentable_id])
+
+    raise ActiveRecord::RecordNotFound if @commentable.respond_to?(:restricted?) && @commentable.restricted? && !Current.user.admin?
   end
 
   def comment_params
