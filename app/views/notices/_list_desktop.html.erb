@@ -13,7 +13,7 @@
     <tbody data-controller="related-toggle-list">
       <% notices.each do |notice| %>
         <% related_notices = notice.related_notices %>
-        <tr class="hover:bg-gray-100 cursor-pointer"
+        <tr class="h-12 hover:bg-gray-100 cursor-pointer"
             data-notice-id="<%= notice.id %>"
             data-controller="clickable"
             data-clickable-url-value="<%= notice_path(notice) %>"
@@ -65,7 +65,7 @@
         <% if related_notices.any? %>
           <% related_notices.each do |related_notice| %>
             <tr
-              class="related-list-row hidden hover:bg-gray-100"
+              class="h-12 related-list-row hidden hover:bg-gray-100"
               data-controller="clickable"
               data-clickable-url-value="<%= notice_path(related_notice) %>"
               data-action="click->clickable#open">

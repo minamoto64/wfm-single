@@ -15,7 +15,7 @@
     <tbody data-controller="related-toggle-list">
       <% interactions.each do |interaction| %>
         <% related_interactions = interaction.related_interactions %>
-        <tr class="hover:bg-gray-100 cursor-pointer"
+        <tr class="h-12 hover:bg-gray-100 cursor-pointer"
             data-interaction-id="<%= interaction.id %>"
             data-controller="clickable"
             data-clickable-url-value="<%= interaction_path(interaction) %>"
@@ -80,7 +80,7 @@
         <% if related_interactions.any? %>
           <% related_interactions.each do |related_interaction| %>
             <tr
-              class="related-list-row hidden hover:bg-gray-100"
+              class="h-12 related-list-row hidden hover:bg-gray-100"
               data-controller="clickable"
               data-clickable-url-value="<%= interaction_path(related_interaction) %>"
               data-action="click->clickable#open">
