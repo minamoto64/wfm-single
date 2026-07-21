@@ -3,7 +3,7 @@ class CustomersController < ApplicationController
 
   def index
     @q = Customer.ransack(params[:q], auth_object: :customer_list)
-    @customers = @q.result.order(:name)
+    @pagy, @customers = pagy(@q.result.order(:name))
   end
 
   def new
