@@ -1,19 +1,11 @@
 class Interaction < ApplicationRecord
-  before_validation :assign_root
+  include Rootable
+  rootable order_column: :occurred_at
+
   before_validation :set_customer_from_parent
-  after_create :assign_self_as_root
 
   belongs_to :customer
   belongs_to :user
-
-  belongs_to :parent, class_name: "Interaction", optional: true
-  has_many :children,
-           -> { order(occurred_at: :desc) },
-           class_name: "Interaction",
-           foreign_key: "parent_id"
-
-  belongs_to :root, class_name: "Interaction", optional: true
-  has_many :thread_interactions, class_name: "Interaction", foreign_key: :root_id, dependent: :nullify
 
   has_many :interaction_notices
   has_many :notices, through: :interaction_notices
@@ -41,25 +33,10 @@ class Interaction < ApplicationRecord
     content_type: %w[image/jpeg image/png image/gif],
     size: { less_than_or_equal_to: 10.megabytes }
 
-  def related_interactions
-    thread_interactions_all = root.thread_interactions
-    thread_interactions_all.reject { |interaction| interaction.id == id }.sort_by(&:occurred_at)
-  end
-
   private
-
-  def assign_root
-    return unless parent
-
-    self.root = parent.root || parent
-  end
 
   def set_customer_from_parent
     self.customer ||= parent&.customer
-  end
-
-  def assign_self_as_root
-    update_column(:root_id, id) if root_id.nil?
   end
 
   def self.ransackable_attributes(auth_object = nil)
