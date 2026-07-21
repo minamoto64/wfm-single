@@ -1,8 +1,10 @@
 class TasksController < ApplicationController
+  include Authorizable
+
   before_action :set_task, only: [ :edit, :update ]
   before_action :set_task_with_associations, only: :show
-  before_action :authorize_view!, only: [ :show, :edit, :update ]
-  before_action :authorize_edit!, only: [ :edit, :update ]
+  before_action -> { authorize_view!(@task, tasks_path) }, only: [ :show, :edit, :update ]
+  before_action -> { authorize_edit!(@task) }, only: [ :edit, :update ]
 
   def index
     @q = visible_tasks.ransack(params[:q], auth_object: :admin)
@@ -73,16 +75,6 @@ class TasksController < ApplicationController
 
   def visible_tasks
     Current.user.admin? ? Task.all : Task.where(restricted: false)
-  end
-
-  def authorize_view!
-    return if Current.user.admin? || !@task.restricted
-    redirect_to tasks_path, alert: "アクセス権限がありません"
-  end
-
-  def authorize_edit!
-    return if @task.user == Current.user
-    redirect_to @task, alert: "編集権限がありません"
   end
 
   def task_params
