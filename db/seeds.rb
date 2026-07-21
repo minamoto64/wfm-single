@@ -68,28 +68,28 @@ user_satou  = User.find_by!(email_address: "satou@example.com")
 # ==============================================================================
 customers_data = [
   {
-    uuid: "11111111-1111-1111-1111-111111111111",
+    key: :hanako,
     name: "山田 花子",
     email: "hanako@example.com",
     phone: "090-1234-5678",
     key_notes: "初回訪問済み。次回は2月にフォロー予定。"
   },
   {
-    uuid: "22222222-2222-2222-2222-222222222222",
+    key: :jiro,
     name: "佐藤 次郎",
     email: "",
     phone: "",
     key_notes: "メール・電話なし。家族経由で連絡。"
   },
   {
-    uuid: "33333333-3333-3333-3333-333333333333",
+    key: :john,
     name: "John Smith",
     email: "john.smith@example.com",
     phone: "03-1234-5678",
     key_notes: "英語対応が必要。"
   },
   {
-    uuid: "44444444-4444-4444-4444-444444444444",
+    key: :hanako_regular,
     name: "山田 花子",
     email: "",
     phone: "",
@@ -97,22 +97,25 @@ customers_data = [
   }
 ]
 
+created_customers = {}
+
 customers_data.each do |attrs|
-  customer = Customer.find_or_create_by!(uuid: attrs[:uuid]) do |c|
-    c.assign_attributes(attrs)
+  customer = Customer.find_or_create_by!(name: attrs[:name], email: attrs[:email], phone: attrs[:phone]) do |c|
+    c.key_notes = attrs[:key_notes]
   end
+
+  created_customers[attrs[:key]] = customer
 
   if customer.previously_new_record?
     puts "初期顧客を作成しました！"
     puts "名前: #{customer.name}"
-    puts "UUID: #{customer.uuid}"
   end
 end
 
-# 以降で顧客をUUIDで参照
-customer_hanako = Customer.find_by!(uuid: "11111111-1111-1111-1111-111111111111")
-customer_jiro   = Customer.find_by!(uuid: "22222222-2222-2222-2222-222222222222")
-customer_john   = Customer.find_by!(uuid: "33333333-3333-3333-3333-333333333333")
+# 以降で顧客を参照
+customer_hanako = created_customers[:hanako]
+customer_jiro   = created_customers[:jiro]
+customer_john   = created_customers[:john]
 
 # ==============================================================================
 # ヘルパーメソッド
