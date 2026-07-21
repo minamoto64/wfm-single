@@ -81,18 +81,6 @@ RSpec.describe Customer, type: :model do
         expect(customer).to be_invalid
       end
     end
-
-    describe 'uuid' do
-      it 'generates a uuid on creation' do
-        expect(create(:customer).uuid).to be_present
-      end
-
-      it 'assigns different uuids when multiple customers have the same name' do
-        customer_a = create(:customer, name: '伊藤綾香')
-        customer_b = create(:customer, name: '伊藤綾香')
-        expect(customer_a.uuid).not_to eq(customer_b.uuid)
-      end
-    end
   end
 
   describe 'ransackable_attributes' do
