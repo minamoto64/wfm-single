@@ -68,6 +68,18 @@ RSpec.describe "Interactions", type: :request do
         expect(response.body).to include(second_sibling_interaction.request_content)
       end
 
+      it "shows the (limit+1)th interaction only on page 2" do
+        limit = Pagy::DEFAULT[:items]
+        old_interaction = create(:interaction, user: user, occurred_at: (limit + 1).days.ago, request_content: "1番古い応対履歴")
+        (1..limit).each { |i| create(:interaction, user: user, occurred_at: i.days.ago) }
+
+        get interactions_path
+        expect(response.body).not_to include(old_interaction.request_content)
+
+        get interactions_path, params: { page: 2 }
+        expect(response.body).to include(old_interaction.request_content)
+      end
+
       it "ignores unauthorized customer email filter and returns unfiltered results" do
         create(:interaction, customer: customer, user: user)
         create(:interaction, customer: other_customer, user: user)
