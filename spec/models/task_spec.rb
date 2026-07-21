@@ -59,8 +59,8 @@ RSpec.describe Task, type: :model do
       expect(association.options[:optional]).to be(true)
     end
 
-    it 'has many thread_tasks' do
-      association = described_class.reflect_on_association(:thread_tasks)
+    it 'has many rooted_tasks' do
+      association = described_class.reflect_on_association(:rooted_tasks)
 
       expect(association.macro).to eq(:has_many)
       expect(association.options[:class_name]).to eq("Task")
