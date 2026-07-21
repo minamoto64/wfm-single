@@ -7,14 +7,16 @@ class NoticesController < ApplicationController
 
   def index
     @q = visible_notices.ransack(params[:q], auth_object: :admin)
-    @notices = @q.result
-               .preload(
-                 :user,
-                 root: {
-                   thread_notices: [ :user ]
-                 }
-               )
-               .order(start_at: :desc)
+    @pagy, @notices = pagy(
+      @q.result
+        .preload(
+          :user,
+          root: {
+            thread_notices: [ :user ]
+          }
+        )
+        .order(start_at: :desc)
+    )
   end
 
   def new

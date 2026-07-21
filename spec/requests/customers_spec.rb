@@ -27,6 +27,18 @@ RSpec.describe "Customers", type: :request do
         expect(response.body).to include(customer.phone)
         expect(response.body).to include(customer.key_notes)
       end
+
+      it "shows the (limit+1)th customer only on page 2" do
+        limit = Pagy::DEFAULT[:items]
+        (1..limit).each { |i| create(:customer, name: format("aaa_page_test_%02d", i), email: "aaa_page_test_#{i}@example.com") }
+        target_customer = create(:customer, name: "zzz_page_test_target", email: "zzz_page_test_target@example.com")
+
+        get customers_path
+        expect(response.body).not_to include(target_customer.name)
+
+        get customers_path, params: { page: 2 }
+        expect(response.body).to include(target_customer.name)
+      end
     end
 
     context "when the user is not logged in" do

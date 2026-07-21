@@ -73,6 +73,18 @@ RSpec.describe "Notices", type: :request do
         expect(response.body).to include(notice.title, other_notice.title)
       end
 
+      it "shows the (limit+1)th notice only on page 2" do
+        limit = Pagy::DEFAULT[:items]
+        (1..limit).each { |i| create(:notice, user: user, start_at: i.minutes.ago) }
+        target_notice = create(:notice, user: user, start_at: 1.year.ago, title: "2ページ目のお知らせ")
+
+        get notices_path
+        expect(response.body).not_to include(target_notice.title)
+
+        get notices_path, params: { page: 2 }
+        expect(response.body).to include(target_notice.title)
+      end
+
       it "uses full-page navigation for user links inside turbo frame" do
         get notices_path
 

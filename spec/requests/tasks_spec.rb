@@ -67,6 +67,18 @@ RSpec.describe "Tasks", type: :request do
         expect(response.body).to include(task.title, other_task.title)
       end
 
+      it "shows the (limit+1)th task only on page 2" do
+        limit = Pagy::DEFAULT[:items]
+        (1..limit).each { |i| create(:task, user: user, due_at: i.hours.from_now) }
+        target_task = create(:task, user: user, due_at: 1.month.from_now, title: "2ページ目のタスク")
+
+        get tasks_path
+        expect(response.body).not_to include(target_task.title)
+
+        get tasks_path, params: { page: 2 }
+        expect(response.body).to include(target_task.title)
+      end
+
       it "uses full-page navigation for user links inside turbo frame" do
         get tasks_path
 

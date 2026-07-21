@@ -5,15 +5,17 @@ class InteractionsController < ApplicationController
 
   def index
     @q = Interaction.ransack(params[:q])
-    @interactions = @q.result
-                    .preload(
-                      :customer,
-                      :user,
-                      root: {
-                        thread_interactions: [ :customer, :user ]
-                      }
-                    )
-                    .order(occurred_at: :desc)
+    @pagy, @interactions = pagy(
+      @q.result
+        .preload(
+          :customer,
+          :user,
+          root: {
+            thread_interactions: [ :customer, :user ]
+          }
+        )
+        .order(occurred_at: :desc)
+    )
   end
 
   def new

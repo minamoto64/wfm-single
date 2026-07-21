@@ -6,15 +6,17 @@ class TasksController < ApplicationController
 
   def index
     @q = visible_tasks.ransack(params[:q], auth_object: :admin)
-    @tasks = @q.result
-               .preload(
-                 :user,
-                 task_assignments: [ :user ],
-                 root: {
-                   thread_tasks: [ :user, task_assignments: [ :user ] ]
-                 }
-               )
-               .order(due_at: :asc)
+    @pagy, @tasks = pagy(
+      @q.result
+        .preload(
+          :user,
+          task_assignments: [ :user ],
+          root: {
+            thread_tasks: [ :user, task_assignments: [ :user ] ]
+          }
+        )
+        .order(due_at: :asc)
+    )
   end
 
   def new

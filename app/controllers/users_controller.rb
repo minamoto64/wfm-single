@@ -4,7 +4,7 @@ class UsersController < ApplicationController
 
   def index
     @q = User.ransack(params[:q], auth_object: :user_list)
-    @users = @q.result.order(:name)
+    @pagy, @users = pagy(@q.result.order(:name))
   end
 
   def show

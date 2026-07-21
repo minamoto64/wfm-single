@@ -25,6 +25,18 @@ RSpec.describe "Users", type: :request do
         expect(response.body).to include(admin.name)
         expect(response.body).to include(I18n.t("users.admin.#{user.admin?}"))
       end
+
+      it "shows the (limit+1)th user only on page 2" do
+        limit = Pagy::DEFAULT[:items]
+        (1..limit).each { |i| create(:user, name: format("aaa_page_test_%02d", i), email_address: "aaa_page_test_#{i}@example.com") }
+        target_user = create(:user, name: "zzz_page_test_target", email_address: "zzz_page_test_target@example.com")
+
+        get users_path
+        expect(response.body).not_to include(target_user.name)
+
+        get users_path, params: { page: 2 }
+        expect(response.body).to include(target_user.name)
+      end
     end
 
     context "when the user is not logged in" do
