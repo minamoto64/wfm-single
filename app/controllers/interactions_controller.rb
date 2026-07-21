@@ -1,7 +1,9 @@
 class InteractionsController < ApplicationController
+  include Authorizable
+
   before_action :set_interaction, only: [ :edit, :update ]
   before_action :set_interaction_with_comments, only: :show
-  before_action :authorize_edit!, only: [ :edit, :update ]
+  before_action -> { authorize_edit!(@interaction) }, only: [ :edit, :update ]
 
   def index
     @q = Interaction.ransack(params[:q])
@@ -68,11 +70,5 @@ class InteractionsController < ApplicationController
       :request_content, :response_result, :completed, :parent_id,
       images: []
     )
-  end
-
-  def authorize_edit!
-    return if @interaction.user == Current.user
-
-    redirect_to @interaction, alert: "編集権限がありません"
   end
 end
