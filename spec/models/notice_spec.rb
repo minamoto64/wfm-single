@@ -41,8 +41,8 @@ RSpec.describe Notice, type: :model do
       expect(association.options[:optional]).to be(true)
     end
 
-    it 'has many thread_notices' do
-      association = described_class.reflect_on_association(:thread_notices)
+    it 'has many rooted_notices' do
+      association = described_class.reflect_on_association(:rooted_notices)
 
       expect(association.macro).to eq(:has_many)
       expect(association.options[:class_name]).to eq("Notice")

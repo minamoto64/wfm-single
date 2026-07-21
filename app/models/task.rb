@@ -1,17 +1,8 @@
 class Task < ApplicationRecord
-  before_validation :assign_root
-  after_create :assign_self_as_root
+  include Rootable
+  rootable order_column: :created_at
 
   belongs_to :user
-
-  belongs_to :parent, class_name: "Task", optional: true
-  has_many :children,
-           -> { order(created_at: :desc) },
-           class_name: "Task",
-           foreign_key: "parent_id"
-
-  belongs_to :root, class_name: "Task", optional: true
-  has_many :thread_tasks, class_name: "Task", foreign_key: :root_id, dependent: :nullify
 
   has_many :task_assignments
   has_many :assigned_users, through: :task_assignments, source: :user
@@ -32,22 +23,7 @@ class Task < ApplicationRecord
     content_type: %w[image/jpeg image/png image/gif],
     size: { less_than_or_equal_to: 10.megabytes }
 
-  def related_tasks
-    thread_tasks_all = root.thread_tasks
-    thread_tasks_all.reject { |task| task.id == id }.sort_by(&:created_at)
-  end
-
   private
-
-  def assign_root
-    return unless parent
-
-    self.root = parent.root || parent
-  end
-
-  def assign_self_as_root
-    update_column(:root_id, id) if root_id.nil?
-  end
 
   scope :due_within, ->(period) {
     from = Time.current.beginning_of_day

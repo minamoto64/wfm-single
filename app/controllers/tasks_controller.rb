@@ -12,7 +12,7 @@ class TasksController < ApplicationController
           :user,
           task_assignments: [ :user ],
           root: {
-            thread_tasks: [ :user, task_assignments: [ :user ] ]
+            rooted_tasks: [ :user, task_assignments: [ :user ] ]
           }
         )
         .order(due_at: :asc)
@@ -44,7 +44,7 @@ class TasksController < ApplicationController
   end
 
   def show
-    @timeline = @task.root.thread_tasks.order(:created_at)
+    @timeline = @task.root.rooted_tasks.order(:created_at)
   end
 
   def edit

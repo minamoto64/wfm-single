@@ -11,7 +11,7 @@ class InteractionsController < ApplicationController
           :customer,
           :user,
           root: {
-            thread_interactions: [ :customer, :user ]
+            rooted_interactions: [ :customer, :user ]
           }
         )
         .order(occurred_at: :desc)
@@ -38,7 +38,7 @@ class InteractionsController < ApplicationController
   end
 
   def show
-    @timeline = @interaction.root.thread_interactions.order(:occurred_at)
+    @timeline = @interaction.root.rooted_interactions.order(:occurred_at)
   end
 
   def edit

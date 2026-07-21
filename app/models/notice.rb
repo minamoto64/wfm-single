@@ -1,17 +1,8 @@
 class Notice < ApplicationRecord
-  before_validation :assign_root
-  after_create :assign_self_as_root
+  include Rootable
+  rootable order_column: :created_at
 
   belongs_to :user
-
-  belongs_to :parent, class_name: "Notice", optional: true
-  has_many :children,
-           -> { order(created_at: :desc) },
-           class_name: "Notice",
-           foreign_key: "parent_id"
-
-  belongs_to :root, class_name: "Notice", optional: true
-  has_many :thread_notices, class_name: "Notice", foreign_key: :root_id, dependent: :nullify
 
   has_many :interaction_notices
   has_many :interactions, through: :interaction_notices
@@ -38,22 +29,7 @@ class Notice < ApplicationRecord
     content_type: %w[image/jpeg image/png image/gif],
     size: { less_than_or_equal_to: 10.megabytes }
 
-  def related_notices
-    thread_notices_all = root.thread_notices
-    thread_notices_all.reject { |notice| notice.id == id }.sort_by(&:created_at)
-  end
-
   private
-
-  def assign_root
-    return unless parent
-
-    self.root = parent.root || parent
-  end
-
-  def assign_self_as_root
-    update_column(:root_id, id) if root_id.nil?
-  end
 
   scope :status, ->(value) {
     now = Time.current

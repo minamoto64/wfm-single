@@ -52,8 +52,8 @@ RSpec.describe Interaction, type: :model do
       expect(association.options[:optional]).to be(true)
     end
 
-    it 'has many thread_interactions' do
-      association = described_class.reflect_on_association(:thread_interactions)
+    it 'has many rooted_interactions' do
+      association = described_class.reflect_on_association(:rooted_interactions)
 
       expect(association.macro).to eq(:has_many)
       expect(association.options[:class_name]).to eq("Interaction")

@@ -12,7 +12,7 @@ class NoticesController < ApplicationController
         .preload(
           :user,
           root: {
-            thread_notices: [ :user ]
+            rooted_notices: [ :user ]
           }
         )
         .order(start_at: :desc)
@@ -42,7 +42,7 @@ class NoticesController < ApplicationController
   end
 
   def show
-    @timeline = @notice.root.thread_notices.order(:created_at)
+    @timeline = @notice.root.rooted_notices.order(:created_at)
   end
 
   def edit
