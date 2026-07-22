@@ -8,10 +8,6 @@ RSpec.describe "Tasks", type: :request do
   let!(:task) { create(:task, user: user) }
   let(:restricted_task) { create(:task, user: admin, restricted: true) }
 
-  def sign_in(user)
-    post login_path, params: { email_address: user.email_address, password: "password55" }
-  end
-
   describe "GET /tasks" do
     context "when the user is logged in" do
       before do
@@ -121,11 +117,9 @@ RSpec.describe "Tasks", type: :request do
     end
 
     context "when the user is not logged in" do
-      it "redirects to the login page" do
-        get tasks_path
+      subject { get tasks_path }
 
-        expect(response).to redirect_to(login_path)
-      end
+      it_behaves_like "requires_authentication"
     end
   end
 
@@ -166,11 +160,9 @@ RSpec.describe "Tasks", type: :request do
     end
 
     context "when the user is not logged in" do
-      it "redirects to the login page" do
-        get task_path(task)
+      subject { get task_path(task) }
 
-        expect(response).to redirect_to(login_path)
-      end
+      it_behaves_like "requires_authentication"
     end
   end
 
@@ -202,11 +194,9 @@ RSpec.describe "Tasks", type: :request do
     end
 
     context "when the user is not logged in" do
-      it "redirects to the login page" do
-        get new_task_path
+      subject { get new_task_path }
 
-        expect(response).to redirect_to(login_path)
-      end
+      it_behaves_like "requires_authentication"
     end
   end
 
@@ -214,13 +204,7 @@ RSpec.describe "Tasks", type: :request do
     context "when the user is logged in" do
       before { sign_in(user) }
 
-      let(:valid_params) do
-        {
-          title:       "テストタスク",
-          description: "テストタスクの詳細",
-          due_at:      1.week.from_now
-        }
-      end
+      let(:valid_params) { attributes_for(:task) }
 
       it "creates a Task with valid params" do
         expect {
@@ -251,13 +235,7 @@ RSpec.describe "Tasks", type: :request do
 
       it "ignores restricted parameter" do
         post tasks_path, params: create_task_with_assignees(
-          {
-            task: {
-              title:       "テストタスク",
-              description: "テストタスクの詳細",
-              restricted:  true
-            }
-          }
+          { task: attributes_for(:task).merge(restricted: true) }
         )
         expect(Task.last.restricted).to be(false)
       end
@@ -268,23 +246,16 @@ RSpec.describe "Tasks", type: :request do
 
       it "allows to set restricted" do
         post tasks_path, params: create_task_with_assignees(
-          {
-            task: {
-              title:       "テストタスク",
-              description: "テストタスクの詳細",
-              restricted:  true
-            }
-          }
+          { task: attributes_for(:task).merge(restricted: true) }
         )
         expect(Task.last.restricted).to be(true)
       end
     end
 
     context "when the user is not logged in" do
-      it "redirects to the login page" do
-        post tasks_path, params: {}
-        expect(response).to redirect_to(login_path)
-      end
+      subject { post tasks_path, params: {} }
+
+      it_behaves_like "requires_authentication"
     end
   end
 
@@ -384,11 +355,9 @@ RSpec.describe "Tasks", type: :request do
     end
 
     context "when the user is not logged in" do
-      it "redirects to the login page" do
-        get edit_task_path(task)
+      subject { get edit_task_path(task) }
 
-        expect(response).to redirect_to(login_path)
-      end
+      it_behaves_like "requires_authentication"
     end
   end
 
@@ -459,11 +428,9 @@ RSpec.describe "Tasks", type: :request do
     end
 
     context "when the user is not logged in" do
-      it "redirects to the login page" do
-        patch task_path(task), params: {}
+      subject { patch task_path(task), params: {} }
 
-        expect(response).to redirect_to(login_path)
-      end
+      it_behaves_like "requires_authentication"
     end
   end
 

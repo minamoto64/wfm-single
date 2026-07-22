@@ -5,10 +5,6 @@ RSpec.describe "Interaction Tasks", type: :request do
   let(:task) { create(:task) }
   let(:customer) { create(:customer) }
 
-  def sign_in(user)
-    post login_path, params: { email_address: user.email_address, password: "password55" }
-  end
-
   before { sign_in(user) }
 
   describe "GET /interactions/:id - related tasks display" do

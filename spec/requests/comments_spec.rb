@@ -4,10 +4,6 @@ RSpec.describe "Comments", type: :request do
   let(:user) { create(:user) }
   let(:other_user) { create(:user) }
 
-  def sign_in(user)
-    post login_path, params: { email_address: user.email_address, password: "password55" }
-  end
-
   before { sign_in(user) }
 
   shared_examples "allows posting comments" do |commentable_factory|

@@ -14,10 +14,6 @@ RSpec.describe "Notices search", type: :request do
     create(:notice, title: "ユーザーお知らせ", content: "一般ユーザーの作業", user: regular_user)
   end
 
-  def sign_in(user)
-    post login_path, params: { email_address: user.email_address, password: "password55" }
-  end
-
   describe "GET /notices" do
     context "when signed in as admin" do
       before { sign_in(admin) }

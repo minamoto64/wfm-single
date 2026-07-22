@@ -6,32 +6,8 @@ RSpec.describe "Notices", type: :request do
   let!(:notice) { create(:notice, user: user) }
   let!(:restricted_notice) { create(:notice, user: admin, restricted: true) }
 
-  def sign_in(user)
-    post login_path, params: { email_address: user.email_address, password: "password55" }
-  end
-
   def valid_params
-    {
-      notice: {
-        title: "テストお知らせ",
-        content: "テストタスクの詳細",
-        level: "important",
-        start_at: 1.hour.ago,
-        end_at: 1.week.from_now
-      }
-    }
-  end
-
-  def child_params
-    {
-      notice: {
-        title: "子テストタスク",
-        content: "子テストタスクの詳細",
-        level: "important",
-        start_at: 1.hour.ago,
-        end_at: 1.week.from_now
-      }
-    }
+    { notice: attributes_for(:notice) }
   end
 
   describe "GET /notices" do
@@ -123,11 +99,9 @@ RSpec.describe "Notices", type: :request do
     end
 
     context "when the user is not logged in" do
-      it "redirects to the login page" do
-        get notices_path
+      subject { get notices_path }
 
-        expect(response).to redirect_to login_path
-      end
+      it_behaves_like "requires_authentication"
     end
   end
 
@@ -213,11 +187,9 @@ RSpec.describe "Notices", type: :request do
     end
 
     context "when the user is not logged in" do
-      it "redirects to the login page" do
-        get notice_path(notice)
+      subject { get notice_path(notice) }
 
-        expect(response).to redirect_to login_path
-      end
+      it_behaves_like "requires_authentication"
     end
   end
 
@@ -249,11 +221,9 @@ RSpec.describe "Notices", type: :request do
     end
 
     context "when the user is not logged in" do
-      it "redirects to the login page" do
-        get new_notice_path
+      subject { get new_notice_path }
 
-        expect(response).to redirect_to login_path
-      end
+      it_behaves_like "requires_authentication"
     end
   end
 
@@ -292,7 +262,7 @@ RSpec.describe "Notices", type: :request do
       end
 
       it "ignores restricted parameter" do
-        post notices_path, params: { notice: child_params[:notice].merge(restricted: true) }
+        post notices_path, params: { notice: attributes_for(:notice).merge(restricted: true) }
 
         expect(Notice.last.restricted).to be(false)
       end
@@ -302,18 +272,16 @@ RSpec.describe "Notices", type: :request do
       before { sign_in(admin) }
 
       it "allows to set restricted" do
-        post notices_path, params: { notice: child_params[:notice].merge(restricted: true) }
+        post notices_path, params: { notice: attributes_for(:notice).merge(restricted: true) }
 
         expect(Notice.last.restricted).to be(true)
       end
     end
 
     context "when the user is not logged in" do
-      it "redirects to the login page" do
-        post notices_path, params: {}
+      subject { post notices_path, params: {} }
 
-        expect(response).to redirect_to login_path
-      end
+      it_behaves_like "requires_authentication"
     end
   end
 
@@ -410,11 +378,9 @@ RSpec.describe "Notices", type: :request do
     end
 
     context "when the user is not logged in" do
-      it "redirects to the login page" do
-        get edit_notice_path(notice)
+      subject { get edit_notice_path(notice) }
 
-        expect(response).to redirect_to login_path
-      end
+      it_behaves_like "requires_authentication"
     end
   end
 
@@ -482,11 +448,9 @@ RSpec.describe "Notices", type: :request do
     end
 
     context "when the user is not logged in" do
-      it "redirects to the login page" do
-        patch notice_path(notice), params: {}
+      subject { patch notice_path(notice), params: {} }
 
-        expect(response).to redirect_to login_path
-      end
+      it_behaves_like "requires_authentication"
     end
   end
 

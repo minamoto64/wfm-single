@@ -9,10 +9,6 @@ RSpec.describe "Users search", type: :request do
     sign_in(user)
   end
 
-  def sign_in(user)
-    post login_path, params: { email_address: user.email_address, password: "password55" }
-  end
-
   describe "GET /users" do
     it "returns all records when no search params are given" do
       get users_path

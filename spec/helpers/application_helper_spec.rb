@@ -26,40 +26,4 @@ RSpec.describe ApplicationHelper, type: :helper do
       ])
     end
   end
-
-  describe "#tab_link_to" do
-    let(:tab) { { path: "/interactions", label: "応対履歴", name: "interactions" } }
-
-    context "when the tab matches the current controller (active)" do
-      subject(:rendered) { helper.tab_link_to(tab) }
-
-      before { allow(helper).to receive(:controller_name).and_return("interactions") }
-
-      it "applies active border class" do
-        expect(rendered).to include("border-blue-500")
-      end
-
-      it "applies active text class" do
-        expect(rendered).to include("text-blue-600")
-      end
-
-      it "does not apply inactive border class" do
-        expect(rendered).not_to include("border-transparent")
-      end
-    end
-
-    context "when the tab does not match the current controller (inactive)" do
-      subject(:rendered) { helper.tab_link_to(tab) }
-
-      before { allow(helper).to receive(:controller_name).and_return("tasks") }
-
-      it "applies inactive border class" do
-        expect(rendered).to include("border-transparent")
-      end
-
-      it "does not apply active border class" do
-        expect(rendered).not_to include("border-blue-500")
-      end
-    end
-  end
 end

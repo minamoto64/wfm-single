@@ -6,10 +6,6 @@ RSpec.describe "Task Interactions", type: :request do
   let(:user) { create(:user) }
   let(:interaction) { create(:interaction) }
 
-  def sign_in(user)
-    post login_path, params: { email_address: user.email_address, password: "password55" }
-  end
-
   before { sign_in(user) }
 
   describe "GET/tasks/new with interaction_id" do
@@ -23,12 +19,7 @@ RSpec.describe "Task Interactions", type: :request do
   describe "POST /tasks with interaction_id" do
     let(:valid_params) do
       {
-        task: {
-          title: "テストタスク",
-          description: "テストタスクの詳細",
-          restricted: false,
-          due_at: 7.days.from_now
-        },
+        task: attributes_for(:task),
         interaction_id: interaction.id
       }
     end

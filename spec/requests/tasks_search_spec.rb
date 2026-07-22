@@ -8,10 +8,6 @@ RSpec.describe "Tasks search", type: :request do
   let!(:restricted_task) { create(:task, title: "限定タスク", description: "管理者専用コンテンツ", restricted: true, user: admin) }
   let!(:user_task)       { create(:task, title: "ユーザータスク", description: "一般ユーザーの作業", user: regular_user) }
 
-  def sign_in(user)
-    post login_path, params: { email_address: user.email_address, password: "password55" }
-  end
-
   describe "GET /tasks" do
     context "when signed in as admin" do
       before { sign_in(admin) }
