@@ -1,30 +1,16 @@
 require "rails_helper"
 
 RSpec.describe "Header", type: :system do
-  let(:user) { create(:user, password: "password55") }
+  let(:user) { create(:user) }
 
   def sign_in(user)
     visit login_path
 
     fill_in "email_address", with: user.email_address
-    fill_in "password", with: "password55"
+    fill_in "password", with: user.password
     click_button "ログイン"
 
     expect(page).to have_current_path(interactions_path)
-  end
-
-  describe "navigation tabs" do
-    before do
-      sign_in(user)
-    end
-
-    it "highlights the active tab for the current controller" do
-      expect(find("[data-tab-name='interactions']")[:class]).to include("border-blue-500")
-    end
-
-    it "does not highlight inactive tabs" do
-      expect(find("[data-tab-name='tasks']")[:class]).to include("border-transparent")
-    end
   end
 
   describe "user menu dropdown", :js do

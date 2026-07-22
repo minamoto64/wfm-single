@@ -13,10 +13,6 @@ RSpec.describe "Task Assignments", type: :request do
     }
   end
 
-  def sign_in(user)
-    post login_path, params: { email_address: user.email_address, password: "password55" }
-  end
-
   before { sign_in(task_creator) }
 
   describe "POST /tasks with assignee_ids" do
@@ -120,13 +116,11 @@ RSpec.describe "Task Assignments", type: :request do
     end
 
     context "when not signed in" do
+      subject { patch task_assignment_path(assignment), params: { task_assignment: { status: "done" } } }
+
       before { delete logout_path }
 
-      it "redirects to the login page" do
-        patch task_assignment_path(assignment), params: { task_assignment: { status: "done" } }
-
-        expect(response).to redirect_to(login_path)
-      end
+      it_behaves_like "requires_authentication"
     end
   end
 end

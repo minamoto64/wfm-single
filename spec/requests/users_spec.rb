@@ -4,10 +4,6 @@ RSpec.describe "Users", type: :request do
   let(:user) { create(:user) }
   let!(:admin) { create(:user, admin: true) }
 
-  def sign_in(user)
-    post login_path, params: { email_address: user.email_address, password: "password55" }
-  end
-
   describe "GET /users" do
     context "when the user is logged in" do
       before { sign_in(user) }
@@ -40,11 +36,9 @@ RSpec.describe "Users", type: :request do
     end
 
     context "when the user is not logged in" do
-      it "redirects to the login page" do
-        get users_path
+      subject { get users_path }
 
-        expect(response).to redirect_to login_path
-      end
+      it_behaves_like "requires_authentication"
     end
   end
 
@@ -119,11 +113,9 @@ RSpec.describe "Users", type: :request do
     end
 
     context "when the user is not logged in" do
-      it "redirects to the login page" do
-        get user_path(user)
+      subject { get user_path(user) }
 
-        expect(response).to redirect_to(login_path)
-      end
+      it_behaves_like "requires_authentication"
     end
   end
 
@@ -164,11 +156,9 @@ RSpec.describe "Users", type: :request do
     end
 
     context "when the user is not logged in" do
-      it "redirects to the login page" do
-        get new_user_path
+      subject { get new_user_path }
 
-        expect(response).to redirect_to login_path
-      end
+      it_behaves_like "requires_authentication"
     end
   end
 
@@ -244,11 +234,9 @@ RSpec.describe "Users", type: :request do
     end
 
     context "when the user is not logged in" do
-      it "redirects to the login page" do
-        post users_path, params: {}
+      subject { post users_path, params: {} }
 
-        expect(response).to redirect_to(login_path)
-      end
+      it_behaves_like "requires_authentication"
     end
   end
 

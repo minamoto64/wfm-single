@@ -3,10 +3,6 @@ require "rails_helper"
 RSpec.describe "Authentication", type: :request do
   let(:user) { create(:user) }
 
-  def sign_in(user)
-    post login_path, params: { email_address: user.email_address, password: "password55" }
-  end
-
   describe "GET /login" do
     it "allows users to access login page" do
       get login_path
@@ -16,11 +12,9 @@ RSpec.describe "Authentication", type: :request do
   end
 
   describe "GET /interactions" do
-    it "redirects unauthenticated users to login page" do
-      get interactions_path
+    subject { get interactions_path }
 
-      expect(response).to redirect_to(login_path)
-    end
+    it_behaves_like "requires_authentication"
   end
 
   describe "POST /login" do

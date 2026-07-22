@@ -7,11 +7,6 @@ RSpec.describe "Interactions", type: :request do
   let(:customer) { create(:customer, name: "鈴木太郎", phone: "090-1111-2222", email: "suzuki@example.com") }
   let(:other_customer) { create(:customer, name: "佐藤花子", phone: "080-3333-4444", email: "sato@example.com") }
 
-
-  def sign_in(user)
-    post login_path, params: { email_address: user.email_address, password: "password55" }
-  end
-
   describe "GET /interactions" do
     context "when the user is logged in" do
       before { sign_in(user) }
@@ -105,10 +100,9 @@ RSpec.describe "Interactions", type: :request do
     end
 
     context "when the user is not logged in" do
-      it "redirects to the login page" do
-        get interactions_path
-        expect(response).to redirect_to(login_path)
-      end
+      subject { get interactions_path }
+
+      it_behaves_like "requires_authentication"
     end
   end
 
@@ -129,10 +123,9 @@ RSpec.describe "Interactions", type: :request do
     end
 
     context "when the user is not logged in" do
-      it "redirects to the login page" do
-        get interactions_path
-        expect(response).to redirect_to(login_path)
-      end
+      subject { get interactions_path }
+
+      it_behaves_like "requires_authentication"
     end
   end
 
@@ -140,18 +133,8 @@ RSpec.describe "Interactions", type: :request do
     context "when the user is logged in" do
       before { sign_in(user) }
 
-      let(:customer) { create(:customer) }
       let(:valid_params) do
-        {
-          interaction: {
-            customer_id: customer.id,
-            channel: "phone",
-            occurred_at: Time.current,
-            request_content: "新規要望",
-            response_result: "対応しました！",
-            completed: true
-          }
-        }
+        { interaction: attributes_for(:interaction).merge(customer_id: customer.id) }
       end
 
       it "creates an Interaction with valid params" do
@@ -183,10 +166,9 @@ RSpec.describe "Interactions", type: :request do
     end
 
     context "when the user is not logged in" do
-      it "redirects to the login page" do
-        post interactions_path, params: {}
-        expect(response).to redirect_to(login_path)
-      end
+      subject { post interactions_path, params: {} }
+
+      it_behaves_like "requires_authentication"
     end
   end
 
@@ -197,7 +179,6 @@ RSpec.describe "Interactions", type: :request do
       }
     end
 
-    let(:customer) { create(:customer) }
     let(:interaction_params) do
       attributes_for(
         :interaction,
@@ -282,10 +263,9 @@ RSpec.describe "Interactions", type: :request do
     end
 
     context "when the user is not logged in" do
-      it "redirects to the login page" do
-        get interaction_path(interaction)
-        expect(response).to redirect_to(login_path)
-      end
+      subject { get interaction_path(interaction) }
+
+      it_behaves_like "requires_authentication"
     end
   end
 
@@ -311,11 +291,12 @@ RSpec.describe "Interactions", type: :request do
     end
 
     context "when the user is not logged in" do
-      it "redirects to the login page" do
-        interaction = create(:interaction, user: user)
-        get edit_interaction_path(interaction)
-        expect(response).to redirect_to(login_path)
-      end
+      subject { get edit_interaction_path(interaction) }
+
+      let(:interaction) { create(:interaction, user: user) }
+
+
+      it_behaves_like "requires_authentication"
     end
   end
 
@@ -360,10 +341,9 @@ RSpec.describe "Interactions", type: :request do
     end
 
     context "when the user is not logged in" do
-      it "redirects to the login page" do
-        patch interaction_path(interaction), params: {}
-        expect(response).to redirect_to(login_path)
-      end
+      subject { patch interaction_path(interaction), params: {} }
+
+      it_behaves_like "requires_authentication"
     end
   end
 

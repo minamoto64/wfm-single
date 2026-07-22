@@ -6,10 +6,6 @@ RSpec.describe "Task Notices", type: :request do
   let(:user) { create(:user) }
   let(:notice) { create(:notice) }
 
-  def sign_in(user)
-    post login_path, params: { email_address: user.email_address, password: "password55" }
-  end
-
   before { sign_in(user) }
 
   describe "GET/tasks/new with notice_id" do
@@ -23,12 +19,7 @@ RSpec.describe "Task Notices", type: :request do
   describe "POST /tasks with notice_id" do
     let(:valid_params) do
       {
-        task: {
-          title: "テストタスク",
-          description: "テストタスクの詳細",
-          restricted: false,
-          due_at: 7.days.from_now
-        },
+        task: attributes_for(:task),
         notice_id: notice.id
       }
     end

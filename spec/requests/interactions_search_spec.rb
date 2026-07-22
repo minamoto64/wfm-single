@@ -15,10 +15,6 @@ RSpec.describe "Interactions search", type: :request do
           channel: "email", completed: true, occurred_at: "2026-06-10 10:00")
   end
 
-  def sign_in(user)
-    post login_path, params: { email_address: user.email_address, password: "password55" }
-  end
-
   describe "GET /interactions" do
     it "returns all records when no search params are given" do
       get interactions_path

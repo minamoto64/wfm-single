@@ -4,10 +4,6 @@ RSpec.describe "Notice Interactions", type: :request do
   let(:user) { create(:user) }
   let(:interaction) { create(:interaction) }
 
-  def sign_in(user)
-    post login_path, params: { email_address: user.email_address, password: "password55" }
-  end
-
   before { sign_in(user) }
 
   describe "GET/notices/new with interaction_id" do
@@ -21,13 +17,7 @@ RSpec.describe "Notice Interactions", type: :request do
   describe "POST /notices with interaction_id" do
     let(:valid_params) do
       {
-        notice: {
-          title: "テストお知らせ",
-          content: "テストお知らせの詳細",
-          level: "normal",
-          start_at: 1.day.from_now,
-          end_at: 7.days.from_now
-        },
+        notice: attributes_for(:notice),
         interaction_id: interaction.id
       }
     end

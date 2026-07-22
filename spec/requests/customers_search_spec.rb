@@ -11,10 +11,6 @@ RSpec.describe "Customers search", type: :request do
     other_customer
   end
 
-  def sign_in(user)
-    post login_path, params: { email_address: user.email_address, password: "password55" }
-  end
-
   describe "GET /customers" do
     it "returns all records when no search params are given" do
       get customers_path
