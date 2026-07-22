@@ -14,9 +14,10 @@ module ImageHelpers
   end
 
   def oversized_file
-    Rack::Test::UploadedFile.new(
-      Rails.root.join("spec/fixtures/files/oversized.jpg"),
-      "image/jpeg"
-    )
+    tempfile = Tempfile.new([ "oversized", ".jpg" ], binmode: true)
+    tempfile.write(SecureRandom.random_bytes(11.megabytes))
+    tempfile.rewind
+
+    Rack::Test::UploadedFile.new(tempfile.path, "image/jpeg")
   end
 end

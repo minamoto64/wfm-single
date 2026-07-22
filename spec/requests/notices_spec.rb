@@ -2,7 +2,6 @@ require 'rails_helper'
 
 RSpec.describe "Notices", type: :request do
   let(:user) { create(:user) }
-  let(:other_user) { create(:user) }
   let(:admin) { create(:user, admin: true) }
   let!(:notice) { create(:notice, user: user) }
   let!(:restricted_notice) { create(:notice, user: admin, restricted: true) }
@@ -328,14 +327,11 @@ RSpec.describe "Notices", type: :request do
     before { sign_in(user) }
 
     context "with a valid image" do
+      let(:images) { [ valid_image ] }
+
       it "creates a notice with images" do
-        expect {
-          post notices_path, params: {
-            notice: attributes_for(:notice).merge(
-              images: [ valid_image ]
-            )
-          }
-        }.to change(Notice, :count).by(1)
+        expect { perform_request }
+          .to change(Notice, :count).by(1)
 
         expect(response).to redirect_to(notice_path(Notice.last))
         expect(Notice.last.images).to be_attached
@@ -343,14 +339,11 @@ RSpec.describe "Notices", type: :request do
     end
 
     context "with an invalid file" do
+      let(:images) { [ invalid_file ] }
+
       it "does not create a notice" do
-        expect {
-          post notices_path, params: {
-            notice: attributes_for(:notice).merge(
-              images: [ invalid_file ]
-            )
-          }
-        }.not_to change(Notice, :count)
+        expect { perform_request }
+          .not_to change(Notice, :count)
       end
     end
   end
@@ -379,6 +372,8 @@ RSpec.describe "Notices", type: :request do
     end
 
     context "when the user is not the creator" do
+      let(:other_user) { create(:user) }
+
       before { sign_in(other_user) }
 
       it "redirects to the show page" do
@@ -452,6 +447,8 @@ RSpec.describe "Notices", type: :request do
     end
 
     context "when the user is not the creator" do
+      let(:other_user) { create(:user) }
+
       before { sign_in(other_user) }
 
       it "does not update the notice and redirects to the show page" do
