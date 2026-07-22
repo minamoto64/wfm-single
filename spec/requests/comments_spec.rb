@@ -73,5 +73,29 @@ RSpec.describe "Comments", type: :request do
 
     it_behaves_like "restricts posting comments", "task"
     it_behaves_like "restricts posting comments", "notice"
+
+    context "with a commentable_type outside the whitelist" do
+      it "returns 404 for a non-commentable model" do
+        commentable_user = create(:user)
+
+        post comments_path, params: {
+          commentable_type: "User",
+          commentable_id: commentable_user.id,
+          comment: { content: "テストコメント" }
+        }
+
+        expect(response).to have_http_status(:not_found)
+      end
+
+      it "returns 404 for a nonexistent class name" do
+        post comments_path, params: {
+          commentable_type: "NonexistentModel",
+          commentable_id: 1,
+          comment: { content: "テストコメント" }
+        }
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
   end
 end
