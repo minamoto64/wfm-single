@@ -24,6 +24,10 @@ module ApplicationHelper
     end
   end
 
+  def thumbnail_variant(image)
+    image.variant(resize_to_limit: [ 800, 800 ])
+  end
+
   def pagy_tailwind_nav(pagy)
     return "".html_safe if pagy.pages <= 1
 
