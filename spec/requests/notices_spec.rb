@@ -425,7 +425,7 @@ RSpec.describe "Notices", type: :request do
       end
     end
 
-    context "when the usee is an admin and the creator" do
+    context "when the user is an admin and the creator" do
       before { sign_in(admin) }
 
       it "updates the restricted notice and redirects to the show page" do

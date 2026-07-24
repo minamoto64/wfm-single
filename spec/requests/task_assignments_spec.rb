@@ -13,9 +13,9 @@ RSpec.describe "Task Assignments", type: :request do
     }
   end
 
-  before { sign_in(task_creator) }
-
   describe "POST /tasks with assignee_ids" do
+    before { sign_in(task_creator) }
+
     context "with assignees" do
       it "creates task_assignments with status todo for each assignee" do
         expect {
@@ -57,6 +57,8 @@ RSpec.describe "Task Assignments", type: :request do
 
   describe "GET /tasks/:id" do
     let(:task) { create(:task, user: task_creator) }
+
+    before { sign_in(task_creator) }
 
     context "with assignees" do
       before do
@@ -117,8 +119,6 @@ RSpec.describe "Task Assignments", type: :request do
 
     context "when not signed in" do
       subject { patch task_assignment_path(assignment), params: { task_assignment: { status: "done" } } }
-
-      before { delete logout_path }
 
       it_behaves_like "requires_authentication"
     end

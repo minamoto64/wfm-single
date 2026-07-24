@@ -10,9 +10,9 @@ RSpec.describe "Interactions search", type: :request do
     sign_in(user)
 
     create(:interaction, customer: customer, user: user,
-          channel: "phone", completed: false, occurred_at: "2026-06-01 10:00")
+          channel: "phone", completed: false, occurred_at: 10.days.ago)
     create(:interaction, customer: other_customer, user: other_user,
-          channel: "email", completed: true, occurred_at: "2026-06-10 10:00")
+          channel: "email", completed: true, occurred_at: 1.day.ago)
   end
 
   describe "GET /interactions" do
@@ -58,14 +58,14 @@ RSpec.describe "Interactions search", type: :request do
     end
 
     it "filters by occurred_at range" do
-      get interactions_path, params: { q: { occurred_at_gteq: "2026-06-05" } }
+      get interactions_path, params: { q: { occurred_at_gteq: 5.days.ago.strftime("%Y-%m-%d") } }
       expect(response.body).to include(other_customer.name)
       expect(response.body).not_to include(customer.name)
     end
 
     it "filters by multiple conditions combined" do
       get interactions_path, params: {
-        q: { channel_eq: "phone", completed_eq: "false", occurred_at_lteq: "2026-06-05" }
+        q: { channel_eq: "phone", completed_eq: "false", occurred_at_lteq: 5.days.ago.strftime("%Y-%m-%d") }
       }
       expect(response.body).to include(customer.name)
       expect(response.body).not_to include(other_customer.name)
