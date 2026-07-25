@@ -73,6 +73,14 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+
+  # The default selenium_chrome_headless window is narrower than Tailwind's
+  # `md` breakpoint (768px), which silently swaps desktop table/list markup
+  # for mobile card markup mid-test. Force a desktop-sized window so system
+  # specs consistently exercise the desktop layout.
+  config.before(:each, :js, type: :system) do
+    page.driver.browser.manage.window.resize_to(1280, 1024)
+  end
 end
 
 require 'capybara/rspec'
