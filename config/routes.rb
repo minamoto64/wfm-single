@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   root "pages#home"
 
   get "/login", to: "sessions#new"
+  get "/login/demo", to: "sessions#demo", as: :demo_login
   post "/login", to: "sessions#create"
   delete "/logout", to: "sessions#destroy"
 

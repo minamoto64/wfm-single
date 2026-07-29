@@ -78,3 +78,4 @@ end
 gem "tailwindcss-rails", "~> 4.6"
 gem "ransack"
 gem "pagy", "~> 8.6"
+gem "rails_icons"

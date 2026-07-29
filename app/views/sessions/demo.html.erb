@@ -6,15 +6,11 @@
     <div class="relative w-full max-w-md mx-auto px-4 py-8">
       <div class="rounded-2xl bg-white px-6 py-10 shadow-xl shadow-blue-100/50 sm:px-8 sm:py-12">
         <div class="mb-8 text-center">
-          <h1 class="text-xl font-bold text-gray-900 sm:text-2xl">新しいパスワードを設定</h1>
-          <p class="mt-2 text-xs text-gray-500 sm:text-sm">新しいパスワードを入力してください</p>
+          <h1 class="text-xl font-bold text-gray-900 sm:text-2xl">ログイン</h1>
+          <p class="mt-2 text-xs text-gray-500 sm:text-sm">アカウント情報を入力してください</p>
         </div>
 
-        <%= render "edit_form" %>
-
-        <p class="mt-6 text-center text-xs sm:text-sm">
-          <%= link_to "← ログイン画面に戻る", login_path, class: "text-blue-600 hover:underline" %>
-        </p>
+        <%= render "demo_form" %>
       </div>
     </div>
   </main>
