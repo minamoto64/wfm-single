@@ -19,10 +19,10 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-gray-50 [scrollbar-gutter:stable]">
-    <% if Current.user.present? %>
-      <%= render "shared/header" %>
+  <body class="min-h-screen flex flex-col bg-gray-50 [scrollbar-gutter:stable]">
+    <%= render "shared/header" %>
 
+    <% if Current.user.present? %>
       <nav class="bg-white border-gray-300"
           data-controller="tabs"
           data-tabs-current-value="<%= controller_name %>"
@@ -45,6 +45,10 @@
       <div class="max-w-7xl mx-auto px-4 py-2 bg-red-100 text-red-800 rounded text-xs sm:text-sm"><%= alert %></div>
     <% end %>
 
-    <%= yield %>
+    <div class="flex-1 flex flex-col">
+      <%= yield %>
+    </div>
+
+    <%= render "shared/footer" %>
   </body>
 </html>
