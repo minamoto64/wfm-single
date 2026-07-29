@@ -1,61 +1,60 @@
-<div class="min-h-screen bg-white">
-  <header class="flex items-center justify-between px-12 py-6">
-    <div class="flex items-center gap-3">
-      <div class="flex h-8 w-8 items-center justify-center rounded bg-blue-600 text-white">🏪</div>
-      <span class="font-bold text-gray-900">店舗業務管理システム</span>
-    </div>
-    <nav class="flex items-center gap-8 text-sm text-gray-600">
-      <a href="#" class="hover:text-blue-600">機能紹介</a>
-      <a href="#" class="hover:text-blue-600">導入メリット</a>
-      <%= link_to "ログイン", login_path, class: "hover:text-blue-600" %>
-      <%= link_to "デモを体験する", login_path, class: "rounded-lg bg-blue-600 px-5 py-2 text-white hover:bg-blue-700" %>
-    </nav>
-  </header>
-  <main class="px-12 pt-16">
-    <section class="mx-auto max-w-6xl text-center">
-      <h1 class="text-5xl font-bold leading-tight text-gray-900">
-        店舗業務を、<br>
-        もっとスマートに。
-      </h1>
-      <p class="mt-8 text-gray-600 leading-relaxed">
-        応対履歴、タスク、周知事項の共有まで。<br>
-        日々の業務を一元管理し、生産性を向上させます。
-      </p>
-      <div class="mt-16 grid grid-cols-3 gap-16">
-        <div>
-          <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-3xl">💬</div>
-          <h3 class="mt-5 font-bold">応対履歴を一元管理</h3>
-          <p class="mt-3 text-sm text-gray-500">
-            顧客とのやり取りを<br>
-            簡単に確認できます。
-          </p>
-        </div>
-        <div>
-          <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-3xl">📋</div>
-          <h3 class="mt-5 font-bold">タスクで業務を見える化</h3>
-          <p class="mt-3 text-sm text-gray-500">
-            タスクを整理し<br>
-            チームで共有できます。
-          </p>
-        </div>
-        <div>
-          <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-3xl">📢</div>
-          <h3 class="mt-5 font-bold">お知らせで情報を共有</h3>
-          <p class="mt-3 text-sm text-gray-500">
-            従業員への周知事項を<br>
-            確実に共有できます。
-          </p>
-        </div>
+<div class="flex-1 flex flex-col bg-gray-50">
+  <main class="relative flex-1 flex flex-col justify-center overflow-hidden bg-gradient-to-b from-blue-50 to-gray-50">
+    <div class="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-blue-100 blur-3xl"></div>
+    <div class="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-blue-50 blur-3xl"></div>
+
+    <section class="relative">
+      <div class="relative max-w-5xl mx-auto px-4 py-4 sm:py-8 text-center w-full">
+        <h2 class="text-2xl font-bold leading-tight text-gray-900 sm:text-4xl">
+          店舗業務を、<br class="sm:hidden">
+          <span class="text-blue-500">もっとスマート</span>に。
+        </h2>
+        <p class="mt-4 text-sm text-gray-600 leading-relaxed sm:text-lg">
+          応対履歴・タスク・お知らせがシームレスにつながり、<br>
+          情報の整理と把握を容易にします。
+        </p>
       </div>
-      <div class="mt-20 h-64 rounded-t-3xl bg-blue-50 flex items-end justify-center overflow-hidden">
-        <div class="mb-8 text-center">
-          <div class="text-8xl">🏬</div>
-          <p class="mt-3 text-sm text-gray-400">店舗運営を支える管理システム</p>
+    </section>
+
+    <section class="relative mt-3 pb-6 sm:mt-6 sm:pb-10 md:mt-16">
+      <div class="max-w-5xl mx-auto px-4 text-center w-full">
+        <h3 class="text-xl font-bold text-gray-900 sm:text-3xl">業務の起点は、この3つ</h3>
+
+        <div class="mt-4 grid grid-cols-1 justify-center gap-3 text-center sm:mt-10 md:grid-cols-3 md:gap-6">
+          <div class="rounded-lg border border-gray-100 bg-white p-4 shadow transition-shadow hover:shadow-lg md:p-6">
+            <div class="flex flex-col items-center">
+              <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-xl mx-auto md:h-14 md:w-14 md:text-2xl">💬</div>
+              <div>
+                <h4 class="font-bold text-sm sm:text-base mt-4">応対履歴</h4>
+                <p class="mt-1 text-xs sm:text-sm text-gray-500">
+                  電話・メール・SNSなどの応対履歴をタスクやお知らせに展開できます。
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="rounded-lg border border-gray-100 bg-white p-4 shadow transition-shadow hover:shadow-lg md:p-6">
+            <div class="flex flex-col items-center">
+              <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-xl mx-auto md:h-14 md:w-14 md:text-2xl">📋</div>
+              <div>
+                <h4 class="font-bold text-sm sm:text-base mt-4">タスク</h4>
+                <p class="mt-1 text-xs sm:text-sm text-gray-500">
+                  担当者を割り当て、進捗状況をひと目で把握できます。
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="rounded-lg border border-gray-100 bg-white p-4 shadow transition-shadow hover:shadow-lg md:p-6">
+            <div class="flex flex-col items-center">
+              <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-xl mx-auto md:h-14 md:w-14 md:text-2xl">📢</div>
+              <div>
+                <h4 class="font-bold text-sm sm:text-base mt-4">お知らせ</h4>
+                <p class="mt-1 text-xs sm:text-sm text-gray-500">
+                  全従業員への周知はもちろん、管理者のみの周知も分けて管理できます。
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="mt-8 flex justify-center gap-5">
-        <%= link_to "デモを体験する", login_path, class: "rounded-lg bg-blue-600 px-10 py-3 font-semibold text-white hover:bg-blue-700" %>
-        <%= link_to "ログインはこちら", login_path, class: "rounded-lg border border-blue-600 px-10 py-3 font-semibold text-blue-600 hover:bg-blue-50" %>
       </div>
     </section>
   </main>
