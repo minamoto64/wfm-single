@@ -1,4 +1,6 @@
 class TaskAssignment < ApplicationRecord
+  include DemoScoped
+
   belongs_to :task
   belongs_to :user
 
