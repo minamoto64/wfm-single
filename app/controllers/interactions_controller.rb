@@ -6,7 +6,7 @@ class InteractionsController < ApplicationController
   before_action -> { authorize_edit!(@interaction) }, only: [ :edit, :update ]
 
   def index
-    @q = Interaction.ransack(params[:q])
+    @q = Interaction.accessible.ransack(params[:q])
     @pagy, @interactions = pagy(
       @q.result
         .preload(
@@ -21,7 +21,7 @@ class InteractionsController < ApplicationController
   end
 
   def new
-    @parent_interaction = Interaction.find_by(id: params[:parent_id])
+    @parent_interaction = Interaction.accessible.find_by(id: params[:parent_id])
     @interaction = Interaction.new(
       parent: @parent_interaction,
       customer: @parent_interaction&.customer
@@ -57,11 +57,11 @@ class InteractionsController < ApplicationController
   private
 
   def set_interaction
-    @interaction = Interaction.preload(:customer, :user).find(params[:id])
+    @interaction = Interaction.accessible.preload(:customer, :user).find(params[:id])
   end
 
   def set_interaction_with_comments
-    @interaction = Interaction.preload(:customer, :user, comments: [ :user ]).find(params[:id])
+    @interaction = Interaction.accessible.preload(:customer, :user, comments: [ :user ]).find(params[:id])
   end
 
   def interaction_params

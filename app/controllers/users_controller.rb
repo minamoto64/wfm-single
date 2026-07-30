@@ -3,7 +3,7 @@ class UsersController < ApplicationController
   before_action :require_admin, only: %i[new create edit update]
 
   def index
-    @q = User.ransack(params[:q], auth_object: :user_list)
+    @q = User.accessible.ransack(params[:q], auth_object: :user_list)
     @pagy, @users = pagy(@q.result.order(:name))
   end
 
@@ -39,7 +39,7 @@ class UsersController < ApplicationController
   private
 
   def set_user
-    @user = User.find(params[:id])
+    @user = User.accessible.find(params[:id])
   end
 
   def user_params

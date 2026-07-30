@@ -13,7 +13,7 @@ class TaskAssignmentsController < ApplicationController
   private
 
   def set_task_assignment
-    @task_assignment = TaskAssignment.find(params[:id])
+    @task_assignment = TaskAssignment.accessible.find(params[:id])
   end
 
   def authorize_owner!
