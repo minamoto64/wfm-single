@@ -398,13 +398,13 @@ task_assignments_data = [
   { task_key: :product_y_stocking,   user: user_satou,   status: :todo },
 ]
 
-# 作成者を含めて、従業員全員に割り当てるタスク
-User.find_each do |u|
+# 作成者を含めて、従業員全員に割り当てるタスク(デモユーザーは対象外)
+User.where(demo: false).find_each do |u|
   task_assignments_data << { task_key: :everyone, user: u, status: :todo }
 end
 
-# 作成者を含めて、管理者権限を持つ全員に割り当てるタスク
-User.where(admin: true).find_each do |u|
+# 作成者を含めて、管理者権限を持つ全員に割り当てるタスク(デモユーザーは対象外)
+User.where(admin: true, demo: false).find_each do |u|
   task_assignments_data << { task_key: :admin_only, user: u, status: :todo }
 end
 
@@ -428,31 +428,25 @@ task_assignments_data.each do |attrs|
 end
 
 # ==============================================================================
-# デモ用ユーザーの作成
+# 応対履歴とタスク・周知事項の関連付け
+# (商品Xの不具合報告 → クレーム多発の注意喚起 → 再発防止策の検討、という一連の流れを表現)
 # ==============================================================================
-demo_users_data = [
-  {
-    name: "Taro Manager",
-    email_address: "manager@example.com",
-    password: "Admin2026!",
-    admin: true
-  },
-  {
-    name: "Hanako Member",
-    email_address: "member@example.com",
-    password: "User2026!",
-    admin: false
-  }
-]
+interaction_product_x_claim = created_interactions[2]
 
-demo_users_data.each do |attrs|
-  user = User.find_or_create_by!(email_address: attrs[:email_address]) do |u|
-    u.assign_attributes(attrs)
-  end
+interaction_task = InteractionTask.find_or_create_by!(
+  interaction: interaction_product_x_claim,
+  task: created_tasks[:product_x_prevention]
+)
 
-  if user.previously_new_record?
-    puts "デモユーザーを作成しました！"
-    puts "名前: #{user.name}"
-    puts "メールアドレス: #{user.email_address}"
-  end
+if interaction_task.previously_new_record?
+  puts "初期応対履歴⇔タスクの関連付けを作成しました"
+end
+
+interaction_notice = InteractionNotice.find_or_create_by!(
+  interaction: interaction_product_x_claim,
+  notice: created_notices[:product_x_claim]
+)
+
+if interaction_notice.previously_new_record?
+  puts "初期応対履歴⇔周知事項の関連付けを作成しました"
 end
