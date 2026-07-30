@@ -22,7 +22,7 @@ class NoticesController < ApplicationController
   end
 
   def new
-    @parent_notice = Notice.find_by(id: params[:parent_id])
+    @parent_notice = Notice.accessible.find_by(id: params[:parent_id])
     @notice = Notice.new(parent: @parent_notice)
   end
 
@@ -32,10 +32,10 @@ class NoticesController < ApplicationController
 
     if @notice.save
       if params[:interaction_id].present?
-        @notice.interactions << Interaction.find(params[:interaction_id])
+        @notice.interactions << Interaction.accessible.find(params[:interaction_id])
       end
 
-      @notice.tasks << Task.find(params[:task_id]) if params[:task_id].present?
+      @notice.tasks << Task.accessible.find(params[:task_id]) if params[:task_id].present?
 
       redirect_to @notice, notice: "お知らせを更新しました"
     else
@@ -61,15 +61,15 @@ class NoticesController < ApplicationController
   private
 
   def set_notice
-    @notice = Notice.preload(:user).find(params[:id])
+    @notice = Notice.accessible.preload(:user).find(params[:id])
   end
 
   def set_notice_with_comments
-    @notice = Notice.preload(:user, comments: [ :user ]).find(params[:id])
+    @notice = Notice.accessible.preload(:user, comments: [ :user ]).find(params[:id])
   end
 
   def visible_notices
-    Current.user.admin? ? Notice.all : Notice.where(restricted: false)
+    Current.user.admin? ? Notice.accessible : Notice.accessible.where(restricted: false)
   end
 
   def notice_params

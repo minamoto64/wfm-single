@@ -1,4 +1,6 @@
 class Customer < ApplicationRecord
+  include DemoScoped
+
   normalizes :email, with: ->(e) { e.strip.downcase }
 
   validates :name, presence: true, length: { maximum: 50 }

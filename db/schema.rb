@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_21_231848) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_30_025540) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -47,19 +47,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_21_231848) do
     t.string "commentable_type", null: false
     t.text "content", null: false
     t.datetime "created_at", null: false
+    t.boolean "demo", default: false, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable"
+    t.index ["demo"], name: "index_comments_on_demo"
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
   create_table "customers", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.boolean "demo", default: false, null: false
     t.string "email"
     t.text "key_notes"
     t.string "name", null: false
     t.string "phone"
     t.datetime "updated_at", null: false
+    t.index ["demo"], name: "index_customers_on_demo"
   end
 
   create_table "interaction_notices", force: :cascade do |t|
@@ -87,6 +91,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_21_231848) do
     t.boolean "completed", default: false, null: false
     t.datetime "created_at", null: false
     t.bigint "customer_id", null: false
+    t.boolean "demo", default: false, null: false
     t.datetime "occurred_at", null: false
     t.bigint "parent_id"
     t.text "request_content", null: false
@@ -96,6 +101,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_21_231848) do
     t.bigint "user_id", null: false
     t.index ["channel"], name: "index_interactions_on_channel"
     t.index ["customer_id", "occurred_at"], name: "index_interactions_on_customer_id_and_occurred_at"
+    t.index ["demo"], name: "index_interactions_on_demo"
     t.index ["parent_id"], name: "index_interactions_on_parent_id"
     t.index ["root_id"], name: "index_interactions_on_root_id"
     t.index ["user_id", "occurred_at"], name: "index_interactions_on_user_id_and_occurred_at"
@@ -114,6 +120,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_21_231848) do
   create_table "notices", force: :cascade do |t|
     t.text "content", null: false
     t.datetime "created_at", null: false
+    t.boolean "demo", default: false, null: false
     t.datetime "end_at", null: false
     t.string "level", null: false
     t.bigint "parent_id"
@@ -123,6 +130,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_21_231848) do
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["demo"], name: "index_notices_on_demo"
     t.index ["level"], name: "index_notices_on_level"
     t.index ["parent_id"], name: "index_notices_on_parent_id"
     t.index ["root_id"], name: "index_notices_on_root_id"
@@ -131,6 +139,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_21_231848) do
 
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.boolean "demo", default: false, null: false
     t.string "ip_address"
     t.datetime "updated_at", null: false
     t.string "user_agent"
@@ -140,10 +149,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_21_231848) do
 
   create_table "task_assignments", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.boolean "demo", default: false, null: false
     t.string "status", null: false
     t.bigint "task_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["demo"], name: "index_task_assignments_on_demo"
     t.index ["task_id", "user_id"], name: "index_task_assignments_on_task_id_and_user_id", unique: true
     t.index ["task_id"], name: "index_task_assignments_on_task_id"
     t.index ["user_id"], name: "index_task_assignments_on_user_id"
@@ -151,6 +162,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_21_231848) do
 
   create_table "tasks", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.boolean "demo", default: false, null: false
     t.text "description", null: false
     t.datetime "due_at"
     t.bigint "parent_id"
@@ -159,6 +171,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_21_231848) do
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["demo"], name: "index_tasks_on_demo"
     t.index ["due_at"], name: "index_tasks_on_due_at"
     t.index ["parent_id"], name: "index_tasks_on_parent_id"
     t.index ["root_id"], name: "index_tasks_on_root_id"
@@ -167,10 +180,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_21_231848) do
   create_table "users", force: :cascade do |t|
     t.boolean "admin", default: false, null: false
     t.datetime "created_at", null: false
+    t.boolean "demo", default: false, null: false
     t.string "email_address", null: false
     t.string "name", null: false
     t.string "password_digest", null: false
     t.datetime "updated_at", null: false
+    t.index ["demo"], name: "index_users_on_demo"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 

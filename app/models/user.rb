@@ -1,4 +1,8 @@
 class User < ApplicationRecord
+  include DemoScoped
+
+  DEMO_LOGIN_EMAIL = "demo@example.com"
+
   has_secure_password
   has_many :sessions, dependent: :destroy
 

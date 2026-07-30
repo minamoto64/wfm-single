@@ -7,7 +7,13 @@ class ApplicationController < ActionController::Base
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
 
+  before_action :set_demo_flag
+
   private
+
+  def set_demo_flag
+    Current.demo = Current.session&.demo || false
+  end
 
   def require_admin
     unless Current.user&.admin?

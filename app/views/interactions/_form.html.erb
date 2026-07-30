@@ -19,7 +19,7 @@
 
       <% if interaction.new_record? && @parent_interaction.nil? %>
         <%= f.collection_select :customer_id,
-                                Customer.order(:name),
+                                Customer.accessible.order(:name),
                                 :id,
                                 :name,
                                 { prompt: "選択してください" },
