@@ -21,6 +21,11 @@ class User < ApplicationRecord
   validates :name, presence: true, length: { maximum: 50 }
   validates :password, length: { minimum: 8 }, if: -> { new_record? || !password.nil? }
 
+  scope :readable, -> { demo(Current.demo?) }
+
+  # 従業員情報のため admin のみ編集可。
+  def editable? = Current.user&.admin?
+
   private
 
   def self.ransackable_attributes(auth_object = nil)
