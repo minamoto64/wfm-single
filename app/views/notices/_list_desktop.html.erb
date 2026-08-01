@@ -12,7 +12,7 @@
 
     <tbody data-controller="related-toggle-list">
       <% notices.each do |notice| %>
-        <% related_notices = notice.related_notices.reject { |n| n.restricted? && !Current.user.admin? } %>
+        <% related_notices = @notices_by_root.fetch(notice.root_id, []).reject { |n| n.id == notice.id } %>
         <tr class="h-12 hover:bg-gray-100 cursor-pointer"
             data-notice-id="<%= notice.id %>"
             data-controller="clickable"
