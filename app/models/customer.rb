@@ -14,7 +14,9 @@ class Customer < ApplicationRecord
   scope :readable, -> { demo(Current.demo?) }
 
   # 顧客情報は業務の核であり、都度の許可申請では現場が回らないため全員編集可。
-  def editable? = Current.user.present?
+  def editable?
+    Current.user.present?
+  end
 
   private
 
