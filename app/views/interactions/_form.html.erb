@@ -19,7 +19,7 @@
 
       <% if interaction.new_record? && @parent_interaction.nil? %>
         <%= select_tag :customer_id,
-                       options_from_collection_for_select(Customer.accessible.order(:name), :id, :name, interaction.customer_id),
+                       options_from_collection_for_select(Customer.readable.order(:name), :id, :name, interaction.customer_id),
                        prompt: "選択してください",
                        class: "w-full border border-gray-300 rounded px-3 py-2 h-8 sm:h-9 text-xs sm:text-sm" %>
       <% else %>

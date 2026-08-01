@@ -50,7 +50,7 @@
     <%= render "related_notices", task: @task %>
     <%= render "shared/comment_thread", commentable: @task %>
 
-    <% if @task.user == Current.user %>
+    <% if @task.editable? %>
       <div class="mt-6 flex justify-end border-t-4 border-gray-300 pt-6">
         <%= link_to "編集",
                     edit_task_path(@task),

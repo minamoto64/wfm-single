@@ -34,7 +34,7 @@
       <%= label_tag :assignee_ids, "担当者", class: "block text-xs sm:text-sm text-gray-700 mb-1" %>
 
       <%= select_tag "assignee_ids[]",
-                     options_from_collection_for_select(User.accessible.order(:name), :id, :name, params[:assignee_ids]),
+                     options_from_collection_for_select(User.readable.order(:name), :id, :name, params[:assignee_ids]),
                      multiple: true,
                      class: "w-full border border-gray-300 rounded px-3 py-2 text-xs sm:text-sm" %>
 
