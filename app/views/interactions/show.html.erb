@@ -76,7 +76,7 @@
     <%= render "related_tasks", interaction: @interaction %>
     <%= render "shared/comment_thread", commentable: @interaction %>
 
-    <% if @interaction.user == Current.user %>
+    <% if @interaction.editable? %>
       <div class="mt-6 flex justify-end border-t-4 border-gray-300 pt-6">
         <%= link_to "編集",
                     edit_interaction_path(@interaction),

@@ -115,24 +115,28 @@ RSpec.describe "Restricted content visibility", type: :request do
       expect(Task.where(user: user)).to be_none
     end
 
-    it "does not let a non-admin set a restricted notice as parent_id" do
+    it "returns 404 when a non-admin sets a restricted notice as parent_id" do
       restricted_notice = create(:notice, user: admin, restricted: true)
 
-      post notices_path, params: { notice: attributes_for(:notice), parent_id: restricted_notice.id }
+      expect {
+        post notices_path, params: { notice: attributes_for(:notice), parent_id: restricted_notice.id }
+      }.not_to change(Notice, :count)
 
-      expect(Notice.last.parent).not_to eq(restricted_notice)
+      expect(response).to have_http_status(:not_found)
     end
 
-    it "does not let a non-admin set a restricted task as parent_id" do
+    it "returns 404 when a non-admin sets a restricted task as parent_id" do
       restricted_task = create(:task, user: admin, restricted: true)
 
-      post tasks_path, params: {
-        task: attributes_for(:task),
-        parent_id: restricted_task.id,
-        assignee_ids: [ user.id ]
-      }
+      expect {
+        post tasks_path, params: {
+          task: attributes_for(:task),
+          parent_id: restricted_task.id,
+          assignee_ids: [ user.id ]
+        }
+      }.not_to change(Task, :count)
 
-      expect(Task.last.parent).not_to eq(restricted_task)
+      expect(response).to have_http_status(:not_found)
     end
   end
 end

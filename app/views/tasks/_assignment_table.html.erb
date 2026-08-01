@@ -19,7 +19,7 @@
         </div>
 
         <div class="flex items-center justify-center px-4 break-words">
-          <% if !compact && assignment.user == Current.user %>
+          <% if !compact && assignment.editable? %>
             <%= form_with model: assignment, url: task_assignment_path(assignment), method: :patch, class: "inline-block", data: { controller: "auto-submit" } do |f| %>
               <%= f.select :status,
                     TaskAssignment.statuses.keys.map { |status| [ I18n.t("enums.task_assignment.status.#{status}"), status ] },

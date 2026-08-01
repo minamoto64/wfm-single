@@ -1,7 +1,7 @@
 <div class="mb-6 border-t-4 border-gray-300 pt-6 text-xs sm:text-sm">
   <h2 class="text-base sm:text-lg font-semibold mb-3">関連タスク</h2>
 
-  <% tasks = notice.tasks.visible %>
+  <% tasks = notice.tasks.readable %>
 
   <% if tasks.any? %>
     <ul class="space-y-2">

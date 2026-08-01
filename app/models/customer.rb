@@ -11,6 +11,11 @@ class Customer < ApplicationRecord
   # add associations after other models are created
   has_many :interactions
 
+  scope :readable, -> { demo(Current.demo?) }
+
+  # 顧客情報は業務の核であり、都度の許可申請では現場が回らないため全員編集可。
+  def editable? = Current.user.present?
+
   private
 
   def self.ransackable_attributes(auth_object = nil)

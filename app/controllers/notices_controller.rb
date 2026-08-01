@@ -3,12 +3,10 @@ class NoticesController < ApplicationController
 
   before_action :set_notice, only: %i[edit update]
   before_action :set_notice_with_comments, only: :show
-  before_action -> { authorize_view!(@notice, notices_path) }, only: %i[show edit update]
   before_action -> { authorize_edit!(@notice) }, only: %i[edit update]
 
-
   def index
-    @q = visible_notices.ransack(params[:q], auth_object: Current.user.admin? ? :admin : nil)
+    @q = readable_notices.ransack(params[:q], auth_object: Current.user.admin? ? :admin : nil)
     @pagy, @notices = pagy(
       @q.result
         .preload(
@@ -22,21 +20,21 @@ class NoticesController < ApplicationController
   end
 
   def new
-    @parent_notice = Notice.accessible.visible.find_by(id: params[:parent_id])
+    @parent_notice = Notice.readable.find(params[:parent_id]) if params[:parent_id].present?
     @notice = Notice.new(parent: @parent_notice)
   end
 
   def create
-    @parent_notice = Notice.accessible.visible.find_by(id: params[:parent_id])
+    @parent_notice = Notice.readable.find(params[:parent_id]) if params[:parent_id].present?
     @notice = Current.user.notices.build(notice_params)
     @notice.parent = @parent_notice
 
     if @notice.save
       if params[:interaction_id].present?
-        @notice.interactions << Interaction.accessible.find(params[:interaction_id])
+        @notice.interactions << Interaction.readable.find(params[:interaction_id])
       end
 
-      @notice.tasks << Task.accessible.visible.find(params[:task_id]) if params[:task_id].present?
+      @notice.tasks << Task.readable.find(params[:task_id]) if params[:task_id].present?
 
       redirect_to @notice, notice: "お知らせを更新しました"
     else
@@ -45,7 +43,7 @@ class NoticesController < ApplicationController
   end
 
   def show
-    @timeline = @notice.root.rooted_notices.visible.order(:created_at)
+    @timeline = @notice.root.rooted_notices.readable.order(:created_at)
   end
 
   def edit
@@ -62,15 +60,15 @@ class NoticesController < ApplicationController
   private
 
   def set_notice
-    @notice = Notice.accessible.preload(:user).find(params[:id])
+    @notice = Notice.readable.preload(:user).find(params[:id])
   end
 
   def set_notice_with_comments
-    @notice = Notice.accessible.preload(:user, comments: [ :user ]).find(params[:id])
+    @notice = Notice.readable.preload(:user, comments: [ :user ]).find(params[:id])
   end
 
-  def visible_notices
-    Notice.accessible.visible
+  def readable_notices
+    Notice.readable
   end
 
   def notice_params

@@ -2,7 +2,7 @@ module DemoScoped
   extend ActiveSupport::Concern
 
   included do
-    scope :accessible, -> { where(demo: Current.demo?) }
+    scope :demo, ->(flag) { where(demo: flag) }
 
     before_validation :assign_demo_flag, on: :create
   end

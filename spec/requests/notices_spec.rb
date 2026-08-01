@@ -154,7 +154,7 @@ RSpec.describe "Notices", type: :request do
       it "cannot access a restricted notice" do
         get notice_path(restricted_notice)
 
-        expect(response).to redirect_to notices_path
+        expect(response).to have_http_status(:not_found)
       end
     end
 
@@ -332,10 +332,10 @@ RSpec.describe "Notices", type: :request do
         expect(response.body).not_to include("管理者のみ")
       end
 
-      it "cannot access a restricted notice and redirects to the index page" do
+      it "cannot access a restricted notice" do
         get edit_notice_path(restricted_notice)
 
-        expect(response).to redirect_to notices_path
+        expect(response).to have_http_status(:not_found)
       end
     end
 
@@ -403,12 +403,12 @@ RSpec.describe "Notices", type: :request do
         expect(response).to have_http_status(:unprocessable_content)
       end
 
-      it "cannot update a restricted notice and redirects to the index template" do
+      it "cannot update a restricted notice" do
         patch notice_path(restricted_notice),
           params: { notice: { content: "追記" } }
 
         expect(restricted_notice.reload.content).not_to eq("追記")
-        expect(response).to redirect_to notices_path
+        expect(response).to have_http_status(:not_found)
       end
     end
 

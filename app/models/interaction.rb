@@ -17,6 +17,8 @@ class Interaction < ApplicationRecord
   has_many :comments, as: :commentable
   has_many_attached :images
 
+  scope :readable, -> { demo(Current.demo?) }
+
   enum :channel, {
     phone: "phone",
     email: "email",
@@ -33,6 +35,11 @@ class Interaction < ApplicationRecord
   validates :images,
     content_type: %w[image/jpeg image/png image/gif],
     size: { less_than_or_equal_to: 10.megabytes }
+
+  # 編集は作成者本人のみ。admin も改ざん防止のため対象外。
+  def editable?
+    user == Current.user
+  end
 
   private
 

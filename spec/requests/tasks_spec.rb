@@ -145,7 +145,7 @@ RSpec.describe "Tasks", type: :request do
       it "cannot access a restricted task" do
         get task_path(restricted_task)
 
-        expect(response).to redirect_to tasks_path
+        expect(response).to have_http_status(:not_found)
       end
     end
 
@@ -308,10 +308,10 @@ RSpec.describe "Tasks", type: :request do
         expect(response.body).not_to include("管理者のみ")
       end
 
-      it "cannot access a restricted task and redirects to the index page" do
+      it "cannot access a restricted task" do
         get edit_task_path(restricted_task)
 
-        expect(response).to redirect_to tasks_path
+        expect(response).to have_http_status(:not_found)
       end
     end
 
@@ -382,12 +382,12 @@ RSpec.describe "Tasks", type: :request do
         expect(response).to have_http_status(:unprocessable_content)
       end
 
-      it "cannot update a restricted task and redirects to the index template" do
+      it "cannot update a restricted task" do
         patch task_path(restricted_task),
           params: { task: { description: "追記" } }
 
         expect(restricted_task.reload.description).not_to eq("追記")
-        expect(response).to redirect_to tasks_path
+        expect(response).to have_http_status(:not_found)
       end
     end
 
