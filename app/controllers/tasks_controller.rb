@@ -7,7 +7,7 @@ class TasksController < ApplicationController
   before_action -> { authorize_edit!(@task) }, only: [ :edit, :update ]
 
   def index
-    @q = visible_tasks.ransack(params[:q], auth_object: :admin)
+    @q = visible_tasks.ransack(params[:q], auth_object: Current.user.admin? ? :admin : nil)
     @pagy, @tasks = pagy(
       @q.result
         .preload(
@@ -22,14 +22,15 @@ class TasksController < ApplicationController
   end
 
   def new
-    @parent_task = Task.accessible.find_by(id: params[:parent_id])
+    @parent_task = Task.accessible.visible.find_by(id: params[:parent_id])
     @task = Task.new(parent: @parent_task)
     @form = TaskForm.new(task: @task)
   end
 
   def create
+    @parent_task = Task.accessible.visible.find_by(id: params[:parent_id])
     @task = Current.user.tasks.build(task_params)
-    @parent_task = @task.parent
+    @task.parent = @parent_task
 
     @form = TaskForm.new(
       task:           @task,
@@ -46,7 +47,7 @@ class TasksController < ApplicationController
   end
 
   def show
-    @timeline = @task.root.rooted_tasks.order(:created_at)
+    @timeline = @task.root.rooted_tasks.visible.order(:created_at)
   end
 
   def edit
@@ -74,17 +75,18 @@ class TasksController < ApplicationController
   end
 
   def visible_tasks
-    Current.user.admin? ? Task.accessible : Task.accessible.where(restricted: false)
+    Task.accessible.visible
   end
 
   def task_params
     permitted = [
       :title,
       :description,
-      :due_at,
-      :parent_id
+      :due_at
     ]
+
     permitted << :restricted if Current.user.admin?
+
     params.require(:task).permit(*permitted, images: [])
   end
 end

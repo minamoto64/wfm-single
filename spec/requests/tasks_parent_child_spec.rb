@@ -174,9 +174,9 @@ RSpec.describe "Tasks parent-child", type: :request do
         task: {
           title: "子お知らせ",
           description: "子の詳細",
-          due_at: 1.hour.ago,
-          parent_id: parent.id
-        }
+          due_at: 1.hour.ago
+        },
+        parent_id: parent.id
       }
     end
 
