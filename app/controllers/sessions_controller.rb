@@ -12,7 +12,8 @@ class SessionsController < ApplicationController
   end
 
   def create
-    if user = User.accessible.authenticate_by(params.permit(:email_address, :password))
+    # 認証前は Current.demo が未確定のため readable は使えない。素の検索で境界を掛けない。
+    if user = User.authenticate_by(params.permit(:email_address, :password))
       start_new_session_for user
       redirect_to interactions_path
     else
