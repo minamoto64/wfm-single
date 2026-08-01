@@ -134,7 +134,7 @@ RSpec.describe "Interactions", type: :request do
       before { sign_in(user) }
 
       let(:valid_params) do
-        { interaction: attributes_for(:interaction).merge(customer_id: customer.id) }
+        { interaction: attributes_for(:interaction), customer_id: customer.id }
       end
 
       it "creates an Interaction with valid params" do
@@ -175,15 +175,13 @@ RSpec.describe "Interactions", type: :request do
   describe "POST /interactions (with images)" do
     subject(:perform_request) do
       post interactions_path, params: {
-        interaction: interaction_params
+        interaction: interaction_params,
+        customer_id: customer.id
       }
     end
 
     let(:interaction_params) do
-      attributes_for(
-        :interaction,
-        customer_id: customer.id
-      ).merge(images: images)
+      attributes_for(:interaction).merge(images: images)
     end
 
     before { sign_in(user) }

@@ -29,8 +29,10 @@ class InteractionsController < ApplicationController
   end
 
   def create
+    @parent_interaction = Interaction.accessible.find_by(id: params[:parent_id])
     @interaction = Current.user.interactions.build(interaction_params)
-    @parent_interaction = @interaction.parent
+    @interaction.parent = @parent_interaction
+    @interaction.customer = @parent_interaction ? @parent_interaction.customer : accessible_customer
 
     if @interaction.save
       redirect_to @interaction, notice: "応対履歴を登録しました"
@@ -66,9 +68,16 @@ class InteractionsController < ApplicationController
 
   def interaction_params
     params.require(:interaction).permit(
-      :customer_id, :channel, :occurred_at,
-      :request_content, :response_result, :completed, :parent_id,
+      :channel,
+      :occurred_at,
+      :request_content,
+      :response_result,
+      :completed,
       images: []
     )
+  end
+
+  def accessible_customer
+    Customer.accessible.find_by(id: params[:customer_id])
   end
 end

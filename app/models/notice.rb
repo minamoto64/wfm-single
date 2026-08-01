@@ -1,6 +1,7 @@
 class Notice < ApplicationRecord
   include Rootable
   include DemoScoped
+  include Restrictable
   rootable order_column: :created_at
 
   belongs_to :user

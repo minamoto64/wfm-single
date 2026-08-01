@@ -176,9 +176,9 @@ RSpec.describe "Interactions parent-child", type: :request do
           response_result: "子の応対履歴の詳細",
           completed: false,
           channel: "phone",
-          occurred_at: 1.hour.ago,
-          parent_id: parent.id
-        }
+          occurred_at: 1.hour.ago
+        },
+        parent_id: parent.id
       }
     end
 

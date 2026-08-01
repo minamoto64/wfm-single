@@ -11,21 +11,19 @@
     </div>
   <% end %>
 
-  <%= f.hidden_field :parent_id if interaction.parent_id.present? %>
+  <%= hidden_field_tag :parent_id, interaction.parent_id if interaction.parent_id.present? %>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
     <div>
-      <%= f.label :customer_id, "顧客", class: "block text-xs sm:text-sm text-gray-700 mb-1" %>
+      <%= label_tag :customer_id, "顧客", class: "block text-xs sm:text-sm text-gray-700 mb-1" %>
 
       <% if interaction.new_record? && @parent_interaction.nil? %>
-        <%= f.collection_select :customer_id,
-                                Customer.accessible.order(:name),
-                                :id,
-                                :name,
-                                { prompt: "選択してください" },
-                                { class: "w-full border border-gray-300 rounded px-3 py-2 h-8 sm:h-9 text-xs sm:text-sm" } %>
+        <%= select_tag :customer_id,
+                       options_from_collection_for_select(Customer.accessible.order(:name), :id, :name, interaction.customer_id),
+                       prompt: "選択してください",
+                       class: "w-full border border-gray-300 rounded px-3 py-2 h-8 sm:h-9 text-xs sm:text-sm" %>
       <% else %>
-        <%= f.hidden_field :customer_id %>
+        <%= hidden_field_tag :customer_id, interaction.customer_id %>
 
         <div class="w-full border border-gray-200 rounded px-3 py-2 h-8 sm:h-9 text-xs sm:text-sm bg-gray-100 text-gray-600 flex items-center">
           <%= interaction.customer.name %>

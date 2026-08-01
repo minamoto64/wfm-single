@@ -1,7 +1,7 @@
 <div class="mb-6 border-t-4 border-gray-300 pt-6 text-xs sm:text-sm ">
   <h2 class="text-base sm:text-lg font-semibold mb-3">関連お知らせ</h2>
 
-  <% notices = interaction.notices %>
+  <% notices = interaction.notices.visible %>
 
   <% if notices.any? %>
     <ul class="space-y-2">

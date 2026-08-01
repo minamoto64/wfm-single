@@ -174,9 +174,9 @@ RSpec.describe "Notices parent-child", type: :request do
           content: "子の詳細",
           level: "normal",
           start_at: 1.hour.ago,
-          end_at: 1.week.from_now,
-          parent_id: parent.id
-        }
+          end_at: 1.week.from_now
+        },
+        parent_id: parent.id
       }
     end
 
