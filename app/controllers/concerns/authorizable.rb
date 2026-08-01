@@ -4,14 +4,8 @@ module Authorizable
   private
 
   def authorize_edit!(record)
-    return if record.user == Current.user
+    return if record.editable?
 
     redirect_to record, alert: "編集権限がありません"
-  end
-
-  def authorize_view!(record, redirect_path)
-    return if Current.user.admin? || !record.restricted
-
-    redirect_to redirect_path, alert: "閲覧権限がありません"
   end
 end
