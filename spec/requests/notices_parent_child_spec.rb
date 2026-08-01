@@ -157,10 +157,10 @@ RSpec.describe "Notices parent-child", type: :request do
     end
 
     context "when creating a follow-up notice with a non-existent parent notice" do
-      it "responds with HTTP 200 OK and ignores the invalid parent_id" do
+      it "responds with HTTP 404 Not Found" do
         get new_notice_path(parent_id: 0)
 
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:not_found)
       end
     end
   end
