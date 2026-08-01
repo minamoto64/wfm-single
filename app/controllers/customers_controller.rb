@@ -2,7 +2,7 @@ class CustomersController < ApplicationController
   before_action :set_customer, only: [ :show, :edit, :update ]
 
   def index
-    @q = Customer.accessible.ransack(params[:q], auth_object: :customer_list)
+    @q = Customer.readable.ransack(params[:q], auth_object: :customer_list)
     @pagy, @customers = pagy(@q.result.order(:name))
   end
 
@@ -38,7 +38,7 @@ class CustomersController < ApplicationController
   private
 
   def set_customer
-    @customer = Customer.accessible.find(params[:id])
+    @customer = Customer.readable.find(params[:id])
   end
 
   def customer_params

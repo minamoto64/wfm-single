@@ -3,11 +3,10 @@ class TasksController < ApplicationController
 
   before_action :set_task, only: [ :edit, :update ]
   before_action :set_task_with_associations, only: :show
-  before_action -> { authorize_view!(@task, tasks_path) }, only: [ :show, :edit, :update ]
   before_action -> { authorize_edit!(@task) }, only: [ :edit, :update ]
 
   def index
-    @q = visible_tasks.ransack(params[:q], auth_object: Current.user.admin? ? :admin : nil)
+    @q = readable_tasks.ransack(params[:q], auth_object: Current.user.admin? ? :admin : nil)
     @pagy, @tasks = pagy(
       @q.result
         .preload(
@@ -22,13 +21,13 @@ class TasksController < ApplicationController
   end
 
   def new
-    @parent_task = Task.accessible.visible.find_by(id: params[:parent_id])
+    @parent_task = Task.readable.find(params[:parent_id]) if params[:parent_id].present?
     @task = Task.new(parent: @parent_task)
     @form = TaskForm.new(task: @task)
   end
 
   def create
-    @parent_task = Task.accessible.visible.find_by(id: params[:parent_id])
+    @parent_task = Task.readable.find(params[:parent_id]) if params[:parent_id].present?
     @task = Current.user.tasks.build(task_params)
     @task.parent = @parent_task
 
@@ -47,7 +46,7 @@ class TasksController < ApplicationController
   end
 
   def show
-    @timeline = @task.root.rooted_tasks.visible.order(:created_at)
+    @timeline = @task.root.rooted_tasks.readable.order(:created_at)
   end
 
   def edit
@@ -67,15 +66,15 @@ class TasksController < ApplicationController
   private
 
   def set_task
-    @task = Task.accessible.preload(:user).find(params[:id])
+    @task = Task.readable.preload(:user).find(params[:id])
   end
 
   def set_task_with_associations
-    @task = Task.accessible.preload(:user, task_assignments: [ :user ], comments: [ :user ]).find(params[:id])
+    @task = Task.readable.preload(:user, task_assignments: [ :user ], comments: [ :user ]).find(params[:id])
   end
 
-  def visible_tasks
-    Task.accessible.visible
+  def readable_tasks
+    Task.readable
   end
 
   def task_params

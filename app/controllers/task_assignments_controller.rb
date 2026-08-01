@@ -13,11 +13,11 @@ class TaskAssignmentsController < ApplicationController
   private
 
   def set_task_assignment
-    @task_assignment = TaskAssignment.accessible.find(params[:id])
+    @task_assignment = TaskAssignment.readable.find(params[:id])
   end
 
   def authorize_owner!
-    return if @task_assignment.user == Current.user
+    return if @task_assignment.editable?
 
     redirect_to @task_assignment.task, alert: "更新権限がありません"
   end

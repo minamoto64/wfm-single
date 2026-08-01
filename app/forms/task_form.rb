@@ -23,11 +23,11 @@ class TaskForm
 
     ActiveRecord::Base.transaction do
       task.save!
-      task.interactions << Interaction.accessible.find(interaction_id) if interaction_id.present?
-      task.notices      << Notice.accessible.visible.find(notice_id)   if notice_id.present?
+      task.interactions << Interaction.readable.find(interaction_id) if interaction_id.present?
+      task.notices      << Notice.readable.find(notice_id)            if notice_id.present?
 
       assignee_ids.each do |user_id|
-        task.task_assignments.create!(user: User.accessible.find(user_id), status: :todo)
+        task.task_assignments.create!(user: User.readable.find(user_id), status: :todo)
       end
     end
 
