@@ -29,14 +29,6 @@ RSpec.describe Task, type: :model do
       expect(association.options[:optional]).to be(true)
     end
 
-    it 'has many children tasks' do
-      association = described_class.reflect_on_association(:children)
-
-      expect(association.macro).to eq(:has_many)
-      expect(association.options[:class_name]).to eq("Task")
-      expect(association.options[:foreign_key]).to eq("parent_id")
-    end
-
     it 'has many task_assignments' do
       association = described_class.reflect_on_association(:task_assignments)
 
@@ -57,14 +49,6 @@ RSpec.describe Task, type: :model do
       expect(association.macro).to eq(:belongs_to)
       expect(association.options[:class_name]).to eq("Task")
       expect(association.options[:optional]).to be(true)
-    end
-
-    it 'has many rooted_tasks' do
-      association = described_class.reflect_on_association(:rooted_tasks)
-
-      expect(association.macro).to eq(:has_many)
-      expect(association.options[:class_name]).to eq("Task")
-      expect(association.options[:foreign_key]).to eq(:root_id)
     end
   end
 
@@ -91,28 +75,29 @@ RSpec.describe Task, type: :model do
     end
   end
 
-  describe '#related_tasks' do
-    it 'returns other tasks in the same thread ordered by created_at' do
+  describe '#related_records' do
+    it 'returns every task with the same root ordered by created_at' do
       parent = create(:task)
       earlier_related_task = create(:task, parent: parent)
       later_related_task = create(:task, parent: parent)
+      same_root = [ parent, earlier_related_task, later_related_task ]
 
-      expect(parent.related_tasks).to eq([ earlier_related_task, later_related_task ])
-      expect(earlier_related_task.related_tasks).to eq([ parent, later_related_task ])
-      expect(later_related_task.related_tasks).to eq([ parent, earlier_related_task ])
+      expect(parent.related_records).to eq(same_root)
+      expect(earlier_related_task.related_records).to eq(same_root)
+      expect(later_related_task.related_records).to eq(same_root)
     end
 
-    it 'returns an empty array when there are no related tasks' do
+    it 'returns only itself when there are no related tasks' do
       task = create(:task)
 
-      expect(task.related_tasks).to eq([])
+      expect(task.related_records).to eq([ task ])
     end
 
-    it 'does not include itself' do
+    it 'includes itself' do
       parent = create(:task)
       create(:task, parent: parent)
 
-      expect(parent.related_tasks).not_to include(parent)
+      expect(parent.related_records).to include(parent)
     end
   end
 

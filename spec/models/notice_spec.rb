@@ -26,13 +26,6 @@ RSpec.describe Notice, type: :model do
       expect(association.options[:optional]).to be(true)
     end
 
-    it 'has many children notices' do
-      association = described_class.reflect_on_association(:children)
-      expect(association.macro).to eq(:has_many)
-      expect(association.options[:class_name]).to eq("Notice")
-      expect(association.options[:foreign_key]).to eq("parent_id")
-    end
-
     it 'belongs to root notice (optional)' do
       association = described_class.reflect_on_association(:root)
 
@@ -40,38 +33,31 @@ RSpec.describe Notice, type: :model do
       expect(association.options[:class_name]).to eq("Notice")
       expect(association.options[:optional]).to be(true)
     end
-
-    it 'has many rooted_notices' do
-      association = described_class.reflect_on_association(:rooted_notices)
-
-      expect(association.macro).to eq(:has_many)
-      expect(association.options[:class_name]).to eq("Notice")
-      expect(association.options[:foreign_key]).to eq(:root_id)
-    end
   end
 
-  describe '#related_notices' do
-    it 'returns other notices in the same thread ordered by created_at' do
+  describe '#related_records' do
+    it 'returns every notice with the same root ordered by created_at' do
       parent = create(:notice)
       earlier_related_notice = create(:notice, parent: parent)
       later_related_notice = create(:notice, parent: parent)
+      same_root = [ parent, earlier_related_notice, later_related_notice ]
 
-      expect(parent.related_notices).to eq([ earlier_related_notice, later_related_notice ])
-      expect(earlier_related_notice.related_notices).to eq([ parent, later_related_notice ])
-      expect(later_related_notice.related_notices).to eq([ parent, earlier_related_notice ])
+      expect(parent.related_records).to eq(same_root)
+      expect(earlier_related_notice.related_records).to eq(same_root)
+      expect(later_related_notice.related_records).to eq(same_root)
     end
 
-    it 'returns an empty array when there are no related notices' do
+    it 'returns only itself when there are no related notices' do
       notice = create(:notice)
 
-      expect(notice.related_notices).to eq([])
+      expect(notice.related_records).to eq([ notice ])
     end
 
-    it 'does not include itself' do
+    it 'includes itself' do
       parent = create(:notice)
       create(:notice, parent: parent)
 
-      expect(parent.related_notices).not_to include(parent)
+      expect(parent.related_records).to include(parent)
     end
   end
 
