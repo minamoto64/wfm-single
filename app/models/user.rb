@@ -24,7 +24,9 @@ class User < ApplicationRecord
   scope :readable, -> { demo(Current.demo?) }
 
   # 従業員情報のため admin のみ編集可。
-  def editable? = Current.user&.admin?
+  def editable?
+    Current.user&.admin?
+  end
 
   private
 

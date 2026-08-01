@@ -10,19 +10,24 @@ module Rootable
   end
 
   class_methods do
-    def rootable(order_column:)
-      has_many :children,
-               -> { order(order_column => :desc) },
-               class_name: name,
-               foreign_key: "parent_id"
-
-      has_many :"rooted_#{model_name.plural}", class_name: name, foreign_key: :root_id, dependent: :nullify
-
-      define_method(:"related_#{model_name.plural}") do
-        rooted_all = root.public_send(:"rooted_#{model_name.plural}")
-        rooted_all.reject { |record| record.id == id }.sort_by(&order_column)
-      end
+    # 一覧画面用。複数レコードの関連を root_id の IN 1本でまとめて引き、
+    # root_id をキーにした Hash で返す。自分自身の除外は呼び出し側で行う。
+    # nil を除くのは、root_id が nil のレコード同士が互いの関連として現れるのを防ぐため。
+    def related_records_by_root(root_ids, preload: [])
+      readable
+        .where(root_id: root_ids.compact.uniq)
+        .preload(preload)
+        .order(root_order_column)
+        .group_by(&:root_id)
     end
+  end
+
+  # 自分と同じ root に属する全レコード。自分自身を含む。
+  # readable 経由なので権限境界はここで閉じる。
+  def related_records
+    self.class.readable
+      .where(root_id: root_id)
+      .order(self.class.root_order_column)
   end
 
   private

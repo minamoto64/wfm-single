@@ -1,7 +1,10 @@
 class Interaction < ApplicationRecord
   include Rootable
   include DemoScoped
-  rootable order_column: :occurred_at
+
+  def self.root_order_column
+    :occurred_at
+  end
 
   before_validation :set_customer_from_parent
 

@@ -8,7 +8,7 @@
 
   <div class="space-y-2">
     <% tasks.each do |task| %>
-      <% related_tasks = task.related_tasks.reject { |t| t.restricted? && !Current.user.admin? } %>
+      <% related_tasks = @tasks_by_root.fetch(task.root_id, []).reject { |t| t.id == task.id } %>
 
       <div class="w-full" data-controller="related-toggle">
 

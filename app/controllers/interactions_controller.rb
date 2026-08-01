@@ -9,14 +9,12 @@ class InteractionsController < ApplicationController
     @q = Interaction.readable.ransack(params[:q])
     @pagy, @interactions = pagy(
       @q.result
-        .preload(
-          :customer,
-          :user,
-          root: {
-            rooted_interactions: [ :customer, :user ]
-          }
-        )
+        .preload(:customer, :user)
         .order(occurred_at: :desc)
+    )
+    @interactions_by_root = Interaction.related_records_by_root(
+      @interactions.map(&:root_id),
+      preload: [ :customer, :user ]
     )
   end
 
@@ -42,7 +40,7 @@ class InteractionsController < ApplicationController
   end
 
   def show
-    @timeline = @interaction.root.rooted_interactions.order(:occurred_at)
+    @timeline = @interaction.related_records
   end
 
   def edit

@@ -2,7 +2,10 @@ class Task < ApplicationRecord
   include Rootable
   include DemoScoped
   include Restrictable
-  rootable order_column: :created_at
+
+  def self.root_order_column
+    :created_at
+  end
 
   belongs_to :user
 

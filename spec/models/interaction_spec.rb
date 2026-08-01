@@ -36,28 +36,12 @@ RSpec.describe Interaction, type: :model do
       expect(association.options[:optional]).to be(true)
     end
 
-    it 'has many children interactions' do
-      association = described_class.reflect_on_association(:children)
-
-      expect(association.macro).to eq(:has_many)
-      expect(association.options[:class_name]).to eq("Interaction")
-      expect(association.options[:foreign_key]).to eq("parent_id")
-    end
-
     it 'belongs to root interaction (optional)' do
       association = described_class.reflect_on_association(:root)
 
       expect(association.macro).to eq(:belongs_to)
       expect(association.options[:class_name]).to eq("Interaction")
       expect(association.options[:optional]).to be(true)
-    end
-
-    it 'has many rooted_interactions' do
-      association = described_class.reflect_on_association(:rooted_interactions)
-
-      expect(association.macro).to eq(:has_many)
-      expect(association.options[:class_name]).to eq("Interaction")
-      expect(association.options[:foreign_key]).to eq(:root_id)
     end
   end
 
@@ -84,28 +68,29 @@ RSpec.describe Interaction, type: :model do
     end
   end
 
-  describe '#related_interactions' do
-    it 'returns other interactions in the same thread ordered by occurred_at' do
+  describe '#related_records' do
+    it 'returns every interaction with the same root ordered by occurred_at' do
       parent = create(:interaction, occurred_at: 3.days.ago)
       earlier_related_interaction = create(:interaction, parent: parent, occurred_at: 2.days.ago)
       later_related_interaction = create(:interaction, parent: parent, occurred_at: 1.day.ago)
+      same_root = [ parent, earlier_related_interaction, later_related_interaction ]
 
-      expect(parent.related_interactions).to eq([ earlier_related_interaction, later_related_interaction ])
-      expect(earlier_related_interaction.related_interactions).to eq([ parent, later_related_interaction ])
-      expect(later_related_interaction.related_interactions).to eq([ parent, earlier_related_interaction ])
+      expect(parent.related_records).to eq(same_root)
+      expect(earlier_related_interaction.related_records).to eq(same_root)
+      expect(later_related_interaction.related_records).to eq(same_root)
     end
 
-    it 'returns an empty array when there are no related interactions' do
+    it 'returns only itself when there are no related interactions' do
       interaction = create(:interaction)
 
-      expect(interaction.related_interactions).to eq([])
+      expect(interaction.related_records).to eq([ interaction ])
     end
 
-    it 'does not include itself' do
+    it 'includes itself' do
       parent = create(:interaction)
       create(:interaction, parent: parent)
 
-      expect(parent.related_interactions).not_to include(parent)
+      expect(parent.related_records).to include(parent)
     end
   end
 

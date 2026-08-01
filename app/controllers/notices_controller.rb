@@ -9,13 +9,12 @@ class NoticesController < ApplicationController
     @q = readable_notices.ransack(params[:q], auth_object: Current.user.admin? ? :admin : nil)
     @pagy, @notices = pagy(
       @q.result
-        .preload(
-          :user,
-          root: {
-            rooted_notices: [ :user ]
-          }
-        )
+        .preload(:user)
         .order(start_at: :desc)
+    )
+    @notices_by_root = Notice.related_records_by_root(
+      @notices.map(&:root_id),
+      preload: [ :user ]
     )
   end
 
@@ -43,7 +42,7 @@ class NoticesController < ApplicationController
   end
 
   def show
-    @timeline = @notice.root.rooted_notices.readable.order(:created_at)
+    @timeline = @notice.related_records
   end
 
   def edit

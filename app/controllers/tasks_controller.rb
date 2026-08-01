@@ -9,14 +9,12 @@ class TasksController < ApplicationController
     @q = readable_tasks.ransack(params[:q], auth_object: Current.user.admin? ? :admin : nil)
     @pagy, @tasks = pagy(
       @q.result
-        .preload(
-          :user,
-          task_assignments: [ :user ],
-          root: {
-            rooted_tasks: [ :user, task_assignments: [ :user ] ]
-          }
-        )
+        .preload(:user, task_assignments: [ :user ])
         .order(due_at: :asc)
+    )
+    @tasks_by_root = Task.related_records_by_root(
+      @tasks.map(&:root_id),
+      preload: [ :user, task_assignments: [ :user ] ]
     )
   end
 
@@ -46,7 +44,7 @@ class TasksController < ApplicationController
   end
 
   def show
-    @timeline = @task.root.rooted_tasks.readable.order(:created_at)
+    @timeline = @task.related_records
   end
 
   def edit

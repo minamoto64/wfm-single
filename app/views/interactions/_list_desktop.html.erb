@@ -14,7 +14,7 @@
 
     <tbody data-controller="related-toggle-list">
       <% interactions.each do |interaction| %>
-        <% related_interactions = interaction.related_interactions %>
+        <% related_interactions = @interactions_by_root.fetch(interaction.root_id, []).reject { |i| i.id == interaction.id } %>
         <tr class="h-12 hover:bg-gray-100 cursor-pointer"
             data-interaction-id="<%= interaction.id %>"
             data-controller="clickable"

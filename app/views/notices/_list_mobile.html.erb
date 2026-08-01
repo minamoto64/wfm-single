@@ -8,7 +8,7 @@
 
   <div class="space-y-2">
     <% notices.each do |notice| %>
-      <% related_notices = notice.related_notices.reject { |n| n.restricted? && !Current.user.admin? } %>
+      <% related_notices = @notices_by_root.fetch(notice.root_id, []).reject { |n| n.id == notice.id } %>
 
       <div class="w-full" data-controller="related-toggle">
 
