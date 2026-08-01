@@ -8,7 +8,7 @@ class NoticesController < ApplicationController
 
 
   def index
-    @q = visible_notices.ransack(params[:q], auth_object: :admin)
+    @q = visible_notices.ransack(params[:q], auth_object: Current.user.admin? ? :admin : nil)
     @pagy, @notices = pagy(
       @q.result
         .preload(
@@ -22,20 +22,21 @@ class NoticesController < ApplicationController
   end
 
   def new
-    @parent_notice = Notice.accessible.find_by(id: params[:parent_id])
+    @parent_notice = Notice.accessible.visible.find_by(id: params[:parent_id])
     @notice = Notice.new(parent: @parent_notice)
   end
 
   def create
+    @parent_notice = Notice.accessible.visible.find_by(id: params[:parent_id])
     @notice = Current.user.notices.build(notice_params)
-    @parent_notice = @notice.parent
+    @notice.parent = @parent_notice
 
     if @notice.save
       if params[:interaction_id].present?
         @notice.interactions << Interaction.accessible.find(params[:interaction_id])
       end
 
-      @notice.tasks << Task.accessible.find(params[:task_id]) if params[:task_id].present?
+      @notice.tasks << Task.accessible.visible.find(params[:task_id]) if params[:task_id].present?
 
       redirect_to @notice, notice: "お知らせを更新しました"
     else
@@ -44,7 +45,7 @@ class NoticesController < ApplicationController
   end
 
   def show
-    @timeline = @notice.root.rooted_notices.order(:created_at)
+    @timeline = @notice.root.rooted_notices.visible.order(:created_at)
   end
 
   def edit
@@ -69,7 +70,7 @@ class NoticesController < ApplicationController
   end
 
   def visible_notices
-    Current.user.admin? ? Notice.accessible : Notice.accessible.where(restricted: false)
+    Notice.accessible.visible
   end
 
   def notice_params
@@ -79,8 +80,6 @@ class NoticesController < ApplicationController
       level
       start_at
       end_at
-      parent_id
-      images: []
     ]
 
     permitted << :restricted if Current.user.admin?
