@@ -6,7 +6,7 @@ class SessionsController < ApplicationController
   end
 
   def demo
-    demo_user = User.unscoped.find_by!(email_address: User::DEMO_LOGIN_EMAIL, demo: true)
+    demo_user = User.find_by!(email_address: User::DEMO_LOGIN_EMAIL, demo: true)
     start_new_session_for demo_user
     redirect_to interactions_path
   end
