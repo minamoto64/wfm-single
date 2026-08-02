@@ -6,6 +6,23 @@ RSpec.describe "Notice Tasks", type: :request do
 
   before { sign_in(user) }
 
+  describe "GET /notices/:id - related tasks display" do
+    let(:notice) { create(:notice, user: user) }
+
+    context "when the linked task has no due date" do
+      let(:task) { create(:task, due_at: nil) }
+
+      before { notice.tasks << task }
+
+      it "displays the fallback text instead of failing" do
+        get notice_path(notice)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("未設定")
+      end
+    end
+  end
+
   describe "GET /notices/new with task_id" do
     it "passes task_id to the form" do
       get new_notice_path(task_id: task.id)
