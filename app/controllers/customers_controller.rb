@@ -1,5 +1,8 @@
 class CustomersController < ApplicationController
+  include Authorizable
+
   before_action :set_customer, only: [ :show, :edit, :update ]
+  before_action -> { authorize_edit!(@customer) }, only: [ :edit, :update ]
 
   def index
     @q = Customer.readable.ransack(params[:q], auth_object: :customer_list)
