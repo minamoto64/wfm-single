@@ -33,5 +33,45 @@ RSpec.describe TaskAssignment, type: :model do
         expect(duplicate).to be_invalid
       end
     end
+
+    describe 'assignee of a restricted task' do
+      let(:restricted_task) { create(:task, restricted: true, user: create(:user, admin: true)) }
+
+      it 'is invalid when the assignee is not an admin' do
+        assignment = build(:task_assignment, task: restricted_task, user: create(:user, admin: false))
+
+        expect(assignment).to be_invalid
+        expect(assignment.errors[:user]).to be_present
+      end
+
+      it 'is valid when the assignee is an admin' do
+        assignment = build(:task_assignment, task: restricted_task, user: create(:user, admin: true))
+
+        expect(assignment).to be_valid
+      end
+
+      it 'allows a non-admin assignee on a task that is not restricted' do
+        assignment = build(:task_assignment, task: create(:task, restricted: false), user: create(:user, admin: false))
+
+        expect(assignment).to be_valid
+      end
+    end
+  end
+
+  describe '.readable' do
+    let(:restricted_task) { create(:task, restricted: true, user: create(:user, admin: true)) }
+    let!(:assignment) { create(:task_assignment, task: restricted_task, user: create(:user, admin: true)) }
+
+    it 'excludes assignments of restricted tasks for a non-admin' do
+      Current.session = Session.new(user: create(:user, admin: false))
+
+      expect(described_class.readable).not_to include(assignment)
+    end
+
+    it 'includes assignments of restricted tasks for an admin' do
+      Current.session = Session.new(user: create(:user, admin: true))
+
+      expect(described_class.readable).to include(assignment)
+    end
   end
 end
