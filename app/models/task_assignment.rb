@@ -21,6 +21,14 @@ class TaskAssignment < ApplicationRecord
     user == Current.user
   end
 
+  def self.ransackable_attributes(auth_object = nil)
+    %w[status user_id]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    %w[user]
+  end
+
   private
 
   # 管理者限定タスクは admin しか閲覧できないため、
@@ -29,13 +37,5 @@ class TaskAssignment < ApplicationRecord
     return if user.blank? || user.admin?
 
     errors.add(:user, "は管理者限定タスクの担当者にできません")
-  end
-
-  def self.ransackable_attributes(auth_object = nil)
-    %w[status user_id]
-  end
-
-  def self.ransackable_associations(auth_object = nil)
-    %w[user]
   end
 end

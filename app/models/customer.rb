@@ -20,8 +20,6 @@ class Customer < ApplicationRecord
     Current.user.present?
   end
 
-  private
-
   # auth_object は「どの一覧画面から検索しているか」を表す。
   # 他モデルの関連を辿った検索では渡らないため、メールアドレス等は開放されない。
   def self.ransackable_attributes(auth_object = nil)

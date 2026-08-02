@@ -40,8 +40,6 @@ class Notice < ApplicationRecord
     user == Current.user
   end
 
-  private
-
   scope :status, ->(value) {
     now = Time.current
     case value

@@ -34,8 +34,6 @@ class Task < ApplicationRecord
     user == Current.user
   end
 
-  private
-
   scope :due_within, ->(period) {
     from = Time.current.beginning_of_day
     case period
