@@ -25,7 +25,6 @@ class Task < ApplicationRecord
 
   validates :title, presence: true, length: { maximum: 50 }
   validates :description, presence: true, length: { maximum: 2000 }
-  validates :restricted, inclusion: { in: [ true, false ] }
   validates :images,
     content_type: %w[image/jpeg image/png image/gif],
     size: { less_than_or_equal_to: 10.megabytes }
@@ -49,9 +48,10 @@ class Task < ApplicationRecord
     end
   }
 
+  # 検索フォームに出せる項目の宣言。閲覧境界は readable が持つ。
   def self.ransackable_attributes(auth_object = nil)
     base = %w[title description due_at]
-    auth_object == :admin ? base + %w[restricted] : base
+    Current.user&.admin? ? base + %w[restricted] : base
   end
 
   def self.ransackable_associations(auth_object = nil)

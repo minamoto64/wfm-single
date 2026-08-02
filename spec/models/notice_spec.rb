@@ -145,7 +145,7 @@ RSpec.describe Notice, type: :model do
 
     describe 'restricted' do
       it 'is valid when restricted is true' do
-        notice = build(:notice, restricted: true)
+        notice = build(:notice, restricted: true, user: build(:user, admin: true))
         expect(notice).to be_valid
       end
 
@@ -157,6 +157,53 @@ RSpec.describe Notice, type: :model do
       it 'is invalid when restricted is nil' do
         notice = build(:notice, restricted: nil)
         expect(notice).to be_invalid
+      end
+
+      it 'inherits restricted from a restricted parent' do
+        admin  = create(:user, admin: true)
+        parent = create(:notice, restricted: true, user: admin)
+
+        child = create(:notice, restricted: false, user: admin, parent: parent)
+
+        expect(child.restricted).to be(true)
+      end
+
+      it 'keeps a restricted child under a parent that is not restricted' do
+        parent = create(:notice, restricted: false)
+
+        child = create(:notice, restricted: true, user: create(:user, admin: true), parent: parent)
+
+        expect(child.restricted).to be(true)
+      end
+
+      it 'is invalid when a non-admin owns a restricted notice' do
+        notice = build(:notice, restricted: true, user: build(:user, admin: false))
+
+        expect(notice).to be_invalid
+        expect(notice.errors[:restricted]).to be_present
+      end
+    end
+
+    describe 'restricted is fixed at creation' do
+      it 'cannot be switched on after creation' do
+        notice = create(:notice, restricted: false)
+        notice.restricted = true
+
+        expect(notice).to be_invalid
+        expect(notice.errors[:restricted]).to be_present
+      end
+
+      it 'cannot be switched off after creation' do
+        notice = create(:notice, restricted: true, user: create(:user, admin: true))
+        notice.restricted = false
+
+        expect(notice).to be_invalid
+      end
+
+      it 'allows updating other attributes without touching restricted' do
+        notice = create(:notice, restricted: true, user: create(:user, admin: true))
+
+        expect(notice.update(content: "追記")).to be(true)
       end
     end
 
@@ -225,16 +272,20 @@ RSpec.describe Notice, type: :model do
   end
 
   describe "ransackable_attributes" do
-    it "permits restricted in addition to base attributes when auth_object is :admin" do
-      expect(described_class.ransackable_attributes(:admin)).to match_array(%w[title content level start_at end_at restricted])
+    it "permits restricted in addition to base attributes for an admin" do
+      Current.session = Session.new(user: build(:user, admin: true))
+
+      expect(described_class.ransackable_attributes).to match_array(%w[title content level start_at end_at restricted])
     end
 
-    it "does not permit restricted when auth_object is nil" do
-      expect(described_class.ransackable_attributes(nil)).to match_array(%w[title content level start_at end_at])
+    it "does not permit restricted when the current user is unset" do
+      expect(described_class.ransackable_attributes).to match_array(%w[title content level start_at end_at])
     end
 
-    it "falls back to the base list without restricted for unexpected auth_object values" do
-      expect(described_class.ransackable_attributes(:something_else)).to match_array(%w[title content level start_at end_at])
+    it "does not permit restricted for a non-admin" do
+      Current.session = Session.new(user: build(:user, admin: false))
+
+      expect(described_class.ransackable_attributes).to match_array(%w[title content level start_at end_at])
     end
   end
 

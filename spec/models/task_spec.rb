@@ -102,6 +102,29 @@ RSpec.describe Task, type: :model do
   end
 
   describe 'validations' do
+    describe 'restricted is fixed at creation' do
+      it 'cannot be switched on after creation' do
+        task = create(:task, restricted: false)
+        task.restricted = true
+
+        expect(task).to be_invalid
+        expect(task.errors[:restricted]).to be_present
+      end
+
+      it 'cannot be switched off after creation' do
+        task = create(:task, restricted: true, user: create(:user, admin: true))
+        task.restricted = false
+
+        expect(task).to be_invalid
+      end
+
+      it 'allows updating other attributes without touching restricted' do
+        task = create(:task, restricted: true, user: create(:user, admin: true))
+
+        expect(task.update(description: "追記")).to be(true)
+      end
+    end
+
     describe 'title' do
       it 'is required' do
         task = build(:task, title: "")
@@ -144,7 +167,7 @@ RSpec.describe Task, type: :model do
 
     describe 'restricted' do
       it 'is valid when restricted is true' do
-        task = build(:task, restricted: true)
+        task = build(:task, restricted: true, user: build(:user, admin: true))
 
         expect(task).to be_valid
       end
@@ -159,6 +182,30 @@ RSpec.describe Task, type: :model do
         task = build(:task, restricted: nil)
 
         expect(task).to be_invalid
+      end
+
+      it 'inherits restricted from a restricted parent' do
+        admin  = create(:user, admin: true)
+        parent = create(:task, restricted: true, user: admin)
+
+        child = create(:task, restricted: false, user: admin, parent: parent)
+
+        expect(child.restricted).to be(true)
+      end
+
+      it 'keeps a restricted child under a parent that is not restricted' do
+        parent = create(:task, restricted: false)
+
+        child = create(:task, restricted: true, user: create(:user, admin: true), parent: parent)
+
+        expect(child.restricted).to be(true)
+      end
+
+      it 'is invalid when a non-admin owns a restricted task' do
+        task = build(:task, restricted: true, user: build(:user, admin: false))
+
+        expect(task).to be_invalid
+        expect(task.errors[:restricted]).to be_present
       end
     end
 
@@ -199,17 +246,22 @@ RSpec.describe Task, type: :model do
   end
 
   describe "ransackable_attributes" do
-    it "permits restricted in addition to base attributes when auth_object is :admin" do
-      expect(described_class.ransackable_attributes(:admin)).to include("title", "description", "due_at", "restricted")
+    it "permits restricted in addition to base attributes for an admin" do
+      Current.session = Session.new(user: build(:user, admin: true))
+
+      expect(described_class.ransackable_attributes).to include("title", "description", "due_at", "restricted")
     end
 
-    it "does not permit restricted when auth_object is nil" do
-      expect(described_class.ransackable_attributes(nil)).to include("title", "description", "due_at")
-      expect(described_class.ransackable_attributes(nil)).not_to include("restricted")
+    it "does not permit restricted when the current user is unset" do
+      expect(described_class.ransackable_attributes).to include("title", "description", "due_at")
+      expect(described_class.ransackable_attributes).not_to include("restricted")
     end
 
-    it "falls back to the base list without restricted for unexpected auth_object values" do
-      expect(described_class.ransackable_attributes(:something_else)).not_to include("restricted")
+    it "does not permit restricted for a non-admin" do
+      Current.session = Session.new(user: build(:user, admin: false))
+
+      expect(described_class.ransackable_attributes).to include("title", "description", "due_at")
+      expect(described_class.ransackable_attributes).not_to include("restricted")
     end
   end
 
