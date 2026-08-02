@@ -28,6 +28,74 @@ RSpec.describe "Restricted content visibility", type: :request do
     end
   end
 
+  describe "creating a follow-up under a restricted record" do
+    context "with a notice" do
+      let(:parent) { create(:notice, user: admin, restricted: true) }
+      let(:child) do
+        sign_in(admin)
+        post notices_path, params: {
+          parent_id: parent.id,
+          notice: attributes_for(:notice).merge(title: "続報", content: "上記の件の続き", restricted: "0")
+        }
+        Notice.find_by!(title: "続報")
+      end
+
+      it "stays restricted even when the admin leaves the checkbox off" do
+        expect(child.restricted).to be(true)
+      end
+
+      it "is not reachable by a non-admin" do
+        target = child
+        sign_in(user)
+        get notice_path(target)
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "with a task" do
+      let(:parent) { create(:task, user: admin, restricted: true) }
+      let(:child) do
+        sign_in(admin)
+        post tasks_path, params: {
+          parent_id: parent.id,
+          task: attributes_for(:task).merge(title: "続報", description: "続き", restricted: "0"),
+          assignee_ids: [ admin.id ]
+        }
+        Task.find_by!(title: "続報")
+      end
+
+      it "stays restricted even when the admin leaves the checkbox off" do
+        expect(child.restricted).to be(true)
+      end
+
+      it "is not reachable by a non-admin" do
+        target = child
+        sign_in(user)
+        get task_path(target)
+
+        expect(response).to have_http_status(:not_found)
+      end
+
+      # 親から継承した restricted は task の before_validation で立つため、
+      # TaskForm 側の担当者チェックがその前に走ると素通りして500になる。
+      it "rejects a non-admin assignee even though restricted is only inherited" do
+        parent_task = parent
+        sign_in(admin)
+        params = {
+          parent_id: parent_task.id,
+          task: attributes_for(:task).merge(title: "継承続報", description: "続き"),
+          assignee_ids: [ user.id ]
+        }
+
+        expect { post tasks_path, params: params }.not_to change(Task, :count)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.body).to include("管理者以外を担当者に指定できません")
+      end
+    end
+  end
+
   describe "cross-model related sections" do
     it "does not expose a restricted task linked to a visible notice" do
       notice = create(:notice, user: admin, restricted: false)

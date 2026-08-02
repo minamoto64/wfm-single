@@ -28,7 +28,6 @@ class Notice < ApplicationRecord
   validates :title, presence: true, length: { maximum: 50 }
   validates :content, presence: true,  length: { maximum: 2000 }
   validates :level, presence: true
-  validates :restricted, inclusion: { in: [ true, false ] }
   validates :start_at, presence: true
   validates :end_at, presence: true
   validates :end_at, comparison: { greater_than: :start_at }, if: -> { start_at.present? && end_at.present? }
@@ -52,9 +51,10 @@ class Notice < ApplicationRecord
     end
   }
 
+  # 検索フォームに出せる項目の宣言。閲覧境界は readable が持つ。
   def self.ransackable_attributes(auth_object = nil)
     base = %w[title content level start_at end_at]
-    auth_object == :admin ? base + %w[restricted] : base
+    Current.user&.admin? ? base + %w[restricted] : base
   end
 
   def self.ransackable_associations(auth_object = nil)

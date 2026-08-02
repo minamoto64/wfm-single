@@ -33,7 +33,7 @@ RSpec.describe "Comments", type: :request do
   end
 
   shared_examples "restricts posting comments" do |commentable_factory|
-    let(:commentable) { create(commentable_factory, user: other_user, restricted: true) }
+    let(:commentable) { create(commentable_factory, user: create(:user, admin: true), restricted: true) }
 
     it "does not allow a non-admin user to comment on a restricted record" do
       expect {

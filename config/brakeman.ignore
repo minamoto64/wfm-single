@@ -1,0 +1,28 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "Mass Assignment",
+      "warning_code": 105,
+      "fingerprint": "f619ca75a347b9b03bcd67e53329dc92dedfac0f09856481e3f6bb4af090556f",
+      "check_name": "PermitAttributes",
+      "message": "Potentially dangerous key allowed for mass assignment",
+      "file": "app/controllers/users_controller.rb",
+      "line": 62,
+      "link": "https://brakemanscanner.org/docs/warning_types/mass_assignment/",
+      "code": "params.require(:user).permit(:admin)",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "UsersController",
+        "method": "create_user_params"
+      },
+      "user_input": ":admin",
+      "confidence": "High",
+      "cwe_id": [
+        915
+      ],
+      "note": "権限は新規登録時にのみ admin が選択でき、登録後は変更できない仕様。create は require_admin で保護し、create_user_params 内でも Current.user.admin? を再確認している。update が通る user_params に :admin は含まれないため、権限昇格の経路はない。spec/requests/users_spec.rb で昇格も降格もできないことを検証済み。"
+    }
+  ],
+  "brakeman_version": "8.0.5"
+}

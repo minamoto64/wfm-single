@@ -100,6 +100,29 @@ RSpec.describe User, type: :model do
         expect(user.admin).to be true
       end
     end
+
+    describe 'admin is fixed at registration' do
+      it 'cannot be revoked after registration' do
+        user = create(:user, admin: true)
+        user.admin = false
+
+        expect(user).to be_invalid
+        expect(user.errors[:admin]).to be_present
+      end
+
+      it 'cannot be granted after registration' do
+        user = create(:user, admin: false)
+        user.admin = true
+
+        expect(user).to be_invalid
+      end
+
+      it 'allows updating other attributes without touching admin' do
+        user = create(:user, admin: true)
+
+        expect(user.update(name: "新しい名前")).to be(true)
+      end
+    end
   end
 
   describe 'ransackable_attributes' do

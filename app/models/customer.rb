@@ -14,12 +14,16 @@ class Customer < ApplicationRecord
   scope :readable, -> { demo(Current.demo?) }
 
   # 顧客情報は業務の核であり、都度の許可申請では現場が回らないため全員編集可。
+  # 認証済みなら常に true になるため、呼び出し側のガードは通過専用。
+  # それでも他リソースと同じ形で書くのは、後から条件を絞るときの入口を1箇所に保つため。
   def editable?
     Current.user.present?
   end
 
   private
 
+  # auth_object は「どの一覧画面から検索しているか」を表す。
+  # 他モデルの関連を辿った検索では渡らないため、メールアドレス等は開放されない。
   def self.ransackable_attributes(auth_object = nil)
     base = %w[name phone]
     auth_object == :customer_list ? base + %w[email] : base

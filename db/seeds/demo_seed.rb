@@ -303,11 +303,14 @@ end
 puts "デモ用タスク #{demo_tasks.size}件を作成しました"
 
 # タスク担当割り当て（作成者 + ランダムに1〜2名を追加）
+# 管理者限定タスクは admin しか閲覧できないため、追加担当者も admin に限る。
 statuses = %i[todo in_progress done]
 
 demo_tasks.each_value do |task|
+  assignable_users = task.restricted? ? all_demo_users.select(&:admin?) : all_demo_users
+
   assignees = [ task.user ]
-  assignees += all_demo_users.reject { |u| u == task.user }.sample(rng.rand(1..2), random: rng)
+  assignees += assignable_users.reject { |u| u == task.user }.sample(rng.rand(1..2), random: rng)
 
   assignees.uniq.each do |user|
     TaskAssignment.create!(

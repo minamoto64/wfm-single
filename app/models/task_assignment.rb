@@ -10,9 +10,11 @@ class TaskAssignment < ApplicationRecord
     done: "done"
   }, default: :todo
 
-  validates :task_id, uniqueness: { scope: :user_id }
+  # 従属リソースのため、親タスクの閲覧境界をそのまま引き継ぐ。
+  scope :readable, -> { demo(Current.demo?).joins(:task).merge(Task.readable) }
 
-  scope :readable, -> { demo(Current.demo?) }
+  validates :task_id, uniqueness: { scope: :user_id }
+  validate :assignee_must_be_admin, if: -> { task&.restricted? }
 
   # 編集は担当者本人のみ。admin も改ざん防止のため対象外。
   def editable?
@@ -20,6 +22,14 @@ class TaskAssignment < ApplicationRecord
   end
 
   private
+
+  # 管理者限定タスクは admin しか閲覧できないため、
+  # 非 admin を担当者にすると「割り当てられているが見えないタスク」が生まれる。
+  def assignee_must_be_admin
+    return if user.blank? || user.admin?
+
+    errors.add(:user, "は管理者限定タスクの担当者にできません")
+  end
 
   def self.ransackable_attributes(auth_object = nil)
     %w[status user_id]
