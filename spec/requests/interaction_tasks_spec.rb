@@ -20,6 +20,19 @@ RSpec.describe "Interaction Tasks", type: :request do
       end
     end
 
+    context "when the linked task has no due date" do
+      let(:task) { create(:task, due_at: nil) }
+
+      before { interaction.tasks << task }
+
+      it "displays the fallback text instead of failing" do
+        get interaction_path(interaction)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("未設定")
+      end
+    end
+
     context "when the interaction has no linked tasks" do
       it "displays the empty message" do
         get interaction_path(interaction)
