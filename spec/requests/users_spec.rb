@@ -198,6 +198,15 @@ RSpec.describe "Users", type: :request do
         expect(response).to redirect_to(user_path(User.last))
       end
 
+      # 権限は新規登録時にのみ選択できる
+      it "can register a new user as an admin" do
+        post users_path, params: {
+          user: valid_params[:user].merge(admin: true)
+        }
+
+        expect(User.last.admin).to be(true)
+      end
+
       it "sets a success notice" do
         post users_path, params: valid_params
 
@@ -256,23 +265,24 @@ RSpec.describe "Users", type: :request do
         expect(response.body).to include("従業員名")
         expect(response.body).to include("メールアドレス")
         expect(response.body).to include("パスワード（変更する場合のみ）")
-        expect(response.body).to include("管理者権限を付与")
+        # 権限は新規登録時にのみ選択できる
+        expect(response.body).not_to include("管理者権限を付与")
       end
     end
 
     context "when the current user is not an admin" do
       before { sign_in(user) }
 
-      it "redirects to the root page" do
+      it "redirects to the show page" do
         get edit_user_path(user)
 
-        expect(response).to redirect_to(root_path)
+        expect(response).to redirect_to(user_path(user))
       end
 
       it "sets an alert message" do
         get edit_user_path(user)
 
-        expect(flash[:alert]).to eq("管理者権限が必要です")
+        expect(flash[:alert]).to eq("編集権限がありません")
       end
     end
   end
@@ -304,6 +314,22 @@ RSpec.describe "Users", type: :request do
 
         expect(user.reload.name).to eq("Updated Name")
         expect(user.reload.email_address).to eq("updated@example.com")
+      end
+
+      # 権限は新規登録時にのみ選択できる
+      it "ignores admin and still applies the other attributes" do
+        other_admin = create(:user, admin: true)
+
+        patch user_path(other_admin), params: { user: { name: "新しい名前", admin: false } }
+
+        expect(other_admin.reload.admin).to be(true)
+        expect(other_admin.name).to eq("新しい名前")
+      end
+
+      it "cannot grant the admin flag to a general user" do
+        patch user_path(user), params: { user: { admin: true } }
+
+        expect(user.reload.admin).to be(false)
       end
 
       it "redirects to the user page" do
@@ -357,16 +383,16 @@ RSpec.describe "Users", type: :request do
         expect(user.reload.name).to eq(original_name)
       end
 
-      it "redirects to the root page" do
+      it "redirects to the show page" do
         patch user_path(user), params: valid_params
 
-        expect(response).to redirect_to(root_path)
+        expect(response).to redirect_to(user_path(user))
       end
 
       it "sets an alert message" do
         patch user_path(user), params: valid_params
 
-        expect(flash[:alert]).to eq("管理者権限が必要です")
+        expect(flash[:alert]).to eq("編集権限がありません")
       end
     end
   end

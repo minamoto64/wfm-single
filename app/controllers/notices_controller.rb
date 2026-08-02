@@ -6,7 +6,7 @@ class NoticesController < ApplicationController
   before_action -> { authorize_edit!(@notice) }, only: %i[edit update]
 
   def index
-    @q = readable_notices.ransack(params[:q], auth_object: Current.user.admin? ? :admin : nil)
+    @q = readable_notices.ransack(params[:q])
     @pagy, @notices = pagy(
       @q.result
         .preload(:user)
@@ -25,7 +25,7 @@ class NoticesController < ApplicationController
 
   def create
     @parent_notice = Notice.readable.find(params[:parent_id]) if params[:parent_id].present?
-    @notice = Current.user.notices.build(notice_params)
+    @notice = Current.user.notices.build(create_notice_params)
     @notice.parent = @parent_notice
 
     if @notice.save
@@ -71,16 +71,13 @@ class NoticesController < ApplicationController
   end
 
   def notice_params
-    permitted = %i[
-      title
-      content
-      level
-      start_at
-      end_at
-    ]
+    params.require(:notice).permit(:title, :content, :level, :start_at, :end_at, images: [])
+  end
 
-    permitted << :restricted if Current.user.admin?
+  # 公開範囲は新規作成時にのみ admin が選択できる。作成後は変更できない。
+  def create_notice_params
+    return notice_params unless Current.user.admin?
 
-    params.require(:notice).permit(*permitted, images: [])
+    notice_params.merge(params.require(:notice).permit(:restricted))
   end
 end

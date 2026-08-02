@@ -360,10 +360,11 @@ RSpec.describe "Notices", type: :request do
         expect(response).to have_http_status(:ok)
       end
 
-      it "displays restricted check box" do
+      # 公開範囲は新規作成時にのみ選択できる
+      it "does not display restricted check box" do
         get edit_notice_path(restricted_notice)
 
-        expect(response.body).to include("管理者のみ")
+        expect(response.body).not_to include("管理者のみ")
       end
     end
 
@@ -433,6 +434,14 @@ RSpec.describe "Notices", type: :request do
 
         expect(restricted_notice.reload.content).to eq("追記")
         expect(response).to redirect_to notice_path(restricted_notice)
+      end
+
+      # 公開範囲は新規作成時にのみ選択できる
+      it "ignores restricted and still applies the other attributes" do
+        patch notice_path(restricted_notice), params: { notice: { content: "追記", restricted: false } }
+
+        expect(restricted_notice.reload.restricted).to be(true)
+        expect(restricted_notice.content).to eq("追記")
       end
     end
 

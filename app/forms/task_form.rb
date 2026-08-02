@@ -6,6 +6,9 @@ class TaskForm
 
   validate :task_must_be_valid
   validate :at_least_one_assignee, if: -> { task.new_record? }
+  # 親から restricted を継承するのは task の before_validation なので、
+  # このバリデーションの実行順に関係なく判定できるよう parent も見る。
+  validate :assignees_must_be_admin, if: -> { task.restricted? || task.parent&.restricted? }
 
   def initialize(task:, assignee_ids: [], interaction_id: nil, notice_id: nil)
     @task           = task
@@ -50,5 +53,15 @@ class TaskForm
   def at_least_one_assignee
     return if assignee_ids.any?
     errors.add(:base, "担当者を1人以上選択してください")
+  end
+
+  # TaskAssignment 側のバリデーションと同じ規則をフォームでも検証する。
+  # ここで弾かないと save 内の create! が RecordInvalid を投げて500になる。
+  # 管理者限定タスクの担当者は admin に限られる（TaskAssignment#assignee_must_be_admin）。
+  def assignees_must_be_admin
+    non_admins = User.readable.where(id: assignee_ids, admin: false)
+    return if non_admins.empty?
+
+    errors.add(:base, "管理者限定タスクには管理者以外を担当者に指定できません（#{non_admins.map(&:name).join('、')}）")
   end
 end

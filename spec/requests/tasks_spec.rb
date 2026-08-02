@@ -246,8 +246,10 @@ RSpec.describe "Tasks", type: :request do
 
       it "allows to set restricted" do
         post tasks_path, params: create_task_with_assignees(
-          { task: attributes_for(:task).merge(restricted: true) }
+          { task: attributes_for(:task).merge(restricted: true) },
+          user: create(:user, admin: true)
         )
+
         expect(Task.last.restricted).to be(true)
       end
     end
@@ -337,10 +339,11 @@ RSpec.describe "Tasks", type: :request do
         expect(response).to have_http_status(:ok)
       end
 
-      it "displays restricted check box" do
+      # 公開範囲は新規作成時にのみ選択できる
+      it "does not display restricted check box" do
         get edit_task_path(restricted_task)
 
-        expect(response.body).to include("管理者のみ")
+        expect(response.body).not_to include("管理者のみ")
       end
     end
 
@@ -413,6 +416,14 @@ RSpec.describe "Tasks", type: :request do
 
         expect(restricted_task.reload.description).to eq("追記")
         expect(response).to redirect_to task_path(restricted_task)
+      end
+
+      # 公開範囲は新規作成時にのみ選択できる
+      it "ignores restricted and still applies the other attributes" do
+        patch task_path(restricted_task), params: { task: { description: "追記", restricted: false } }
+
+        expect(restricted_task.reload.restricted).to be(true)
+        expect(restricted_task.description).to eq("追記")
       end
     end
 

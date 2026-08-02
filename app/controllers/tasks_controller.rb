@@ -6,7 +6,7 @@ class TasksController < ApplicationController
   before_action -> { authorize_edit!(@task) }, only: [ :edit, :update ]
 
   def index
-    @q = readable_tasks.ransack(params[:q], auth_object: Current.user.admin? ? :admin : nil)
+    @q = readable_tasks.ransack(params[:q])
     @pagy, @tasks = pagy(
       @q.result
         .preload(:user, task_assignments: [ :user ])
@@ -26,7 +26,7 @@ class TasksController < ApplicationController
 
   def create
     @parent_task = Task.readable.find(params[:parent_id]) if params[:parent_id].present?
-    @task = Current.user.tasks.build(task_params)
+    @task = Current.user.tasks.build(create_task_params)
     @task.parent = @parent_task
 
     @form = TaskForm.new(
@@ -76,14 +76,13 @@ class TasksController < ApplicationController
   end
 
   def task_params
-    permitted = [
-      :title,
-      :description,
-      :due_at
-    ]
+    params.require(:task).permit(:title, :description, :due_at, images: [])
+  end
 
-    permitted << :restricted if Current.user.admin?
+  # 公開範囲は新規作成時にのみ admin が選択できる。作成後は変更できない。
+  def create_task_params
+    return task_params unless Current.user.admin?
 
-    params.require(:task).permit(*permitted, images: [])
+    task_params.merge(params.require(:task).permit(:restricted))
   end
 end
