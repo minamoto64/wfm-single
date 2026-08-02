@@ -1,6 +1,7 @@
 <div class="mb-6 border-t-4 border-gray-300 pt-6 text-xs sm:text-sm">
   <h2 class="text-base sm:text-lg font-semibold mb-3">関連応対履歴</h2>
 
+  <%# Interaction は公開範囲を持たず demo 境界だけなので、readable な親から辿る限り境界は保たれる %>
   <% interactions = task.interactions %>
 
   <% if interactions.any? %>
