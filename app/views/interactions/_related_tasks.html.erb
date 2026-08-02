@@ -12,8 +12,8 @@
                       class: "flex-1 min-w-0 truncate text-gray-700 group-hover:text-blue-600" %>
 
           <span class="w-10 sm:w-32 shrink-0 whitespace-nowrap text-right tabular-nums text-gray-500 group-hover:text-blue-600">
-            <span class="sm:hidden"><%= task.due_at.strftime("%-m/%-d") %></span>
-            <span class="hidden sm:inline"><%= l task.due_at %></span>
+            <span class="sm:hidden"><%= task.due_at ? task.due_at.strftime("%-m/%-d") : "未設定" %></span>
+            <span class="hidden sm:inline"><%= task.due_at ? l(task.due_at) : "未設定" %></span>
           </span>
         </li>
       <% end %>
