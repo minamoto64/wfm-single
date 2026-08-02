@@ -29,6 +29,17 @@ class User < ApplicationRecord
     Current.user&.admin?
   end
 
+  # auth_object は「どの一覧画面から検索しているか」を表す。
+  # 他モデルの関連を辿った検索では渡らないため、メールアドレス等は開放されない。
+  def self.ransackable_attributes(auth_object = nil)
+    base = %w[name]
+    auth_object == :user_list ? base + %w[email_address admin] : base
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    []
+  end
+
   private
 
   # 権限は新規登録時にのみ選択できる。降格・昇格の両方を止める。
@@ -40,16 +51,5 @@ class User < ApplicationRecord
     return unless admin_changed?
 
     errors.add(:admin, "は登録後に変更できません")
-  end
-
-  # auth_object は「どの一覧画面から検索しているか」を表す。
-  # 他モデルの関連を辿った検索では渡らないため、メールアドレス等は開放されない。
-  def self.ransackable_attributes(auth_object = nil)
-    base = %w[name]
-    auth_object == :user_list ? base + %w[email_address admin] : base
-  end
-
-  def self.ransackable_associations(auth_object = nil)
-    []
   end
 end

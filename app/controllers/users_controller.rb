@@ -12,6 +12,7 @@ class UsersController < ApplicationController
   end
 
   def show
+    # Interaction は公開範囲を持たず demo 境界だけなので、readable な親から辿る限り境界は保たれる。
     @interactions = @user.interactions.order(occurred_at: :desc)
   end
 

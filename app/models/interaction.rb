@@ -44,17 +44,17 @@ class Interaction < ApplicationRecord
     user == Current.user
   end
 
-  private
-
-  def set_customer_from_parent
-    self.customer ||= parent&.customer
-  end
-
   def self.ransackable_attributes(auth_object = nil)
     %w[channel completed occurred_at]
   end
 
   def self.ransackable_associations(auth_object = nil)
     %w[customer user]
+  end
+
+  private
+
+  def set_customer_from_parent
+    self.customer ||= parent&.customer
   end
 end
