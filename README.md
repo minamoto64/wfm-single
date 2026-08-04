@@ -1,58 +1,52 @@
 # wfm-single
 
-店舗・小規模チーム向けの業務情報集約アプリ。
-顧客応対・タスク・全体周知という 3 種類の業務イベントを、相互に関連付けたまま管理する。
+顧客対応から生まれる業務を一元管理するアプリ。
+応対履歴・タスク・お知らせ・顧客・従業員の情報を、相互に関連付けたまま管理する。
 
 **デモ環境: https://sync-wfm.com**
 トップページの「デモを試す」ボタンから、登録なしでログインできる。
 
----
-
-## 何を解決するアプリか
-
-現場の情報は「顧客から電話が来た」「その対応で誰かに作業を頼んだ」「全員に周知した」という
-つながりを持っているのに、実際には応対メモ・タスク管理ツール・掲示板がそれぞれ分断されている。
-結果として「この作業依頼は何が発端だったのか」が後から辿れなくなる。
-
-このアプリは 3 つの業務イベントをテーブルとして分離しつつ、
-中間テーブルで相互に接続することで、**発端から結果までの流れを双方向に辿れる**ようにしている。
-
-```
-応対履歴 (Interaction) ──┬── タスク (Task)
-                          │        │
-                          └── お知らせ (Notice)
-```
-
-例えば「商品Xの不具合報告」という応対履歴から、そこで発行された「再発防止策の検討」タスクと
-「クレーム多発の注意喚起」お知らせの両方へ辿れる。逆にタスク側からも発端の応対履歴が見える。
-
-さらに応対履歴・タスク・お知らせはそれぞれ**自己参照の親子関係**を持てるため、
-「一次対応 → 二次対応」のような時系列の連なりも表現できる。
+<img src="docs/images/top.png" alt="トップページ" width="100%">
 
 ---
+
+## なぜ作ったか
+
+以前、情報のほとんどが紙とその場のやりとりだけで回っている現場で
+働いていたことがある。伝えたいことがあれば人を探して伝えるか、
+メモを書き置きするしかなく、確認したいことは紙の記録をめくって
+探すか、直接聞くしかなかった。
+
+また、電話だけで完結したやり取りの記録が残らず、同じ顧客から
+再び連絡が来てもいつ・誰が・どんな理由で対応したのか誰も分からない、
+という経験もした。対応者も困るし、顧客にも「前にも話したのに」と
+苛立たれる。
+
+情報が一箇所にまとまっていないだけで、仕事はここまで非効率になる。
+紙・口頭・その場限りのやりとりでは、情報は「点」のまま散らばり、
+他の情報とのつながりが見えない。応対履歴・タスク・お知らせ・顧客・
+従業員を相互にリンクさせ、点在する情報を「網の目」のようにつなぎ、
+ひとつの情報から関連する情報をシームレスに辿れる状態を目指したのが、
+このアプリの出発点。
 
 ## 主な機能
 
-- **応対履歴 / タスク / お知らせ の CRUD** と、相互の関連付け
-- **顧客管理**と、顧客を軸にした応対履歴の集約
-- **認証**（Rails 8 標準の認証ジェネレータ + `has_secure_password`）とパスワードリセット
-- **権限制御** — 一般ユーザー / 管理者、レコード単位の「関係者限定」「管理者限定」
-- **検索・絞り込み**（Ransack）と**ページネーション**（Pagy）
-- **画像添付**（Active Storage + ruby-vips によるサムネイル生成）と、認可を通した配信
-- **コメント**によるレコード単位の議論
-- **デモモード** — `demo: true` のレコードだけが見える隔離された体験用データセット
+- **相互リンクによる追跡性** — 応対履歴・タスク・お知らせ・顧客・従業員が互いにリンクされ、
+  ひとつのレコードから関連する情報を辿れる。同じテーブル内でも、関連レコード同士の
+  関係性が一覧で把握できる
+- **タスクの進捗管理** — 担当者ごとの進捗状況を管理できる
+- **権限制御** — タスク・お知らせは、公開範囲を「管理者のみ」に絞れる
+- **コメント** — 応対履歴・タスク・お知らせのどれにでも紐づけられる
 
-### デモモードの設計
+応対履歴詳細画面から、関連するタスク・お知らせ・自己参照による関連グループ
+（この案件の流れ）を相互に行き来できる。
 
-ポートフォリオとして誰でも触れる状態にする一方で、見学者の操作が
-本来のデータを壊さないようにする必要があった。
+<img src="docs/images/interaction_relations.gif" width="100%">
 
-そこで全モデルに `demo` フラグを持たせ、`DemoScoped` concern で
-「デモユーザーはデモデータだけ、通常ユーザーは通常データだけ」を見るように
-デフォルトの可視範囲を切り替えている。`bin/rails demo:reset` で
-デモデータだけを削除・再投入できるため、定期的に初期状態へ戻せる。
+タスク一覧では行にカーソルを合わせるだけで担当者ごとの進捗状況を確認でき、
+詳細画面では一覧表示で確認できる。
 
-この分離が実際に効いているかは `spec/requests/demo_isolation_spec.rb` で検証している。
+<img src="docs/images/task_progress.gif" width="100%">
 
 ---
 
@@ -63,8 +57,6 @@
 | 言語 / フレームワーク | Ruby 4.0 / Rails 8.1 |
 | データベース | PostgreSQL 17 |
 | フロントエンド | Hotwire (Turbo / Stimulus)、Import Maps、Tailwind CSS 4 |
-| アセット | Propshaft |
-| 非同期処理 / キャッシュ | Solid Queue / Solid Cache / Solid Cable |
 | ファイル保存 | Active Storage + ruby-vips |
 | テスト | RSpec、FactoryBot、Capybara |
 | 静的解析 | RuboCop (rails-omakase)、Brakeman、bundler-audit |
@@ -72,99 +64,34 @@
 | コンテナ / デプロイ | Docker、Kamal 2 |
 | インフラ | Amazon Lightsail、Cloudflare（ドメイン登録・DNS） |
 
----
+フロントエンドは Hotwire（Turbo / Stimulus）を選んだ。React や Next.js は学習していない
+状態だったため、フロントエンドの学習コストを増やすより、Rails の標準の枠内でどこまで
+動的なUIを再現できるかを検証する方を選んだ。
 
-## インフラ構成
-
-```mermaid
-flowchart LR
-    U[ユーザー] -->|HTTPS| CF[Cloudflare<br/>ドメイン + DNS]
-    CF --> KP
-
-    subgraph LS["Lightsail (Ubuntu 24.04)"]
-        KP[kamal-proxy] --> APP[Rails 8.1 + Thruster]
-        APP --> DB[(PostgreSQL 17)]
-    end
-
-    GH[GitHub Actions] -->|build & push| GHCR[(GHCR)]
-    GHCR -->|kamal deploy| LS
-```
-
-`main` への push で CI が成功すると、GitHub Actions が amd64 イメージをビルドして GHCR に push し、
-Kamal がゼロダウンタイムでコンテナを差し替える。構築手順の全文は [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)。
+インフラの選定理由は後述の「アーキテクチャ」を参照。
 
 ---
 
-## DB構造
+## アーキテクチャ
 
-```mermaid
-erDiagram
-    USERS {
-        string name
-        string email_address
-        boolean admin
-    }
-    CUSTOMERS {
-        string name
-        string email
-        string phone
-    }
-    INTERACTIONS {
-        string channel
-        text request_content
-        text response_result
-        boolean completed
-        bigint parent_id
-        bigint root_id
-    }
-    TASKS {
-        string title
-        text description
-        datetime due_at
-        boolean restricted
-        bigint parent_id
-        bigint root_id
-    }
-    NOTICES {
-        string title
-        text content
-        string level
-        boolean restricted
-        bigint parent_id
-        bigint root_id
-    }
-    TASK_ASSIGNMENTS {
-        string status
-    }
-    COMMENTS {
-        text content
-        string commentable_type
-    }
+### インフラ
 
-    USERS ||--o{ INTERACTIONS : creates
-    USERS ||--o{ TASKS : creates
-    USERS ||--o{ NOTICES : creates
-    USERS ||--o{ COMMENTS : writes
-    USERS ||--o{ TASK_ASSIGNMENTS : assigned
-    CUSTOMERS ||--o{ INTERACTIONS : has
+<img src="docs/images/infrastructure.svg" alt="インフラ構成図" width="100%">
 
-    INTERACTIONS }o--o{ TASKS : interaction_tasks
-    INTERACTIONS }o--o{ NOTICES : interaction_notices
-    NOTICES }o--o{ TASKS : notice_tasks
+AWS の理解がまだ浅い状態だったので、まずは Lightsail 1台 + Docker の最小構成にしている。
+段階的に本格的な構成へ移行予定（「今後の課題」参照）。構築手順は [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)。
 
-    TASKS ||--o{ TASK_ASSIGNMENTS : has
-    INTERACTIONS ||--o{ COMMENTS : "commentable"
-    TASKS ||--o{ COMMENTS : "commentable"
-    NOTICES ||--o{ COMMENTS : "commentable"
+図のソースは [docs/diagrams/infrastructure.drawio](docs/diagrams/infrastructure.drawio) にあり、[draw.io](https://app.diagrams.net) で開いて編集できる。
 
-    INTERACTIONS ||--o{ INTERACTIONS : "parent / root"
-    TASKS ||--o{ TASKS : "parent / root"
-    NOTICES ||--o{ NOTICES : "parent / root"
-```
+## ER図
 
-`interaction_tasks` / `interaction_notices` / `notice_tasks` は中間テーブルで、
-3つの業務イベントを相互に関連付けている。`comments` は `commentable_type` による
-ポリモーフィック関連で、3つのイベントどれにでも紐付く。
+<img src="docs/images/schema.svg" alt="ER図" width="100%">
+
+`comments` はどのテーブルにも紐づけられるよう `commentable_type` によるポリモーフィック
+関連にしている。
+
+全カラム・全テーブル（Active Storage 含む）は [docs/diagrams/schema.dbml](docs/diagrams/schema.dbml) を参照。
+図のソース（draw.io 形式）は [docs/diagrams/schema.drawio](docs/diagrams/schema.drawio)。
 
 ---
 
@@ -213,35 +140,50 @@ bin/bundler-audit        # 依存 gem の脆弱性
 
 ### 可視範囲を concern に切り出す
 
-「誰がどのレコードを見られるか」の判定は、コントローラに散らばると
-抜け漏れが起きやすい。以下の 3 つの concern に責務を分けている。
+「誰がどのレコードを見られるか」の判定は、コントローラに散らばると抜け漏れが
+起きやすい。以下の3つの concern に責務を分けている。
 
 - `DemoScoped` — デモデータと通常データの隔離
-- `Restrictable` — 「関係者限定」「管理者限定」の可視性
+- `Restrictable` — レコードごとに公開範囲を「管理者のみ」に絞る
 - `Rootable` — 自己参照の親子関係における root の解決
 
-これらを合成した `readable` スコープを各モデルに持たせ、
-コントローラは `Model.readable` から引くだけにしている。
-権限まわりのリクエストスペック（`restricted_visibility_spec.rb` 等）で
-境界が守られていることを検証している。
+これらを合成した `readable` スコープを各モデルに持たせ、コントローラは
+`Model.readable` から引くだけにしている。権限まわりのリクエストスペック
+（`restricted_visibility_spec.rb` 等）で境界が守られていることを検証している。
 
 ### 画像を認可経由で配信する
 
 Active Storage の署名付き URL は、URL を知っていれば誰でも取得できてしまう。
-「関係者限定」のレコードに添付された画像がそれでは漏れるため、
-`AttachmentsController` を挟んで、レコードの可視性判定を通過した場合のみ
+「管理者のみ」のレコードに添付された画像がそれでは漏れるため、
+`AttachmentsController` を挟んで、レコードを閲覧できるかどうかの判定を通過した場合のみ
 配信するようにしている。
 
 ### フォームオブジェクト
 
 タスクの登録は「タスク本体 + 担当者の割り当て + 関連レコードの紐付け」を
-1 つの画面で扱うため、`TaskForm` にまとめてコントローラを薄く保っている。
+1つの画面で扱うため、`TaskForm` にまとめてコントローラを薄く保っている。
+
+### デモモードの設計
+
+ポートフォリオとして誰でも触れる状態にする一方で、見学者の操作が本来のデータを
+壊さないようにする必要があった。
+
+そこで全モデルに `demo` フラグを持たせ、`DemoScoped` concern で「デモユーザーは
+デモデータだけ、通常ユーザーは通常データだけ」を見るようにデフォルトの可視範囲を
+切り替えている。`bin/rails demo:reset` でデモデータだけを削除・再投入できるため、
+定期的に初期状態へ戻せる。
+
+この分離が実際に効いているかは `spec/requests/demo_isolation_spec.rb` で検証している。
 
 ---
 
 ## 今後の課題
 
+- Lightsail 1台構成から、AWS の理解を深めた上での本格的な構成（VPC / ECS など）へ移行する
+- インフラを Terraform で定義する
 - デモデータの定期リセットを Solid Queue の recurring job で自動化する
 - Active Storage の保存先を S3 に移し、ディスク使用量をインスタンスから切り離す
-- インフラを Terraform で定義する
 - N+1 の継続監視（開発環境では Bullet を導入済み）
+- 応対履歴・タスク・お知らせの内容入力欄に要約ボタンを設置し、登録作業の時間を短縮する。
+  入力の手間を減らせなければ、結局手書きのメモに戻ってしまう。
+  要約ボタンでその差を埋めたい（API連携の学習・実装が必要で未着手）
