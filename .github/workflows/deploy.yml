@@ -48,7 +48,7 @@ jobs:
       # config/deploy.yml の builder.cache.type: gha を使うために、
       # Actions のキャッシュ用トークンを docker buildx へ公開する。
       - name: Expose GitHub Actions runtime for buildx cache
-        uses: crazy-max/ghaction-github-runtime@v3
+        uses: crazy-max/ghaction-github-runtime@v4
 
       - name: Configure SSH
         run: |
