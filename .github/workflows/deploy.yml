@@ -43,7 +43,7 @@ jobs:
       # GitHub Actions の runner は amd64 ネイティブなので、
       # Apple Silicon のローカルビルド (QEMU 経由で 20〜40 分) を回避できる。
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       # config/deploy.yml の builder.cache.type: gha を使うために、
       # Actions のキャッシュ用トークンを docker buildx へ公開する。
