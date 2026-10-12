@@ -49,7 +49,7 @@ RSpec.describe "Notices", type: :request do
       end
 
       it "shows the (limit+1)th notice only on page 2" do
-        limit = Pagy::DEFAULT[:items]
+        limit = Pagy::DEFAULT[:limit]
         (1..limit).each { |i| create(:notice, user: user, start_at: i.minutes.ago) }
         target_notice = create(:notice, user: user, start_at: 1.year.ago, title: "2ページ目のお知らせ")
 

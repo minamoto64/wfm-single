@@ -64,7 +64,7 @@ RSpec.describe "Interactions", type: :request do
       end
 
       it "shows the (limit+1)th interaction only on page 2" do
-        limit = Pagy::DEFAULT[:items]
+        limit = Pagy::DEFAULT[:limit]
         old_interaction = create(:interaction, user: user, occurred_at: (limit + 1).days.ago, request_content: "1番古い応対履歴")
         (1..limit).each { |i| create(:interaction, user: user, occurred_at: i.days.ago) }
 
