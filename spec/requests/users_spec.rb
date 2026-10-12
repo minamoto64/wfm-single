@@ -23,7 +23,7 @@ RSpec.describe "Users", type: :request do
       end
 
       it "shows the (limit+1)th user only on page 2" do
-        limit = Pagy::DEFAULT[:items]
+        limit = Pagy::DEFAULT[:limit]
         (1..limit).each { |i| create(:user, name: format("aaa_page_test_%02d", i), email_address: "aaa_page_test_#{i}@example.com") }
         target_user = create(:user, name: "zzz_page_test_target", email_address: "zzz_page_test_target@example.com")
 

@@ -64,7 +64,7 @@ RSpec.describe "Tasks", type: :request do
       end
 
       it "shows the (limit+1)th task only on page 2" do
-        limit = Pagy::DEFAULT[:items]
+        limit = Pagy::DEFAULT[:limit]
         (1..limit).each { |i| create(:task, user: user, due_at: i.hours.from_now) }
         target_task = create(:task, user: user, due_at: 1.month.from_now, title: "2ページ目のタスク")
 
