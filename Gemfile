@@ -4,7 +4,7 @@ source "https://rubygems.org"
 gem "rails", "~> 8.1.2"
 # Rails 8.1.3.1 は JSON.parse(json, options) と位置引数の Hash で呼ぶため json 3 系と非互換。
 # Rails 8.1.4 以降に上げたらこの行を外す。
-gem "json", "~> 2.21"
+gem "json", "~> 3.0"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # Use postgresql as the database for Active Record
