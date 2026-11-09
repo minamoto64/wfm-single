@@ -235,7 +235,7 @@ GEM
     observer (0.1.2)
     open3 (0.2.1)
     ostruct (0.6.3)
-    pagy (43.7.0)
+    pagy (43.8.1)
       json
       uri
       yaml
@@ -531,7 +531,7 @@ DEPENDENCIES
   jbuilder
   json (~> 2.21)
   kamal
-  pagy (~> 43.6)
+  pagy (~> 43.8)
   pg (~> 1.7)
   propshaft
   puma (>= 5.0)
