@@ -99,7 +99,7 @@ AWS の理解がまだ浅い状態だったので、まずは Lightsail 1台 + D
 
 ### 必要なもの
 
-- Ruby 4.0.1（`.ruby-version` 参照）
+- Ruby 4.0.9（`.ruby-version` 参照）
 - PostgreSQL 17
 - libvips（画像処理）
 
