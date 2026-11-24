@@ -32,10 +32,12 @@ module Rootable
 
   private
 
+  # 親は保存済みで、after_create（assign_self_as_root）により必ず root_id を持つため、
+  # parent.root は nil にならない。既存データに root_id が nil のものが無いことも前提にしている。
   def assign_root
     return unless parent
 
-    self.root = parent.root || parent
+    self.root = parent.root
   end
 
   def assign_self_as_root
